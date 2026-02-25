@@ -55,12 +55,14 @@ enable_language(C ASM)
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
     ${CMAKE_SOURCE_DIR}/../../include
+    ${CMAKE_SOURCE_DIR}/../../src/cm7
+    ${CMAKE_SOURCE_DIR}/../../src/common
 )
 
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
-    # Example: ${CMAKE_SOURCE_DIR}/../../src/cm7/dsp_tasks.c
+    ${CMAKE_SOURCE_DIR}/../../src/cm7/app_main.c
 )
 
 # Link directories setup
