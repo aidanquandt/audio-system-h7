@@ -4,8 +4,7 @@ cmake_minimum_required(VERSION 3.22)
 set(MX_Defines_Syms 
 	CORE_CM4 
 	USE_HAL_DRIVER 
-	STM32H745xx 
-	USE_PWR_DIRECT_SMPS_SUPPLY
+	STM32H745xx
     $<$<CONFIG:Debug>:DEBUG>
 )
 # STM32CubeMX generated include paths

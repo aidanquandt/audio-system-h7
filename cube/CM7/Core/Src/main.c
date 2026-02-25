@@ -180,13 +180,9 @@ void SystemClock_Config(void)
 
   /** Configure the main internal regulator output voltage
   */
-  /* MANUAL FIX: CubeMX generates VOS2 here, but 480 MHz requires VOS0.
-     Must go VOS1 first, then overdrive to VOS0. Reapply after CubeMX regen. */
-  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE0);
 
   while(!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {}
-
-  HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE0);
 
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
@@ -221,8 +217,6 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.APB2CLKDivider = RCC_APB2_DIV2;
   RCC_ClkInitStruct.APB4CLKDivider = RCC_APB4_DIV2;
 
-  /* MANUAL FIX: CubeMX generates LATENCY_0, but 480 MHz @ VOS0 needs 4 WS.
-     Reapply after CubeMX regen. */
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4) != HAL_OK)
   {
     Error_Handler();
