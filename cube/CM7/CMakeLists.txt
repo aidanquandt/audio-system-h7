@@ -60,8 +60,6 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
-    ${CMAKE_SOURCE_DIR}/../../src/audio/audio_processing.c
-    ${CMAKE_SOURCE_DIR}/../../src/dsp/filters.c
 )
 
 # Link directories setup

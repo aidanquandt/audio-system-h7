@@ -10,8 +10,7 @@ build/
 *.lst
 *.su
 
-# IDE files
-.vscode/
+# IDE files (keep .vscode/ for team settings)
 .idea/
 *.iws
 *.iml
