@@ -34,3 +34,6 @@ echo "✓ Build complete"
 echo "  Outputs:"
 echo "    - build/CM4/cube_CM4.elf"
 echo "    - build/CM7/cube_CM7.elf"
+
+# Update IntelliSense
+"$SCRIPT_DIR/merge-compile-commands.sh"

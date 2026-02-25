@@ -3,7 +3,7 @@
         "*.h": "c",
         "*.c": "c"
     },
-    "C_Cpp.default.compileCommands": "${workspaceFolder}/build/CM7/compile_commands.json",
+    "C_Cpp.default.compileCommands": "${workspaceFolder}/build/compile_commands.json",
     "editor.formatOnSave": false,
     "files.eol": "\n"
 }

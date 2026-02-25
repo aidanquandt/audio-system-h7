@@ -2,13 +2,7 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Configure Both Cores",
-            "type": "shell",
-            "command": "./scripts/configure.sh",
-            "problemMatcher": []
-        },
-        {
-            "label": "Build Both Cores",
+            "label": "Build",
             "type": "shell",
             "command": "./scripts/build.sh",
             "group": {
@@ -18,34 +12,22 @@
             "problemMatcher": ["$gcc"]
         },
         {
-            "label": "Build CM4 Only",
+            "label": "Flash",
             "type": "shell",
-            "command": "cmake --build build/CM4 -j8",
-            "problemMatcher": ["$gcc"]
+            "command": "./scripts/flash.sh",
+            "problemMatcher": []
         },
         {
-            "label": "Build CM7 Only",
-            "type": "shell",
-            "command": "cmake --build build/CM7 -j8",
-            "problemMatcher": ["$gcc"]
-        },
-        {
-            "label": "Clean Build",
+            "label": "Clean",
             "type": "shell",
             "command": "./scripts/clean.sh",
             "problemMatcher": []
         },
         {
-            "label": "Full Rebuild",
+            "label": "Rebuild",
             "type": "shell",
             "command": "./scripts/rebuild.sh",
             "problemMatcher": ["$gcc"]
-        },
-        {
-            "label": "Flash to Board",
-            "type": "shell",
-            "command": "./scripts/flash.sh",
-            "problemMatcher": []
         }
     ]
 }
