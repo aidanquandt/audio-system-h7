@@ -1,0 +1,67 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug CM7 (OpenOCD)",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "openocd",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/CM7/cube_CM7.elf",
+            "configFiles": [
+                "${workspaceFolder}/openocd.cfg"
+            ],
+            "gdbPath": "gdb-multiarch",
+            "device": "STM32H745XI",
+            "svdFile": "",
+            "runToEntryPoint": "main",
+            "preLaunchTask": "Build",
+            "showDevDebugOutput": "raw",
+            "liveWatch": {
+                "enabled": true,
+                "samplesPerSecond": 4
+            }
+        },
+        {
+            "name": "Debug CM4 (OpenOCD)",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "openocd",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/CM4/cube_CM4.elf",
+            "configFiles": [
+                "${workspaceFolder}/openocd.cfg"
+            ],
+            "gdbPath": "gdb-multiarch",
+            "device": "STM32H745XI",
+            "svdFile": "",
+            "runToEntryPoint": "main",
+            "preLaunchTask": "Build",
+            "showDevDebugOutput": "raw",
+            "targetProcessor": 1,
+            "liveWatch": {
+                "enabled": true,
+                "samplesPerSecond": 4
+            }
+        },
+        {
+            "name": "Attach CM7 (OpenOCD)",
+            "type": "cortex-debug",
+            "request": "attach",
+            "servertype": "openocd",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/CM7/cube_CM7.elf",
+            "configFiles": [
+                "${workspaceFolder}/openocd.cfg"
+            ],
+            "gdbPath": "gdb-multiarch",
+            "device": "STM32H745XI",
+            "svdFile": "",
+            "showDevDebugOutput": "raw",
+            "liveWatch": {
+                "enabled": true,
+                "samplesPerSecond": 4
+            }
+        }
+    ]
+}
