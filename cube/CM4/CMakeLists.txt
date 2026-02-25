@@ -54,6 +54,7 @@ enable_language(C ASM)
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
+    ${CMAKE_SOURCE_DIR}/../..
     ${CMAKE_SOURCE_DIR}/../../include
     ${CMAKE_SOURCE_DIR}/../../src/cm4
     ${CMAKE_SOURCE_DIR}/../../src/common
@@ -62,6 +63,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
+    ${CMAKE_SOURCE_DIR}/../../bsp/gpio.c
     ${CMAKE_SOURCE_DIR}/../../src/cm4/app_main/app_main.c
 )
 

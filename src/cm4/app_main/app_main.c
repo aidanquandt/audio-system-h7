@@ -1,16 +1,15 @@
 #include "app_main.h"
+#include "bsp/gpio.h"
 #include "FreeRTOS.h"
-#include "stm32h7xx_hal.h"
 #include "task.h"
-#include "main.h"
 
 static void led_task(void *pvParameters)
 {
     (void)pvParameters;
 
     for (;;) {
-        HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);  // Red LED
-        HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);  // Green LED
+        bsp_gpio_toggle(BSP_GPIO_LED_RED);
+        bsp_gpio_toggle(BSP_GPIO_LED_GREEN);
         vTaskDelay(pdMS_TO_TICKS(500));
     }
 }

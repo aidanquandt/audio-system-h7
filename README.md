@@ -37,7 +37,6 @@ STM32H745I-DISCO
 
 ## Known Issues / TODO
 
-- **Layering violation**: `src/cm4/app_main/app_main.c` calls `HAL_GPIO_TogglePin()` and includes `stm32h7xx_hal.h` and `main.h` directly. LED toggling should go through a `BSP_LED_Toggle()` wrapper in `bsp/`.
 - **GDB path**: `launch.json` has `gdbPath: "gdb-multiarch"` which is Linux-only. On Windows with the ARM toolchain this should be `arm-none-eabi-gdb` (or full path).
 - **SVD file**: `launch.json` has `svdFile: ""` — no peripheral register view in debugger. Add the STM32H745 SVD from STM32CubeH7 or https://github.com/STMicroelectronics/cmsis-header-stm32.
 - **Missing Attach CM4 debug config**: `launch.json` has Attach CM7 but no Attach CM4 configuration.
