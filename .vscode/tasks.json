@@ -5,10 +5,7 @@
             "label": "Build",
             "type": "shell",
             "command": "./scripts/build.sh",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
+            "group": "build",
             "problemMatcher": ["$gcc"]
         },
         {
@@ -27,6 +24,16 @@
             "label": "Rebuild",
             "type": "shell",
             "command": "./scripts/rebuild.sh",
+            "problemMatcher": ["$gcc"]
+        },
+        {
+            "label": "Build and Flash",
+            "type": "shell",
+            "command": "./scripts/build-and-flash.sh",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
             "problemMatcher": ["$gcc"]
         }
     ]
