@@ -1,12 +1,9 @@
 {
-    "cmake.sourceDirectory": "${workspaceFolder}/cube/CM7",
-    "cmake.useCMakePresets": "always",
-    "cmake.showSystemKits": false,
-    "cmake.configureOnOpen": false,
     "files.associations": {
         "*.h": "c",
         "*.c": "c"
     },
-    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
-    "editor.formatOnSave": false
+    "C_Cpp.default.compileCommands": "${workspaceFolder}/build/CM7/compile_commands.json",
+    "editor.formatOnSave": false,
+    "files.eol": "\n"
 }
