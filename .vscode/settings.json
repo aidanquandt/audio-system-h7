@@ -3,7 +3,19 @@
         "*.h": "c",
         "*.c": "c"
     },
-    "C_Cpp.default.compileCommands": "${workspaceFolder}/build/compile_commands.json",
+    // Disable C/C++ IntelliSense (using clangd instead)
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "C_Cpp.formatting": "disabled",
+    "C_Cpp.errorSquiggles": "disabled",
+    "C_Cpp.autocomplete": "disabled",
+    // clangd settings
+    "clangd.arguments": [
+        "--compile-commands-dir=${workspaceFolder}/build",
+        "--background-index",
+        "--clang-tidy",
+        "--header-insertion=never"
+    ],
     "editor.formatOnSave": false,
-    "files.eol": "\n"
+    "files.eol": "\n",
+    "cmake.ignoreCMakeListsMissing": true
 }
