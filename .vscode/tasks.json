@@ -4,13 +4,13 @@
         {
             "label": "Configure Both Cores",
             "type": "shell",
-            "command": "./tools/configure.sh",
+            "command": "./scripts/configure.sh",
             "problemMatcher": []
         },
         {
             "label": "Build Both Cores",
             "type": "shell",
-            "command": "./tools/build.sh",
+            "command": "./scripts/build.sh",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -32,14 +32,20 @@
         {
             "label": "Clean Build",
             "type": "shell",
-            "command": "./tools/clean.sh",
+            "command": "./scripts/clean.sh",
             "problemMatcher": []
         },
         {
             "label": "Full Rebuild",
             "type": "shell",
-            "command": "./tools/rebuild.sh",
+            "command": "./scripts/rebuild.sh",
             "problemMatcher": ["$gcc"]
+        },
+        {
+            "label": "Flash to Board",
+            "type": "shell",
+            "command": "./scripts/flash.sh",
+            "problemMatcher": []
         }
     ]
 }
