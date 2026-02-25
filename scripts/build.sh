@@ -19,10 +19,6 @@ fi
 echo "=== Building STM32H745 Dual-Core Project ==="
 echo
 
-# Apply CubeMX clock fixes (VOS0 + flash latency for 480 MHz)
-"$SCRIPT_DIR/fix-cubemx-clocks.sh"
-echo
-
 # Build CM4
 echo "Building CM4..."
 cmake --build "$PROJECT_ROOT/build/CM4" -j"$JOBS"
