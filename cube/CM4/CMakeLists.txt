@@ -43,39 +43,26 @@ include("mx-generated.cmake")
 # In order to use CMake for cross-compiling
 set(CMAKE_CXX_COMPILER_FORCED "true")
 
-# Add project symbols (macros)
-target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user defined symbols
-)
-
 # Enable CMake support for ASM and C languages
 enable_language(C ASM)
 
-# Add include paths
-target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user defined include paths
-    ${CMAKE_SOURCE_DIR}/../..
-    ${CMAKE_SOURCE_DIR}/../../include
-    ${CMAKE_SOURCE_DIR}/../../src/cm4
-    ${CMAKE_SOURCE_DIR}/../../src/common
+# INTERFACE library for application code: FreeRTOS + CMSIS-core + defines.
+# Deliberately excludes STM32H7xx_HAL_Driver/Inc to enforce the BSP boundary.
+add_library(freertos_iface INTERFACE)
+target_include_directories(freertos_iface INTERFACE
+    ${CMAKE_SOURCE_DIR}/Core/Inc
+    ${CMAKE_SOURCE_DIR}/../Middlewares/Third_Party/FreeRTOS/Source/include
+    ${CMAKE_SOURCE_DIR}/../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2
+    ${CMAKE_SOURCE_DIR}/../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F
+    ${CMAKE_SOURCE_DIR}/../Drivers/CMSIS/Device/ST/STM32H7xx/Include
+    ${CMAKE_SOURCE_DIR}/../Drivers/CMSIS/Include
 )
+target_compile_definitions(freertos_iface INTERFACE ${MX_Defines_Syms})
 
-# Add sources to executable
-target_sources(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user sources here
-    ${CMAKE_SOURCE_DIR}/../../bsp/gpio.c
-    ${CMAKE_SOURCE_DIR}/../../src/cm4/app_main/app_main.c
-)
+add_subdirectory(${CMAKE_SOURCE_DIR}/../../bsp     ${CMAKE_BINARY_DIR}/bsp)
+add_subdirectory(${CMAKE_SOURCE_DIR}/../../src/cm4 ${CMAKE_BINARY_DIR}/app)
 
-# Link directories setup
-target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user defined library search paths
-)
-
-# Add linked libraries
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user defined libraries
-)
+target_link_libraries(${CMAKE_PROJECT_NAME} bsp app_cm4)
 
 # Remove wrong libob.a library dependency when using cpp files
 list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
