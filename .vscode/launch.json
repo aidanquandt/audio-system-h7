@@ -2,20 +2,33 @@
     "version": "0.2.0",
     "configurations": [
         {
+            // Primary session: starts OpenOCD, connects GDB to cpu0 (CM7).
+            // numberOfProcessors:2 tells Cortex-Debug that a second GDB server
+            // (cpu1 / CM4) will be available on gdb_port+1 (50001).
             "name": "Debug CM7 (OpenOCD)",
             "type": "cortex-debug",
             "request": "launch",
             "servertype": "openocd",
+            "serverpath": "C:\\msys64\\ucrt64\\bin\\openocd.exe",
             "cwd": "${workspaceFolder}",
             "executable": "${workspaceFolder}/build/CM7/cube_CM7.elf",
             "configFiles": [
                 "${workspaceFolder}/openocd.cfg"
             ],
-            "gdbPath": "gdb-multiarch",
+            "gdbPath": "C:\\msys64\\ucrt64\\bin\\gdb-multiarch.exe",
+            "armToolchainPath": "C:\\msys64\\ucrt64\\bin",
+            "toolchainPrefix": "arm-none-eabi",
+            "objdumpPath": "C:\\msys64\\ucrt64\\bin\\arm-none-eabi-objdump.exe",
             "device": "STM32H745XI",
             "svdFile": "",
+            "numberOfProcessors": 2,
+            "targetProcessor": 0,
             "runToEntryPoint": "main",
             "preLaunchTask": "Build",
+            "preLaunchCommands": [
+                "set substitute-path c:\\\\github\\\\ash7 C:/github/ash7",
+                "set substitute-path C:\\\\github\\\\ash7 C:/github/ash7"
+            ],
             "showDevDebugOutput": "raw",
             "liveWatch": {
                 "enabled": true,
@@ -23,22 +36,63 @@
             }
         },
         {
+            // Secondary session: connects GDB to cpu1 (CM4) on gdb_port+1.
+            // Does NOT start a new OpenOCD instance — the CM7 session owns it.
+            // Launch this AFTER (or together via the Dual-Core compound below)
+            // the CM7 session so OpenOCD is already running.
             "name": "Debug CM4 (OpenOCD)",
+            "type": "cortex-debug",
+            "request": "attach",
+            "servertype": "external",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/CM4/cube_CM4.elf",
+            "gdbTarget": "localhost:50001",
+            "gdbPath": "C:\\msys64\\ucrt64\\bin\\gdb-multiarch.exe",
+            "armToolchainPath": "C:\\msys64\\ucrt64\\bin",
+            "toolchainPrefix": "arm-none-eabi",
+            "objdumpPath": "C:\\msys64\\ucrt64\\bin\\arm-none-eabi-objdump.exe",
+            "device": "STM32H745XI",
+            "svdFile": "",
+            "numberOfProcessors": 2,
+            "targetProcessor": 1,
+            "preLaunchCommands": [
+                "set substitute-path c:\\\\github\\\\ash7 C:/github/ash7",
+                "set substitute-path C:\\\\github\\\\ash7 C:/github/ash7"
+            ],
+            "showDevDebugOutput": "raw",
+            "liveWatch": {
+                "enabled": true,
+                "samplesPerSecond": 4
+            }
+        },
+        {
+            // Standalone CM4 session: starts its own OpenOCD instance.
+            // Use this when you ONLY want CM4 debugging (no CM7 session running).
+            "name": "Debug CM4 (OpenOCD, Standalone)",
             "type": "cortex-debug",
             "request": "launch",
             "servertype": "openocd",
+            "serverpath": "C:\\msys64\\ucrt64\\bin\\openocd.exe",
             "cwd": "${workspaceFolder}",
             "executable": "${workspaceFolder}/build/CM4/cube_CM4.elf",
             "configFiles": [
                 "${workspaceFolder}/openocd.cfg"
             ],
-            "gdbPath": "gdb-multiarch",
+            "gdbPath": "C:\\msys64\\ucrt64\\bin\\gdb-multiarch.exe",
+            "armToolchainPath": "C:\\msys64\\ucrt64\\bin",
+            "toolchainPrefix": "arm-none-eabi",
+            "objdumpPath": "C:\\msys64\\ucrt64\\bin\\arm-none-eabi-objdump.exe",
             "device": "STM32H745XI",
             "svdFile": "",
+            "numberOfProcessors": 2,
+            "targetProcessor": 1,
             "runToEntryPoint": "main",
             "preLaunchTask": "Build",
+            "preLaunchCommands": [
+                "set substitute-path c:\\\\github\\\\ash7 C:/github/ash7",
+                "set substitute-path C:\\\\github\\\\ash7 C:/github/ash7"
+            ],
             "showDevDebugOutput": "raw",
-            "targetProcessor": 1,
             "liveWatch": {
                 "enabled": true,
                 "samplesPerSecond": 4
@@ -49,19 +103,41 @@
             "type": "cortex-debug",
             "request": "attach",
             "servertype": "openocd",
+            "serverpath": "C:\\msys64\\ucrt64\\bin\\openocd.exe",
             "cwd": "${workspaceFolder}",
             "executable": "${workspaceFolder}/build/CM7/cube_CM7.elf",
             "configFiles": [
                 "${workspaceFolder}/openocd.cfg"
             ],
-            "gdbPath": "gdb-multiarch",
+            "gdbPath": "C:\\msys64\\ucrt64\\bin\\gdb-multiarch.exe",
+            "armToolchainPath": "C:\\msys64\\ucrt64\\bin",
+            "toolchainPrefix": "arm-none-eabi",
+            "objdumpPath": "C:\\msys64\\ucrt64\\bin\\arm-none-eabi-objdump.exe",
             "device": "STM32H745XI",
             "svdFile": "",
+            "numberOfProcessors": 2,
+            "targetProcessor": 0,
+            "preLaunchCommands": [
+                "set substitute-path c:\\\\github\\\\ash7 C:/github/ash7",
+                "set substitute-path C:\\\\github\\\\ash7 C:/github/ash7"
+            ],
             "showDevDebugOutput": "raw",
             "liveWatch": {
                 "enabled": true,
                 "samplesPerSecond": 4
             }
+        }
+    ],
+    "compounds": [
+        {
+            // Starts both cores together.  CM7 launches first (owns OpenOCD),
+            // then CM4 attaches to the already-running server on port 50001.
+            "name": "Debug Dual-Core (CM7 + CM4)",
+            "configurations": [
+                "Debug CM7 (OpenOCD)",
+                "Debug CM4 (OpenOCD)"
+            ],
+            "stopAll": true
         }
     ]
 }
