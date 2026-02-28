@@ -11,4 +11,4 @@ target_include_directories(app_cm4
         ${CMAKE_CURRENT_SOURCE_DIR}/../../include
 )
 
-target_link_libraries(app_cm4 PRIVATE bsp freertos_iface)
+target_link_libraries(app_cm4 PRIVATE bsp ipc_common freertos_iface)

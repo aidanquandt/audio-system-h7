@@ -2,6 +2,7 @@
 # stm32cubemx is PRIVATE — HAL headers do not propagate to consumers.
 add_library(bsp STATIC
     gpio.c
+    hsem.c
 )
 
 target_include_directories(bsp

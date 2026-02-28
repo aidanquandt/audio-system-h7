@@ -1,22 +1,19 @@
 #include "app_main.h"
+#include "ipc.h"
 #include "FreeRTOS.h"
 #include "task.h"
-
-static uint8_t aidan_counter = 0;
 
 static void default_task(void *pvParameters)
 {
     (void)pvParameters;
-    
+
     for (;;) {
-        aidan_counter++;
-        // Your CM7 application code here (DSP processing, etc.)
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
 
 void app_main(void)
 {
-    // Create your application tasks here
+    ipc_init();
     xTaskCreate(default_task, "CM7_Default", 256, NULL, tskIDLE_PRIORITY + 1, NULL);
 }

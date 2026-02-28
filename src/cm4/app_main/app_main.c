@@ -1,4 +1,5 @@
 #include "app_main.h"
+#include "ipc.h"
 #include "bsp/gpio.h"
 #include "FreeRTOS.h"
 #include "task.h"
@@ -15,5 +16,6 @@ static void led_task(void *pvParameters)
 
 void app_main(void)
 {
+    ipc_init();
     xTaskCreate(led_task, "LED", 256, NULL, tskIDLE_PRIORITY + 1, NULL);
 }

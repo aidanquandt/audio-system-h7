@@ -59,7 +59,9 @@ target_include_directories(freertos_iface INTERFACE
 )
 target_compile_definitions(freertos_iface INTERFACE ${MX_Defines_Syms})
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/../../src/cm7 ${CMAKE_BINARY_DIR}/app)
+add_subdirectory(${CMAKE_SOURCE_DIR}/../../bsp        ${CMAKE_BINARY_DIR}/bsp)
+add_subdirectory(${CMAKE_SOURCE_DIR}/../../src/common ${CMAKE_BINARY_DIR}/common)
+add_subdirectory(${CMAKE_SOURCE_DIR}/../../src/cm7    ${CMAKE_BINARY_DIR}/app)
 
 target_link_libraries(${CMAKE_PROJECT_NAME} app_cm7)
 

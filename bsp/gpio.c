@@ -1,4 +1,7 @@
 #include "bsp/gpio.h"
+
+#ifdef CORE_CM4
+
 #include "main.h"
 
 typedef struct {
@@ -28,3 +31,11 @@ void bsp_gpio_toggle(bsp_gpio_t pin)
     if (pin >= BSP_GPIO_COUNT) return;
     HAL_GPIO_TogglePin(gpio_map[pin].port, gpio_map[pin].pin);
 }
+
+#else
+
+void bsp_gpio_set(bsp_gpio_t pin)    { (void)pin; }
+void bsp_gpio_reset(bsp_gpio_t pin)  { (void)pin; }
+void bsp_gpio_toggle(bsp_gpio_t pin) { (void)pin; }
+
+#endif
