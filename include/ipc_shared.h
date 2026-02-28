@@ -1,6 +1,11 @@
 #pragma once
 
 #include <stdint.h>
+#include <stddef.h>
+
+#ifndef __DMB
+#define __DMB()  __asm__ volatile ("dmb" ::: "memory")
+#endif
 
 #define IPC_SRAM3_BASE    0x30040000UL
 #define IPC_READY_FLAG    0xA5B6C7D8UL
@@ -9,7 +14,6 @@
 
 #define HSEM_CH_CM4_TO_CM7  0U
 #define HSEM_CH_CM7_TO_CM4  1U
-#define HSEM_CH_BOOT_SYNC   2U
 
 typedef enum {
     IPC_CMD_PING       = 0x01,
@@ -22,8 +26,8 @@ typedef enum {
 } ipc_cmd_t;
 
 typedef struct {
-    uint32_t cmd;
-    uint32_t args[3];
+    ipc_cmd_t cmd;
+    uint32_t  args[3];
 } ipc_msg_t;
 
 typedef struct {
@@ -48,7 +52,7 @@ static inline int ipc_queue_push(volatile ipc_queue_t *q, const ipc_msg_t *m)
     uint32_t next = (head + 1U) & (IPC_QUEUE_DEPTH - 1U);
     if (next == q->tail) return -1;
     q->slots[head] = *m;
-    __asm__ volatile ("dmb" ::: "memory");
+    __DMB();
     q->head = next;
     return 0;
 }
@@ -58,7 +62,11 @@ static inline int ipc_queue_pop(volatile ipc_queue_t *q, ipc_msg_t *m)
     uint32_t tail = q->tail;
     if (tail == q->head) return -1;
     *m = q->slots[tail];
-    __asm__ volatile ("dmb" ::: "memory");
+    __DMB();
     q->tail = (tail + 1U) & (IPC_QUEUE_DEPTH - 1U);
     return 0;
 }
+
+_Static_assert((IPC_QUEUE_DEPTH & (IPC_QUEUE_DEPTH - 1U)) == 0U, "IPC_QUEUE_DEPTH must be power of 2");
+_Static_assert(offsetof(ipc_shared_t, cm4_to_cm7) == 32U, "ipc_shared_t layout changed");
+_Static_assert(sizeof(ipc_shared_t) <= 32768U, "ipc_shared_t exceeds SRAM3");
