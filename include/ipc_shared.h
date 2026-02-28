@@ -4,7 +4,7 @@
 #include <stddef.h>
 
 #ifndef __DMB
-#define __DMB()  __asm__ volatile ("dmb" ::: "memory")
+#define __DMB()  __asm__ volatile ("dmb" ::: "memory")  /* CMSIS fallback for host/unit-test builds */
 #endif
 
 #define IPC_SRAM3_BASE    0x30040000UL
@@ -12,6 +12,7 @@
 #define IPC_VERSION       1U
 #define IPC_QUEUE_DEPTH   8U    /* must be power of 2 */
 
+/* HSEM channel assignments for IPC — part of the inter-core protocol. */
 #define HSEM_CH_CM4_TO_CM7  0U
 #define HSEM_CH_CM7_TO_CM4  1U
 
@@ -39,33 +40,12 @@ typedef struct {
 typedef struct {
     volatile uint32_t ready_flag;
     volatile uint32_t version;
-    uint32_t          _pad[6];
+    uint32_t          _pad[6];  /* pad cm4_to_cm7 to offset 32 — enforced by static assert below */
     ipc_queue_t       cm4_to_cm7;
     ipc_queue_t       cm7_to_cm4;
 } ipc_shared_t;
 
 #define IPC_SHARED  ((ipc_shared_t *)IPC_SRAM3_BASE)
-
-static inline int ipc_queue_push(volatile ipc_queue_t *q, const ipc_msg_t *m)
-{
-    uint32_t head = q->head;
-    uint32_t next = (head + 1U) & (IPC_QUEUE_DEPTH - 1U);
-    if (next == q->tail) return -1;
-    q->slots[head] = *m;
-    __DMB();
-    q->head = next;
-    return 0;
-}
-
-static inline int ipc_queue_pop(volatile ipc_queue_t *q, ipc_msg_t *m)
-{
-    uint32_t tail = q->tail;
-    if (tail == q->head) return -1;
-    *m = q->slots[tail];
-    __DMB();
-    q->tail = (tail + 1U) & (IPC_QUEUE_DEPTH - 1U);
-    return 0;
-}
 
 _Static_assert((IPC_QUEUE_DEPTH & (IPC_QUEUE_DEPTH - 1U)) == 0U, "IPC_QUEUE_DEPTH must be power of 2");
 _Static_assert(offsetof(ipc_shared_t, cm4_to_cm7) == 32U, "ipc_shared_t layout changed");
