@@ -8,7 +8,7 @@ static void led_task(void *pvParameters)
     (void)pvParameters;
 
     for (;;) {
-        bsp_gpio_toggle(BSP_GPIO_LED_RED);
+        bsp_gpio_toggle(BSP_GPIO_LED_GREEN);
         vTaskDelay(pdMS_TO_TICKS(500));
     }
 }

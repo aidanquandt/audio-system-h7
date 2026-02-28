@@ -7,8 +7,8 @@ typedef struct {
 } gpio_descriptor_t;
 
 static const gpio_descriptor_t gpio_map[BSP_GPIO_COUNT] = {
-    [BSP_GPIO_LED_RED]   = { LD1_GPIO_Port, LD1_Pin },  /* PJ2  */
-    [BSP_GPIO_LED_GREEN] = { LD2_GPIO_Port, LD2_Pin },  /* PI13 */
+    [BSP_GPIO_LED_RED]   = { LD6_GPIO_Port, LD6_Pin },
+    [BSP_GPIO_LED_GREEN] = { LD7_GPIO_Port, LD7_Pin },
 };
 
 void bsp_gpio_set(bsp_gpio_t pin)
