@@ -5,8 +5,6 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#include <string.h>
-
 static void led_task(void *pvParameters)
 {
     (void)pvParameters;
@@ -20,7 +18,8 @@ static void led_task(void *pvParameters)
 static void uart_tx_task(void *pvParameters)
 {
     (void)pvParameters;
-    static const uint8_t msg[] = "CM4 heartbeat\r\n";
+    /* Must be in SRAM (not const/rodata/Flash) — DMA1 cannot reach Flash on H7. */
+    static uint8_t msg[] = "CM4 heartbeat\r\n";
 
     for (;;) {
         bsp_uart_transmit(msg, sizeof(msg) - 1);
@@ -31,6 +30,7 @@ static void uart_tx_task(void *pvParameters)
 void app_main(void)
 {
     ipc_init();
+    bsp_uart_init();
     xTaskCreate(led_task,     "LED",     256, NULL, tskIDLE_PRIORITY + 1, NULL);
     xTaskCreate(uart_tx_task, "UART_TX", 256, NULL, tskIDLE_PRIORITY + 1, NULL);
 }

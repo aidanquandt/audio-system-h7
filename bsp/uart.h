@@ -8,12 +8,24 @@ extern "C" {
 #include <stdint.h>
 
 /**
- * @brief  Blocking UART transmit.
+ * @brief  Initialise UART BSP resources.
  *
- * Wraps HAL_UART_Transmit on USART3 (ST-Link VCP, 115200 8N1).
+ * Must be called once before bsp_uart_transmit, before the FreeRTOS
+ * scheduler starts.  Creates the DMA-completion semaphore.
+ */
+void bsp_uart_init(void);
+
+/**
+ * @brief  DMA-backed UART transmit (task-blocking).
+ *
+ * Launches HAL_UART_Transmit_DMA and suspends the calling task until
+ * HAL_UART_TxCpltCallback signals completion.  The CPU is free to run
+ * other tasks while bytes are clocking out.
  * On CM7 this is a no-op stub — USART3 belongs to the CM4 domain.
  *
- * @param buf  Pointer to data buffer.
+ * @param buf  Pointer to data buffer (must remain valid until return).
+ *             MUST reside in D2 SRAM — DMA1 on H7 cannot access Flash
+ *             or DTCM.  Do NOT pass a pointer to a 'const' / rodata buffer.
  * @param len  Number of bytes to send.
  */
 void bsp_uart_transmit(const uint8_t *buf, uint16_t len);
