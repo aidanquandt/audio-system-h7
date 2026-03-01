@@ -1,6 +1,7 @@
 # CM4 application library. Sees only the BSP API and FreeRTOS — never the HAL.
 add_library(app_cm4 STATIC
     app_main/app_main.c
+    uart/uart.c
 )
 
 target_include_directories(app_cm4

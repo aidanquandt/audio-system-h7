@@ -1,7 +1,7 @@
 #include "app_main.h"
 #include "ipc.h"
 #include "bsp/gpio.h"
-#include "bsp/uart.h"
+#include "uart/uart.h"
 #include "FreeRTOS.h"
 #include "task.h"
 
@@ -22,7 +22,7 @@ static void uart_tx_task(void *pvParameters)
     static uint8_t msg[] = "CM4 heartbeat\r\n";
 
     for (;;) {
-        bsp_uart_transmit(msg, sizeof(msg) - 1);
+        uart_transmit(msg, sizeof(msg) - 1);
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
@@ -30,7 +30,7 @@ static void uart_tx_task(void *pvParameters)
 void app_main(void)
 {
     ipc_init();
-    bsp_uart_init();
+    uart_init();
     xTaskCreate(led_task,     "LED",     256, NULL, tskIDLE_PRIORITY + 1, NULL);
     xTaskCreate(uart_tx_task, "UART_TX", 256, NULL, tskIDLE_PRIORITY + 1, NULL);
 }
