@@ -69,8 +69,6 @@ void Error_Handler(void);
 #define USB_OTG_FS2_ID_GPIO_Port GPIOA
 #define B1_Pin GPIO_PIN_13
 #define B1_GPIO_Port GPIOC
-#define LD6_Pin GPIO_PIN_13
-#define LD6_GPIO_Port GPIOI
 #define LCD_INT_Pin GPIO_PIN_2
 #define LCD_INT_GPIO_Port GPIOG
 #define OSC_OUT_Pin GPIO_PIN_1
