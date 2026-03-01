@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ipc_shared.h"
+#include "ipc/ipc_shared.h"
 
 void ipc_init(void);
 int ipc_send(ipc_cmd_t cmd, uint32_t arg0, uint32_t arg1, uint32_t arg2);

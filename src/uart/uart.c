@@ -1,4 +1,4 @@
-#include "uart.h"
+#include "uart/uart.h"
 #include "bsp/uart.h"
 #include "FreeRTOS.h"
 #include "semphr.h"

@@ -1,4 +1,4 @@
-#include "ipc.h"
+#include "ipc/ipc.h"
 #include "bsp/hsem.h"
 #include "FreeRTOS.h"
 #include "task.h"
