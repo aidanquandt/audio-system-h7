@@ -20,6 +20,7 @@ set(_sources
     heartbeat/heartbeat.c
     cobs/cobs.c
     rpc/rpc.c
+    rpc/rpc_generated.c
 )
 
 # ── CM4-only sources ──────────────────────────────────────────────────────────

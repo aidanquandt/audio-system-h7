@@ -142,13 +142,14 @@ static void ipc_rx_task(void *arg)
 
 static void rpc_dispatch(uint8_t msg_id, const uint8_t *payload, size_t len)
 {
+    configASSERT(len <= RPC_FRAME_MAX_PAYLOAD);
+
     for (size_t i = 0; i < s_handler_count; i++) {
         if (s_handlers[i].msg_id != msg_id) continue;
 
 #ifdef CORE_CM4
-        if (s_handlers[i].dest == DEST_CM7) {
+        if (s_handlers[i].dest == DEST_CM7 || s_handlers[i].dest == DEST_BOTH) {
             rpc_frame_t frame = { .msg_id = msg_id, .len = (uint8_t)len };
-            configASSERT(len <= RPC_FRAME_MAX_PAYLOAD);
             memcpy((void *)frame.data, payload, len);
 
             taskENTER_CRITICAL();
@@ -158,7 +159,8 @@ static void rpc_dispatch(uint8_t msg_id, const uint8_t *payload, size_t len)
             if (rc == 0) {
                 bsp_hsem_notify(HSEM_CH_RPC_CM4_TO_CM7);
             }
-        } else {
+        }
+        if (s_handlers[i].dest == DEST_CM4 || s_handlers[i].dest == DEST_BOTH) {
             if (s_handlers[i].fn) s_handlers[i].fn(msg_id, payload, len);
         }
 #else

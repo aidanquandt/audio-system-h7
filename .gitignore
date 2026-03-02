@@ -34,3 +34,8 @@ cmake_install.cmake
 
 # Language server cache
 .cache/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo

@@ -14,29 +14,20 @@ Install:  pacman -S mingw-w64-ucrt-x86_64-python-pyserial
 """
 
 import sys
-import struct
 import threading
 import msvcrt
+from pathlib import Path
+
 import serial
+
+# rpc_messages.py lives alongside this script
+sys.path.insert(0, str(Path(__file__).parent))
+import rpc_messages as rpc
 
 PORT = sys.argv[1] if len(sys.argv) > 1 else "COM5"
 BAUD = 2000000
 
-MSG_HEARTBEAT_CM4    = 0x01
-MSG_HEARTBEAT_CM7    = 0x02
-MSG_LED_TOGGLE_GREEN = 0x10
-MSG_LED_TOGGLE_RED   = 0x11
-MSG_SET_GAIN         = 0x20
-MSG_PEAK_METER       = 0x80
-
-MSG_NAMES = {
-    MSG_HEARTBEAT_CM4:    "HEARTBEAT_CM4",
-    MSG_HEARTBEAT_CM7:    "HEARTBEAT_CM7",
-    MSG_LED_TOGGLE_GREEN: "LED_TOGGLE_GREEN",
-    MSG_LED_TOGGLE_RED:   "LED_TOGGLE_RED",
-    MSG_SET_GAIN:         "SET_GAIN",
-    MSG_PEAK_METER:       "PEAK_METER",
-}
+MSG_NAMES = {cls.MSG_ID: cls.__name__ for cls in rpc.REGISTRY.values()}
 
 
 def cobs_encode(data: bytes) -> bytes:
@@ -82,19 +73,6 @@ def make_frame(msg_id: int, payload: bytes) -> bytes:
     return cobs_encode(bytes([msg_id]) + payload) + b"\x00"
 
 
-def parse_payload(msg_id: int, payload: bytes) -> str:
-    if msg_id in (MSG_HEARTBEAT_CM4, MSG_HEARTBEAT_CM7) and len(payload) >= 4:
-        (seq,) = struct.unpack_from("<I", payload)
-        return f"seq={seq}"
-    if msg_id == MSG_SET_GAIN and len(payload) >= 5:
-        ch, gain = struct.unpack_from("<Bf", payload)
-        return f"ch={ch} gain={gain:.2f}dB"
-    if msg_id == MSG_PEAK_METER and len(payload) >= 5:
-        ch, peak = struct.unpack_from("<Bf", payload)
-        return f"ch={ch} peak={peak:.2f}dB"
-    return payload.hex() if payload else ""
-
-
 def rx_thread(ser: serial.Serial, stop: threading.Event) -> None:
     buf = bytearray()
     while not stop.is_set():
@@ -104,11 +82,11 @@ def rx_thread(ser: serial.Serial, stop: threading.Event) -> None:
         if byte == b"\x00":
             if buf:
                 try:
-                    decoded = cobs_decode(bytes(buf))
-                    msg_id  = decoded[0]
-                    payload = decoded[1:]
+                    raw     = cobs_decode(bytes(buf))
+                    msg_id  = raw[0]
+                    msg     = rpc.decode_frame(msg_id, raw[1:])
                     name    = MSG_NAMES.get(msg_id, f"0x{msg_id:02x}")
-                    detail  = parse_payload(msg_id, payload)
+                    detail  = str(msg) if msg else raw[1:].hex()
                     print(f"  [{name}]  {detail}")
                 except Exception as e:
                     print(f"  decode error: {e}  raw={buf.hex()}")
@@ -134,10 +112,10 @@ def run() -> None:
             if ch == b"q":
                 break
             elif ch == b"g":
-                ser.write(make_frame(MSG_LED_TOGGLE_GREEN, b"\x00"))
+                ser.write(make_frame(rpc.LedToggleGreen.MSG_ID, rpc.LedToggleGreen().pack()))
                 print("  -> LED_TOGGLE_GREEN sent")
             elif ch == b"r":
-                ser.write(make_frame(MSG_LED_TOGGLE_RED, b"\x00"))
+                ser.write(make_frame(rpc.LedToggleRed.MSG_ID, rpc.LedToggleRed().pack()))
                 print("  -> LED_TOGGLE_RED sent")
 
         stop.set()

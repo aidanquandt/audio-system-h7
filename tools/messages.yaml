@@ -1,0 +1,42 @@
+version: 1
+
+# dest controls routing:
+#   host  — device sends this to the host; no inbound handler generated
+#   cm4   — routed to CM4 (CM7 forwards if it receives it via IPC)
+#   cm7   — CM4 forwards to CM7 via IPC
+#   both  — CM4 handles locally AND forwards to CM7
+
+messages:
+  - id: 0x01
+    name: heartbeat_cm4
+    dest: host
+    fields:
+      - { name: seq, type: uint32 }
+
+  - id: 0x02
+    name: heartbeat_cm7
+    dest: host
+    fields:
+      - { name: seq, type: uint32 }
+
+  - id: 0x10
+    name: led_toggle_green
+    dest: cm4
+
+  - id: 0x11
+    name: led_toggle_red
+    dest: cm7
+
+  - id: 0x20
+    name: set_gain
+    dest: cm7
+    fields:
+      - { name: channel, type: uint8 }
+      - { name: gain_db, type: float32 }
+
+  - id: 0x80
+    name: peak_meter
+    dest: host
+    fields:
+      - { name: channel, type: uint8 }
+      - { name: peak_db, type: float32 }
