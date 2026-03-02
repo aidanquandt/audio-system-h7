@@ -17,9 +17,8 @@ set(_target app_${_core_lower})
 set(_sources
     app_main/app_main.c
     heartbeat/heartbeat.c
-    cobs/cobs.c
     rpc/rpc.c
-    rpc/rpc_generated.c
+    rpc/generated/rpc_generated.c
 )
 
 # ── CM4-only sources ──────────────────────────────────────────────────────────
@@ -36,11 +35,11 @@ add_library(${_target} STATIC ${_sources})
 
 target_include_directories(${_target}
     PUBLIC
-        # Consumers use full paths from src/ root:
+        # Module headers via full path from src/ root:
         #   #include "app_main/app_main.h"
-        #   #include "ipc/ipc.h"
+        #   #include "rpc/rpc.h"
         #   #include "uart/uart.h"
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_link_libraries(${_target} PRIVATE bsp freertos_iface)
+target_link_libraries(${_target} PRIVATE bsp freertos_iface project_includes cobs)

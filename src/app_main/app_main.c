@@ -1,7 +1,7 @@
 #include "app_main/app_main.h"
 #include "heartbeat/heartbeat.h"
 #include "rpc/rpc.h"
-#include "rpc/rpc_generated.h"
+#include "rpc/generated/rpc_generated.h"
 #include "bsp/gpio.h"
 
 #ifdef CORE_CM4

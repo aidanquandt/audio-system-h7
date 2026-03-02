@@ -1,7 +1,7 @@
 #include "heartbeat/heartbeat.h"
 #include "bsp/gpio.h"
 #include "rpc/rpc.h"
-#include "rpc/messages.h"
+#include "messages.h"
 #include "FreeRTOS.h"
 #include "task.h"
 
