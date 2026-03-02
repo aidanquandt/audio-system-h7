@@ -126,10 +126,14 @@ void ipc_init(void)
     ipc_ctx.rx_channel = HSEM_CH_CM4_TO_CM7;
 
     ipc_shared_t *sh = IPC_SHARED;
-    sh->cm4_to_cm7.head = 0;
-    sh->cm4_to_cm7.tail = 0;
-    sh->cm7_to_cm4.head = 0;
-    sh->cm7_to_cm4.tail = 0;
+    sh->cm4_to_cm7.head      = 0;
+    sh->cm4_to_cm7.tail      = 0;
+    sh->cm7_to_cm4.head      = 0;
+    sh->cm7_to_cm4.tail      = 0;
+    sh->cm4_to_cm7_rpc.head  = 0;
+    sh->cm4_to_cm7_rpc.tail  = 0;
+    sh->cm7_to_cm4_rpc.head  = 0;
+    sh->cm7_to_cm4_rpc.tail  = 0;
     sh->version = IPC_VERSION;
     __DMB();
     sh->ready_flag = IPC_READY_FLAG;

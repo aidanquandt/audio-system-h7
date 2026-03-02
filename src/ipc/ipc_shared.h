@@ -46,9 +46,10 @@ typedef struct {
 #define RPC_FRAME_MAX_PAYLOAD  32U
 #define RPC_QUEUE_DEPTH        8U    /* must be power of 2 */
 
-typedef struct {
+typedef struct __attribute__((aligned(4))) {
     uint8_t msg_id;
     uint8_t len;
+    uint8_t _pad[2];
     uint8_t data[RPC_FRAME_MAX_PAYLOAD];
 } rpc_frame_t;
 
