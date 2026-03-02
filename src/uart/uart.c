@@ -3,6 +3,7 @@
 #include "FreeRTOS.h"
 #include "semphr.h"
 #include "queue.h"
+#include "stream_buffer.h"
 #include "task.h"
 #include <string.h>
 
@@ -13,24 +14,31 @@ typedef struct {
     uint16_t len;
 } uart_msg_t;
 
-static QueueHandle_t     tx_queue;
-static SemaphoreHandle_t tx_complete;
-static uint32_t          drop_count;
+static struct {
+    QueueHandle_t     queue;
+    SemaphoreHandle_t complete;
+    uint32_t          drop_count;
+} tx_ctx;
 
-static SemaphoreHandle_t rx_ready;
-static uint8_t           rx_buf[UART_RX_BUF_LEN];
+static struct {
+    StreamBufferHandle_t stream;
+    uint8_t              buf[UART_RX_BUF_LEN];
+    volatile uint32_t    drop_count;
+} rx_ctx;
 
 static void tx_cplt_handler(void)
 {
     BaseType_t woken = pdFALSE;
-    xSemaphoreGiveFromISR(tx_complete, &woken);
+    xSemaphoreGiveFromISR(tx_ctx.complete, &woken);
     portYIELD_FROM_ISR(woken);
 }
 
-static void rx_cplt_handler(void)
+static void rx_cplt_handler(uint16_t received)
 {
     BaseType_t woken = pdFALSE;
-    xSemaphoreGiveFromISR(rx_ready, &woken);
+    size_t written = xStreamBufferSendFromISR(rx_ctx.stream, rx_ctx.buf, received, &woken);
+    if (written < received) rx_ctx.drop_count += received - written;
+    bsp_uart_receive_dma(rx_ctx.buf, UART_RX_BUF_LEN);
     portYIELD_FROM_ISR(woken);
 }
 
@@ -40,53 +48,45 @@ static void uart_drain_task(void *arg)
     uart_msg_t msg;
 
     for (;;) {
-        xQueueReceive(tx_queue, &msg, portMAX_DELAY);
+        xQueueReceive(tx_ctx.queue, &msg, portMAX_DELAY);
         if (bsp_uart_transmit_dma(msg.data, msg.len)) {
-            xSemaphoreTake(tx_complete, pdMS_TO_TICKS(UART_DMA_TIMEOUT_MS));
+            if (!xSemaphoreTake(tx_ctx.complete, pdMS_TO_TICKS(UART_DMA_TIMEOUT_MS))) {
+                tx_ctx.drop_count++;
+            }
         } else {
-            drop_count++;
+            tx_ctx.drop_count++;
         }
     }
 }
 
-static void uart_rx_task(void *arg)
+StreamBufferHandle_t uart_get_rx_stream(void)
 {
-    (void)arg;
-
-    bsp_uart_receive_dma(rx_buf, UART_RX_BUF_LEN);
-
-    for (;;) {
-        xSemaphoreTake(rx_ready, portMAX_DELAY);
-        uart_on_receive(rx_buf, UART_RX_BUF_LEN);
-        bsp_uart_receive_dma(rx_buf, UART_RX_BUF_LEN);
-    }
-}
-
-__attribute__((weak)) void uart_on_receive(const uint8_t *buf, uint16_t len)
-{
-    (void)buf;
-    (void)len;
+    return rx_ctx.stream;
 }
 
 void uart_init(void)
 {
-    tx_complete = xSemaphoreCreateBinary();
-    tx_queue    = xQueueCreate(UART_TX_QUEUE_DEPTH, sizeof(uart_msg_t));
-    rx_ready    = xSemaphoreCreateBinary();
-    configASSERT(tx_complete);
-    configASSERT(tx_queue);
-    configASSERT(rx_ready);
+    tx_ctx.complete = xSemaphoreCreateBinary();
+    tx_ctx.queue    = xQueueCreate(UART_TX_QUEUE_DEPTH, sizeof(uart_msg_t));
+    rx_ctx.stream   = xStreamBufferCreate(UART_RX_STREAM_SIZE, 1);
+    configASSERT(tx_ctx.complete);
+    configASSERT(tx_ctx.queue);
+    configASSERT(rx_ctx.stream);
     bsp_uart_set_tx_cplt_cb(tx_cplt_handler);
     bsp_uart_set_rx_cplt_cb(rx_cplt_handler);
+    bool ok = bsp_uart_receive_dma(rx_ctx.buf, UART_RX_BUF_LEN);
+    configASSERT(ok);
     xTaskCreate(uart_drain_task, "UART_tx", 256, NULL, tskIDLE_PRIORITY + 2, NULL);
-    xTaskCreate(uart_rx_task,    "UART_rx", 256, NULL, tskIDLE_PRIORITY + 2, NULL);
 }
 
 uint32_t uart_get_drop_count(void)
 {
-    uint32_t n = drop_count;
-    drop_count = 0;
-    return n;
+    uint32_t n_rx, n_tx;
+    taskENTER_CRITICAL();
+    n_rx = rx_ctx.drop_count; rx_ctx.drop_count = 0;
+    taskEXIT_CRITICAL();
+    n_tx = tx_ctx.drop_count; tx_ctx.drop_count = 0;
+    return n_rx + n_tx;
 }
 
 void uart_transmit(const uint8_t *buf, uint16_t len)
@@ -97,5 +97,5 @@ void uart_transmit(const uint8_t *buf, uint16_t len)
     msg.len = len > UART_TX_MAX_MSG_LEN ? UART_TX_MAX_MSG_LEN : len;
     memcpy(msg.data, buf, msg.len);
 
-    xQueueSend(tx_queue, &msg, portMAX_DELAY);
+    xQueueSend(tx_ctx.queue, &msg, portMAX_DELAY);
 }
