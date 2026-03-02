@@ -3,6 +3,57 @@ import struct
 from dataclasses import dataclass, field
 from typing import ClassVar
 
+
+# ── COBS framing ───────────────────────────────────────────────────────
+
+def cobs_encode(data: bytes) -> bytes:
+    """COBS-encode data. Returns encoded bytes without the 0x00 frame terminator."""
+    out = bytearray()
+    i = 0
+    while True:
+        block_start = len(out)
+        out.append(0)
+        code = 1
+        while i < len(data) and data[i] != 0x00:
+            out.append(data[i])
+            i += 1
+            code += 1
+            if code == 0xFF:
+                out[block_start] = code
+                code = 1
+                block_start = len(out)
+                out.append(0)
+        out[block_start] = code
+        if i >= len(data):
+            break
+        i += 1
+    return bytes(out)
+
+
+def cobs_decode(data: bytes) -> bytes:
+    """COBS-decode a frame (without its 0x00 terminator). Raises ValueError on malformed input."""
+    out = bytearray()
+    i = 0
+    while i < len(data):
+        code = data[i]; i += 1
+        if code == 0:
+            raise ValueError("unexpected 0x00 inside COBS frame")
+        for _ in range(code - 1):
+            if i >= len(data):
+                raise ValueError("truncated COBS block")
+            out.append(data[i]); i += 1
+        if code < 0xFF and i < len(data):
+            out.append(0x00)
+    return bytes(out)
+
+
+def make_frame(msg_id: int, payload: bytes) -> bytes:
+    """Build a complete framed packet: COBS(msg_id || payload) + 0x00 terminator."""
+    return cobs_encode(bytes([msg_id]) + payload) + b'\x00'
+
+
+# ── Message classes ──────────────────────────────────────────────────────────
+
 @dataclass
 class HeartbeatCm4:
     MSG_ID: ClassVar[int] = 0x01

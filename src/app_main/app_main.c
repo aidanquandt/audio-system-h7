@@ -1,5 +1,4 @@
 #include "app_main/app_main.h"
-#include "ipc/ipc.h"
 #include "heartbeat/heartbeat.h"
 #include "rpc/rpc.h"
 #include "rpc/rpc_generated.h"
@@ -29,8 +28,6 @@ void rpc_handle_led_toggle_red(void)
 
 void app_main(void)
 {
-    ipc_init();
-
 #ifdef CORE_CM4
     uart_init();
     transport_register(&uart_transport);

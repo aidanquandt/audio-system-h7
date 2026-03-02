@@ -5,29 +5,41 @@
 
 /* -- Weak default handlers ------------------------------------------ */
 
+#ifdef CORE_CM4
 __attribute__((weak)) void rpc_handle_led_toggle_green(void) {}
+#endif /* CORE_CM4 */
+#ifdef CORE_CM7
 __attribute__((weak)) void rpc_handle_led_toggle_red(void) {}
+#endif /* CORE_CM7 */
+#ifdef CORE_CM7
 __attribute__((weak)) void rpc_handle_set_gain(const set_gain_t *msg) { (void)msg; }
+#endif /* CORE_CM7 */
 
 /* -- Dispatch shims ------------------------------------------------- */
 
+#ifdef CORE_CM4
 static void _on_led_toggle_green(uint8_t id, const uint8_t *buf, size_t len)
 {
     (void)id; (void)buf; (void)len;
     rpc_handle_led_toggle_green();
 }
+#endif /* CORE_CM4 */
 
+#ifdef CORE_CM7
 static void _on_led_toggle_red(uint8_t id, const uint8_t *buf, size_t len)
 {
     (void)id; (void)buf; (void)len;
     rpc_handle_led_toggle_red();
 }
+#endif /* CORE_CM7 */
 
+#ifdef CORE_CM7
 static void _on_set_gain(uint8_t id, const uint8_t *buf, size_t len)
 {
     (void)id;
     if (len >= sizeof(set_gain_t)) rpc_handle_set_gain((const set_gain_t *)buf);
 }
+#endif /* CORE_CM7 */
 
 /* -- Registration --------------------------------------------------- */
 

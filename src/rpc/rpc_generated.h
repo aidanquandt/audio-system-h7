@@ -6,6 +6,12 @@ void rpc_register_all(void);
 
 /* Implement any of these to handle incoming messages.
    Weak no-ops are provided — only override what you need. */
+#ifdef CORE_CM4
 void rpc_handle_led_toggle_green(void);
+#endif /* CORE_CM4 */
+#ifdef CORE_CM7
 void rpc_handle_led_toggle_red(void);
+#endif /* CORE_CM7 */
+#ifdef CORE_CM7
 void rpc_handle_set_gain(const set_gain_t *msg);
+#endif /* CORE_CM7 */

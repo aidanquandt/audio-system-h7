@@ -39,7 +39,11 @@ int cobs_decode(const uint8_t *in, size_t in_len, uint8_t *out)
             out[write++] = in[read++];
         }
 
-        /* All blocks except the last emit a trailing zero. */
+        /* Emit a zero between consecutive blocks, but NOT after the final
+         * block. `read < in_len` is the canonical check: if all input bytes
+         * have been consumed this was the last overhead byte, so no inter-
+         * block zero follows it. The code < 0xFF guard suppresses the zero
+         * for the special 254-byte full-block variant as per COBS spec. */
         if (code < 0xFF && read < in_len) {
             out[write++] = 0x00;
         }

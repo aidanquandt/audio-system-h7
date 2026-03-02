@@ -16,7 +16,6 @@ set(_target app_${_core_lower})
 # ── Sources compiled for every core ──────────────────────────────────────────
 set(_sources
     app_main/app_main.c
-    ipc/ipc.c
     heartbeat/heartbeat.c
     cobs/cobs.c
     rpc/rpc.c

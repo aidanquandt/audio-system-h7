@@ -23,6 +23,7 @@ typedef struct {
 static handler_entry_t    s_handlers[MAX_HANDLERS];
 static size_t             s_handler_count = 0;
 static SemaphoreHandle_t  s_ipc_wakeup;
+static volatile uint32_t  s_wire_overrun_count = 0;
 
 static void rpc_dispatch(uint8_t msg_id, const uint8_t *payload, size_t len);
 
@@ -86,7 +87,11 @@ static void wire_task(void *arg)
             if (n < sizeof(raw)) {
                 raw[n++] = b;
             } else {
-                n = 0; /* overrun — drop and wait for next 0x00 */
+                /* Buffer overrun: discard accumulated bytes and resync on the
+                 * next 0x00. Increment the counter so the condition is
+                 * observable in a debugger or via rpc_get_wire_overrun_count(). */
+                n = 0;
+                s_wire_overrun_count++;
             }
         }
     }
@@ -182,7 +187,7 @@ void rpc_register(uint8_t msg_id, rpc_dest_t dest, rpc_handler_fn fn)
     };
 }
 
-void rpc_transmit(uint8_t msg_id, const void *payload, size_t len)
+int rpc_transmit(uint8_t msg_id, const void *payload, size_t len)
 {
     configASSERT(len <= RPC_FRAME_MAX_PAYLOAD);
 
@@ -194,6 +199,7 @@ void rpc_transmit(uint8_t msg_id, const void *payload, size_t len)
     size_t elen = cobs_encode(buf, 1U + len, encoded);
     encoded[elen] = 0x00;
     transport_send(encoded, elen + 1U);
+    return 0;  /* uart_transmit blocks until queued — never drops */
 #else
     rpc_frame_t frame = { .msg_id = msg_id, .len = (uint8_t)len };
     memcpy(frame.data, payload, len);
@@ -205,11 +211,33 @@ void rpc_transmit(uint8_t msg_id, const void *payload, size_t len)
     if (rc == 0) {
         bsp_hsem_notify(HSEM_CH_RPC_CM7_TO_CM4);
     }
+    return rc;  /* 0 = queued, -1 = queue full (caller may retry or drop) */
 #endif
+}
+
+uint32_t rpc_get_wire_overrun_count(void)
+{
+    return s_wire_overrun_count;
 }
 
 void rpc_init(void)
 {
+    bsp_hsem_init();
+
+#ifdef CORE_CM7
+    /* CM7 owns shared-memory initialisation. Zero both queues, stamp the
+     * version, then write ready_flag last as the release barrier that CM4
+     * polls in ipc_rx_task before arming any HSEM channels. */
+    ipc_shared_t *sh        = IPC_SHARED;
+    sh->cm4_to_cm7_rpc.head = 0;
+    sh->cm4_to_cm7_rpc.tail = 0;
+    sh->cm7_to_cm4_rpc.head = 0;
+    sh->cm7_to_cm4_rpc.tail = 0;
+    sh->version = IPC_VERSION;
+    __DMB();
+    sh->ready_flag = IPC_READY_FLAG;
+#endif
+
     s_ipc_wakeup = xSemaphoreCreateBinary();
     configASSERT(s_ipc_wakeup);
 

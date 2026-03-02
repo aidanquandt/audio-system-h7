@@ -1,10 +1,11 @@
 version: 1
 
 # dest controls routing:
-#   host  — device sends this to the host; no inbound handler generated
-#   cm4   — routed to CM4 (CM7 forwards if it receives it via IPC)
-#   cm7   — CM4 forwards to CM7 via IPC
-#   both  — CM4 handles locally AND forwards to CM7
+#   host  — device-originated only; generates no inbound handler.
+#            CM7 pushes via IPC, CM4 COBS-encodes and forwards to wire.
+#   cm4   — host sends to device; CM4 handles locally
+#   cm7   — host sends to device; CM4 forwards to CM7 via IPC
+#   both  — host sends to device; CM4 handles locally AND forwards to CM7
 
 messages:
   - id: 0x01
