@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include "rpc/messages.h"
 
+typedef enum { DEST_CM4, DEST_CM7 } rpc_dest_t;
 typedef void (*rpc_handler_fn)(uint8_t msg_id, const uint8_t *payload, size_t len);
 
 /* Register a handler for msg_id. Use dest to control routing on CM4:

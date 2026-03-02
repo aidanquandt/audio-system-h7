@@ -8,17 +8,17 @@
 static void heartbeat_task(void *pvParameters)
 {
     (void)pvParameters;
+    static uint32_t seq = 0;
 
     for (;;) {
 #ifdef CORE_CM4
-        static uint32_t seq = 0;
         bsp_gpio_toggle(BSP_GPIO_LED_GREEN);
-        ping_t ping = { .seq = seq++ };
-        rpc_transmit(MSG_PING, &ping, sizeof(ping));
+        heartbeat_cm4_t hb = { .seq = seq++ };
+        rpc_transmit(MSG_HEARTBEAT_CM4, &hb, sizeof(hb));
 #else
         bsp_gpio_toggle(BSP_GPIO_LED_RED);
-        peak_meter_t meter = { .channel = 0, .peak_db = -20.0f };
-        rpc_transmit(MSG_PEAK_METER, &meter, sizeof(meter));
+        heartbeat_cm7_t hb = { .seq = seq++ };
+        rpc_transmit(MSG_HEARTBEAT_CM7, &hb, sizeof(hb));
 #endif
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
