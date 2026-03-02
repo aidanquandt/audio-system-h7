@@ -18,12 +18,15 @@ set(_sources
     app_main/app_main.c
     ipc/ipc.c
     heartbeat/heartbeat.c
+    cobs/cobs.c
+    rpc/rpc.c
 )
 
 # ── CM4-only sources ──────────────────────────────────────────────────────────
 if(APP_CORE STREQUAL "CM4")
     list(APPEND _sources
         uart/uart.c
+        transport/transport.c
     )
 endif()
 

@@ -12,9 +12,13 @@
 #define IPC_VERSION       1U
 #define IPC_QUEUE_DEPTH   8U    /* must be power of 2 */
 
-/* HSEM channel assignments for IPC — part of the inter-core protocol. */
-#define HSEM_CH_CM4_TO_CM7  0U
-#define HSEM_CH_CM7_TO_CM4  1U
+/* HSEM channel assignments — part of the inter-core protocol. */
+#define HSEM_CH_CM4_TO_CM7      0U
+#define HSEM_CH_CM7_TO_CM4      1U
+#define HSEM_CH_RPC_CM4_TO_CM7  2U
+#define HSEM_CH_RPC_CM7_TO_CM4  3U
+
+/* ── IPC (raw command) types ─────────────────────────────────────────────── */
 
 typedef enum {
     IPC_CMD_PING       = 0x01,
@@ -37,16 +41,38 @@ typedef struct {
     volatile ipc_msg_t slots[IPC_QUEUE_DEPTH];
 } ipc_queue_t;
 
+/* ── RPC framing types ───────────────────────────────────────────────────── */
+
+#define RPC_FRAME_MAX_PAYLOAD  32U
+#define RPC_QUEUE_DEPTH        8U    /* must be power of 2 */
+
+typedef struct {
+    uint8_t msg_id;
+    uint8_t len;
+    uint8_t data[RPC_FRAME_MAX_PAYLOAD];
+} rpc_frame_t;
+
+typedef struct {
+    volatile uint32_t   head;
+    volatile uint32_t   tail;
+    volatile rpc_frame_t slots[RPC_QUEUE_DEPTH];
+} rpc_frame_queue_t;
+
+/* ── Shared memory layout ────────────────────────────────────────────────── */
+
 typedef struct {
     volatile uint32_t ready_flag;
     volatile uint32_t version;
     uint32_t          _pad[6];  /* pad cm4_to_cm7 to offset 32 — enforced by static assert below */
     ipc_queue_t       cm4_to_cm7;
     ipc_queue_t       cm7_to_cm4;
+    rpc_frame_queue_t cm4_to_cm7_rpc;
+    rpc_frame_queue_t cm7_to_cm4_rpc;
 } ipc_shared_t;
 
 #define IPC_SHARED  ((ipc_shared_t *)IPC_SRAM3_BASE)
 
+_Static_assert((RPC_QUEUE_DEPTH & (RPC_QUEUE_DEPTH - 1U)) == 0U, "RPC_QUEUE_DEPTH must be power of 2");
 _Static_assert((IPC_QUEUE_DEPTH & (IPC_QUEUE_DEPTH - 1U)) == 0U, "IPC_QUEUE_DEPTH must be power of 2");
 _Static_assert(offsetof(ipc_shared_t, cm4_to_cm7) == 32U, "ipc_shared_t layout changed");
 _Static_assert(sizeof(ipc_shared_t) <= 32768U, "ipc_shared_t exceeds SRAM3");

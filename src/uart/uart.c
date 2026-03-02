@@ -89,12 +89,12 @@ uint32_t uart_get_drop_count(void)
     return n_rx + n_tx;
 }
 
-void uart_transmit(const uint8_t *buf, uint16_t len)
+void uart_transmit(const uint8_t *buf, size_t len)
 {
     if (buf == NULL || len == 0) return;
 
     uart_msg_t msg;
-    msg.len = len > UART_TX_MAX_MSG_LEN ? UART_TX_MAX_MSG_LEN : len;
+    msg.len = (uint16_t)(len > UART_TX_MAX_MSG_LEN ? UART_TX_MAX_MSG_LEN : len);
     memcpy(msg.data, buf, msg.len);
 
     xQueueSend(tx_ctx.queue, &msg, portMAX_DELAY);

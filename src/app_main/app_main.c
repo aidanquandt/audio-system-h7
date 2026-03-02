@@ -1,36 +1,42 @@
 #include "app_main/app_main.h"
 #include "ipc/ipc.h"
 #include "heartbeat/heartbeat.h"
+#include "rpc/rpc.h"
+#include "rpc/messages.h"
 
 #ifdef CORE_CM4
 #include "uart/uart.h"
-#include "bsp/gpio.h"
+#include "transport/transport.h"
 #include "FreeRTOS.h"
 #include "task.h"
-#include "stream_buffer.h"
 
-static void uart_rx_task(void *arg)
+static const transport_t uart_transport = {
+    .send          = uart_transmit,
+    .get_rx_stream = uart_get_rx_stream,
+};
+
+static void on_ping(uint8_t msg_id, const uint8_t *payload, size_t len)
 {
-    (void)arg;
-    uint8_t buf[UART_RX_BUF_LEN];
-    StreamBufferHandle_t stream = uart_get_rx_stream();
-
-    for (;;) {
-        size_t n = xStreamBufferReceive(stream, buf, sizeof(buf), portMAX_DELAY);
-        if (n > 0) {
-            /* TODO: feed buf[0..n] into protocol parser */
-            bsp_gpio_toggle(BSP_GPIO_LED_GREEN);
-        }
-    }
+    (void)msg_id;
+    if (len < sizeof(ping_t)) return;
+    const ping_t *ping = (const ping_t *)payload;
+    pong_t pong = { .seq = ping->seq };
+    rpc_transmit(MSG_PONG, &pong, sizeof(pong));
 }
-#endif
+#endif /* CORE_CM4 */
 
 void app_main(void)
 {
     ipc_init();
+
 #ifdef CORE_CM4
     uart_init();
-    xTaskCreate(uart_rx_task, "uart_rx", 256, NULL, tskIDLE_PRIORITY + 2, NULL);
+    transport_register(&uart_transport);
+    rpc_register(MSG_PING,     DEST_CM4, on_ping);
+    rpc_register(MSG_SET_GAIN, DEST_CM7, NULL);   /* forwarded to CM7 */
 #endif
+
+    rpc_init();
     heartbeat_init();
 }
+
