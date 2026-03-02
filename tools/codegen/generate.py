@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """
-Generate RPC message definitions from tools/messages.yaml.
+Generate RPC message definitions from proto/messages.yaml.
 
 Outputs:
     src/rpc/messages.h          — C enum + packed structs
     src/rpc/rpc_generated.h     — rpc_register_all() + typed handler declarations
     src/rpc/rpc_generated.c     — weak defaults + dispatch shims + rpc_register_all()
-    tools/rpc_messages.py       — Python dataclasses with pack/unpack
+    tools/host/rpc_messages.py  — Python dataclasses with pack/unpack + COBS codec
 
 Usage:
-    python tools/generate.py
+    python tools/codegen/generate.py
 """
 
 import sys
@@ -21,8 +21,8 @@ try:
 except ImportError:
     sys.exit("PyYAML required:  pacman -S mingw-w64-ucrt-x86_64-python-yaml")
 
-ROOT    = Path(__file__).parent.parent
-SCHEMA  = Path(__file__).parent / "messages.yaml"
+ROOT    = Path(__file__).parent.parent.parent   # tools/codegen -> tools -> repo root
+SCHEMA  = ROOT / "proto" / "messages.yaml"
 
 C_TYPES = {
     "uint8":   "uint8_t",
@@ -362,7 +362,7 @@ def main() -> None:
         ROOT / "src" / "rpc" / "messages.h":        gen_messages_h(msgs),
         ROOT / "src" / "rpc" / "rpc_generated.h":   gen_rpc_generated_h(msgs),
         ROOT / "src" / "rpc" / "rpc_generated.c":   gen_rpc_generated_c(msgs),
-        ROOT / "tools" / "rpc_messages.py":          gen_rpc_messages_py(msgs),
+        ROOT / "tools" / "host" / "rpc_messages.py": gen_rpc_messages_py(msgs),
     }
 
     for path, content in outputs.items():

@@ -3,7 +3,7 @@
 RPC host — decodes COBS frames from the STM32H745 and sends LED toggle commands.
 
 Usage:
-    python tools/host.py COM5
+    python tools/host/host.py COM5
 
 Keys:
     g  — toggle green LED (CM4 handles locally)
