@@ -1,7 +1,7 @@
 #include "rpc/rpc.h"
 #include "cobs/cobs.h"
 #include "transport/transport.h"
-#include "ipc/ipc_shared.h"
+#include "shared/shared_mem.h"
 #include "bsp/hsem.h"
 #include "FreeRTOS.h"
 #include "task.h"
@@ -27,7 +27,7 @@ static volatile uint32_t  s_wire_overrun_count = 0;
 
 static void rpc_dispatch(uint8_t msg_id, const uint8_t *payload, size_t len);
 
-/* ── IPC queue helpers (mirrors ipc.c pattern) ───────────────────────────── */
+/* ── Shared-memory queue helpers ────────────────────────────────────────── */
 
 static int rpc_frame_push(volatile rpc_frame_queue_t *q, const rpc_frame_t *f)
 {
@@ -105,17 +105,17 @@ static void ipc_rx_task(void *arg)
     (void)arg;
 
 #ifdef CORE_CM4
-    volatile rpc_frame_queue_t *q       = &IPC_SHARED->cm7_to_cm4_rpc;
+    volatile rpc_frame_queue_t *q       = &SHARED_MEM->cm7_to_cm4_rpc;
     uint32_t                    channel = HSEM_CH_RPC_CM7_TO_CM4;
 
     uint32_t wait = 0;
-    while (IPC_SHARED->ready_flag != IPC_READY_FLAG) {
+    while (SHARED_MEM->ready_flag != SHMEM_READY_FLAG) {
         vTaskDelay(pdMS_TO_TICKS(1));
         if (++wait > IPC_BOOT_TIMEOUT_MS) break;
     }
     __DMB();
 #else
-    volatile rpc_frame_queue_t *q       = &IPC_SHARED->cm4_to_cm7_rpc;
+    volatile rpc_frame_queue_t *q       = &SHARED_MEM->cm4_to_cm7_rpc;
     uint32_t                    channel = HSEM_CH_RPC_CM4_TO_CM7;
 #endif
 
@@ -158,7 +158,7 @@ static void rpc_dispatch(uint8_t msg_id, const uint8_t *payload, size_t len)
             memcpy((void *)frame.data, payload, len);
 
             taskENTER_CRITICAL();
-            int rc = rpc_frame_push(&IPC_SHARED->cm4_to_cm7_rpc, &frame);
+            int rc = rpc_frame_push(&SHARED_MEM->cm4_to_cm7_rpc, &frame);
             taskEXIT_CRITICAL();
 
             if (rc == 0) {
@@ -205,7 +205,7 @@ int rpc_transmit(uint8_t msg_id, const void *payload, size_t len)
     memcpy(frame.data, payload, len);
 
     taskENTER_CRITICAL();
-    int rc = rpc_frame_push(&IPC_SHARED->cm7_to_cm4_rpc, &frame);
+    int rc = rpc_frame_push(&SHARED_MEM->cm7_to_cm4_rpc, &frame);
     taskEXIT_CRITICAL();
 
     if (rc == 0) {
@@ -228,14 +228,14 @@ void rpc_init(void)
     /* CM7 owns shared-memory initialisation. Zero both queues, stamp the
      * version, then write ready_flag last as the release barrier that CM4
      * polls in ipc_rx_task before arming any HSEM channels. */
-    ipc_shared_t *sh        = IPC_SHARED;
+    shared_mem_t *sh        = SHARED_MEM;
     sh->cm4_to_cm7_rpc.head = 0;
     sh->cm4_to_cm7_rpc.tail = 0;
     sh->cm7_to_cm4_rpc.head = 0;
     sh->cm7_to_cm4_rpc.tail = 0;
-    sh->version = IPC_VERSION;
+    sh->version = SHMEM_VERSION;
     __DMB();
-    sh->ready_flag = IPC_READY_FLAG;
+    sh->ready_flag = SHMEM_READY_FLAG;
 #endif
 
     s_ipc_wakeup = xSemaphoreCreateBinary();
