@@ -6,7 +6,6 @@
 #include "task.h"
 #include <string.h>
 
-/* Timeout sized well above worst case: 128 bytes @ 2 Mbaud = ~0.5 ms. */
 #define UART_DMA_TIMEOUT_MS  50U
 
 typedef struct {
@@ -18,10 +17,20 @@ static QueueHandle_t     tx_queue;
 static SemaphoreHandle_t tx_complete;
 static uint32_t          drop_count;
 
+static SemaphoreHandle_t rx_ready;
+static uint8_t           rx_buf[UART_RX_BUF_LEN];
+
 static void tx_cplt_handler(void)
 {
     BaseType_t woken = pdFALSE;
     xSemaphoreGiveFromISR(tx_complete, &woken);
+    portYIELD_FROM_ISR(woken);
+}
+
+static void rx_cplt_handler(void)
+{
+    BaseType_t woken = pdFALSE;
+    xSemaphoreGiveFromISR(rx_ready, &woken);
     portYIELD_FROM_ISR(woken);
 }
 
@@ -40,14 +49,37 @@ static void uart_drain_task(void *arg)
     }
 }
 
+static void uart_rx_task(void *arg)
+{
+    (void)arg;
+
+    bsp_uart_receive_dma(rx_buf, UART_RX_BUF_LEN);
+
+    for (;;) {
+        xSemaphoreTake(rx_ready, portMAX_DELAY);
+        uart_on_receive(rx_buf, UART_RX_BUF_LEN);
+        bsp_uart_receive_dma(rx_buf, UART_RX_BUF_LEN);
+    }
+}
+
+__attribute__((weak)) void uart_on_receive(const uint8_t *buf, uint16_t len)
+{
+    (void)buf;
+    (void)len;
+}
+
 void uart_init(void)
 {
     tx_complete = xSemaphoreCreateBinary();
     tx_queue    = xQueueCreate(UART_TX_QUEUE_DEPTH, sizeof(uart_msg_t));
+    rx_ready    = xSemaphoreCreateBinary();
     configASSERT(tx_complete);
     configASSERT(tx_queue);
+    configASSERT(rx_ready);
     bsp_uart_set_tx_cplt_cb(tx_cplt_handler);
-    xTaskCreate(uart_drain_task, "UART_drain", 256, NULL, tskIDLE_PRIORITY + 2, NULL);
+    bsp_uart_set_rx_cplt_cb(rx_cplt_handler);
+    xTaskCreate(uart_drain_task, "UART_tx", 256, NULL, tskIDLE_PRIORITY + 2, NULL);
+    xTaskCreate(uart_rx_task,    "UART_rx", 256, NULL, tskIDLE_PRIORITY + 2, NULL);
 }
 
 uint32_t uart_get_drop_count(void)
@@ -65,6 +97,5 @@ void uart_transmit(const uint8_t *buf, uint16_t len)
     msg.len = len > UART_TX_MAX_MSG_LEN ? UART_TX_MAX_MSG_LEN : len;
     memcpy(msg.data, buf, msg.len);
 
-    /* Blocks only if all UART_TX_QUEUE_DEPTH slots are full. */
     xQueueSend(tx_queue, &msg, portMAX_DELAY);
 }

@@ -5,3 +5,6 @@
 
 void bsp_uart_set_tx_cplt_cb(void (*cb)(void));
 bool bsp_uart_transmit_dma(const uint8_t *buf, uint16_t len);
+
+void bsp_uart_set_rx_cplt_cb(void (*cb)(void));
+bool bsp_uart_receive_dma(uint8_t *buf, uint16_t len);
