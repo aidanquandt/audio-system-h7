@@ -3,6 +3,7 @@
 add_library(bsp STATIC
     gpio.c
     hsem.c
+    sdram.c
     uart.c
 )
 

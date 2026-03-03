@@ -1,10 +1,14 @@
 #include "app_main/app_main.h"
 #include "bsp/gpio.h"
+#include "bsp/sdram.h"
+#include "FreeRTOS.h"
+#include "task.h"
 #include "heartbeat/heartbeat.h"
 #include "led/led.h"
 #include "rpc/rpc.h"
 
 #ifdef CORE_CM4
+#include "sdram/sdram.h"
 #include "uart/uart.h"
 #include "transport/transport.h"
 
@@ -16,12 +20,21 @@ static const transport_t uart_transport = {
 
 void app_main(void)
 {
+    bsp_gpio_init();
+
 #ifdef CORE_CM4
+    sdram_init();
+    if (bsp_sdram_test())
+    {
+        for (int i = 0; i < 6; i++)
+        {
+            bsp_gpio_toggle(BSP_GPIO_LED_GREEN);
+            vTaskDelay(pdMS_TO_TICKS(150));
+        }
+    }
     uart_init();
     transport_register(&uart_transport);
 #endif
-
-    bsp_gpio_init();
     rpc_init();
     led_init();
     heartbeat_init();
