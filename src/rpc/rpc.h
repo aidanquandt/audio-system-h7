@@ -2,15 +2,18 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include "messages.h"
 
 typedef enum { DEST_CM4, DEST_CM7, DEST_BOTH } rpc_dest_t;
 typedef void (*rpc_handler_fn)(uint8_t msg_id, const uint8_t *payload, size_t len);
 
-/* Register a handler for msg_id. Use dest to control routing on CM4:
- *   DEST_CM4 — dispatch locally
- *   DEST_CM7 — forward to CM7 via IPC (fn may be NULL)
- * On CM7, dest is ignored; all dispatched messages call fn directly. */
+/* Register a handler for msg_id.
+ *
+ * dest controls CM4 dispatch only — CM7 always calls fn directly because
+ * IPC delivery already implies the message was meant for it:
+ *   DEST_CM4  — call fn locally, do not forward
+ *   DEST_CM7  — push to IPC queue for CM7, fn may be NULL
+ *   DEST_BOTH — call fn locally AND forward to CM7
+ */
 void rpc_register(uint8_t msg_id, rpc_dest_t dest, rpc_handler_fn fn);
 
 void     rpc_init(void);

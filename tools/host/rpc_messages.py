@@ -55,34 +55,6 @@ def make_frame(msg_id: int, payload: bytes) -> bytes:
 # ── Message classes ──────────────────────────────────────────────────────────
 
 @dataclass
-class HeartbeatCm4:
-    MSG_ID: ClassVar[int] = 0x01
-    seq: int = 0
-
-    @classmethod
-    def unpack(cls, data: bytes) -> 'HeartbeatCm4':
-        seq, = struct.unpack_from('<I', data)
-        return cls(seq=seq)
-
-    def pack(self) -> bytes:
-        return struct.pack('<I', self.seq)
-
-
-@dataclass
-class HeartbeatCm7:
-    MSG_ID: ClassVar[int] = 0x02
-    seq: int = 0
-
-    @classmethod
-    def unpack(cls, data: bytes) -> 'HeartbeatCm7':
-        seq, = struct.unpack_from('<I', data)
-        return cls(seq=seq)
-
-    def pack(self) -> bytes:
-        return struct.pack('<I', self.seq)
-
-
-@dataclass
 class LedToggleGreen:
     MSG_ID: ClassVar[int] = 0x10
 
@@ -122,6 +94,34 @@ class SetGain:
 
 
 @dataclass
+class HeartbeatCm4:
+    MSG_ID: ClassVar[int] = 0x01
+    seq: int = 0
+
+    @classmethod
+    def unpack(cls, data: bytes) -> 'HeartbeatCm4':
+        seq, = struct.unpack_from('<I', data)
+        return cls(seq=seq)
+
+    def pack(self) -> bytes:
+        return struct.pack('<I', self.seq)
+
+
+@dataclass
+class HeartbeatCm7:
+    MSG_ID: ClassVar[int] = 0x02
+    seq: int = 0
+
+    @classmethod
+    def unpack(cls, data: bytes) -> 'HeartbeatCm7':
+        seq, = struct.unpack_from('<I', data)
+        return cls(seq=seq)
+
+    def pack(self) -> bytes:
+        return struct.pack('<I', self.seq)
+
+
+@dataclass
 class PeakMeter:
     MSG_ID: ClassVar[int] = 0x80
     channel: int = 0
@@ -137,11 +137,11 @@ class PeakMeter:
 
 
 REGISTRY: dict[int, type] = {
-    0x01: HeartbeatCm4,
-    0x02: HeartbeatCm7,
     0x10: LedToggleGreen,
     0x11: LedToggleRed,
     0x20: SetGain,
+    0x01: HeartbeatCm4,
+    0x02: HeartbeatCm7,
     0x80: PeakMeter,
 }
 

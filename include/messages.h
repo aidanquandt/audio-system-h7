@@ -3,17 +3,17 @@
 #include <stdint.h>
 
 typedef enum {
-    MSG_HEARTBEAT_CM4        = 0x01,
-    MSG_HEARTBEAT_CM7        = 0x02,
     MSG_LED_TOGGLE_GREEN     = 0x10,
     MSG_LED_TOGGLE_RED       = 0x11,
     MSG_SET_GAIN             = 0x20,
+    MSG_HEARTBEAT_CM4        = 0x01,
+    MSG_HEARTBEAT_CM7        = 0x02,
     MSG_PEAK_METER           = 0x80,
 } msg_id_t;
 
+typedef struct __attribute__((packed)) { uint8_t channel; float gain_db; } set_gain_t;
 typedef struct __attribute__((packed)) { uint32_t seq; } heartbeat_cm4_t;
 typedef struct __attribute__((packed)) { uint32_t seq; } heartbeat_cm7_t;
-typedef struct __attribute__((packed)) { uint8_t channel; float gain_db; } set_gain_t;
 typedef struct __attribute__((packed)) { uint8_t channel; float peak_db; } peak_meter_t;
 
 /* MSG_LED_TOGGLE_GREEN, MSG_LED_TOGGLE_RED: no payload — pass NULL, 0. */

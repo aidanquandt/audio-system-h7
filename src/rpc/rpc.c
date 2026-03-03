@@ -45,8 +45,9 @@ static int rpc_frame_pop(volatile rpc_frame_queue_t *q, rpc_frame_t *f)
 {
     uint32_t tail = q->tail;
     if (tail == q->head) return -1;
+    __DMB();  /* acquire: observe slot data written before producer advanced head */
     *f = q->slots[tail];
-    __DMB();
+    __DMB();  /* release: finish reading slot before advancing tail */
     q->tail = (tail + 1U) & (RPC_QUEUE_DEPTH - 1U);
     return 0;
 }
@@ -112,7 +113,7 @@ static void ipc_rx_task(void *arg)
     uint32_t wait = 0;
     while (SHARED_MEM->ready_flag != SHMEM_READY_FLAG) {
         vTaskDelay(pdMS_TO_TICKS(1));
-        if (++wait > IPC_BOOT_TIMEOUT_MS) break;
+        configASSERT(++wait <= IPC_BOOT_TIMEOUT_MS); /* CM7 failed to init shared memory */
     }
     __DMB();
 #else

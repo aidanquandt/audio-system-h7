@@ -1,43 +1,36 @@
 version: 1
 
-# dest controls routing:
-#   host  — device-originated only; generates no inbound handler.
-#            CM7 pushes via IPC, CM4 COBS-encodes and forwards to wire.
-#   cm4   — host sends to device; CM4 handles locally
-#   cm7   — host sends to device; CM4 forwards to CM7 via IPC
-#   both  — host sends to device; CM4 handles locally AND forwards to CM7
+# inbound:  host → device.  Generate typed rpc_register_<name>(dest) + weak handler.
+# outbound: device → host.  Generate struct + rpc_transmit() helpers only.
+# Routing (which core handles each inbound message) is declared in the
+# module that owns the handler, not here. See src/led/led.c for example.
 
-messages:
+inbound:
+  - id: 0x10
+    name: led_toggle_green
+
+  - id: 0x11
+    name: led_toggle_red
+
+  - id: 0x20
+    name: set_gain
+    fields:
+      - { name: channel, type: uint8 }
+      - { name: gain_db, type: float32 }
+
+outbound:
   - id: 0x01
     name: heartbeat_cm4
-    dest: host
     fields:
       - { name: seq, type: uint32 }
 
   - id: 0x02
     name: heartbeat_cm7
-    dest: host
     fields:
       - { name: seq, type: uint32 }
 
-  - id: 0x10
-    name: led_toggle_green
-    dest: cm4
-
-  - id: 0x11
-    name: led_toggle_red
-    dest: cm7
-
-  - id: 0x20
-    name: set_gain
-    dest: cm7
-    fields:
-      - { name: channel, type: uint8 }
-      - { name: gain_db, type: float32 }
-
   - id: 0x80
     name: peak_meter
-    dest: host
     fields:
       - { name: channel, type: uint8 }
       - { name: peak_db, type: float32 }

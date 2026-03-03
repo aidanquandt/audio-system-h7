@@ -17,6 +17,7 @@ set(_target app_${_core_lower})
 set(_sources
     app_main/app_main.c
     heartbeat/heartbeat.c
+    led/led.c
     rpc/rpc.c
     rpc/generated/rpc_generated.c
 )

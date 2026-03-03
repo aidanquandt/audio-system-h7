@@ -6,60 +6,50 @@
 
 /* -- Weak default handlers ------------------------------------------ */
 
-#ifdef CORE_CM4
 __attribute__((weak)) void rpc_handle_led_toggle_green(void) {}
-#endif /* CORE_CM4 */
-#ifdef CORE_CM7
 __attribute__((weak)) void rpc_handle_led_toggle_red(void) {}
-#endif /* CORE_CM7 */
-#ifdef CORE_CM7
 __attribute__((weak)) void rpc_handle_set_gain(const set_gain_t *msg) { (void)msg; }
-#endif /* CORE_CM7 */
 
-/* -- Dispatch shims ------------------------------------------------- */
+/* -- Dispatch shims (private) --------------------------------------- */
 
-#ifdef CORE_CM4
 static void _on_led_toggle_green(uint8_t id, const uint8_t *buf, size_t len)
 {
     (void)id; (void)buf; (void)len;
     rpc_handle_led_toggle_green();
 }
-#endif /* CORE_CM4 */
 
-#ifdef CORE_CM7
 static void _on_led_toggle_red(uint8_t id, const uint8_t *buf, size_t len)
 {
     (void)id; (void)buf; (void)len;
     rpc_handle_led_toggle_red();
 }
-#endif /* CORE_CM7 */
 
-#ifdef CORE_CM7
 static void _on_set_gain(uint8_t id, const uint8_t *buf, size_t len)
 {
     (void)id;
     if (len >= sizeof(set_gain_t)) rpc_handle_set_gain((const set_gain_t *)buf);
 }
-#endif /* CORE_CM7 */
 
-/* -- Registration --------------------------------------------------- */
+/* -- Per-message registration functions ----------------------------- */
 
-void rpc_register_all(void)
+void rpc_register_led_toggle_green(rpc_dest_t dest)
 {
-#ifdef CORE_CM4
-    rpc_register(MSG_LED_TOGGLE_GREEN, DEST_CM4, _on_led_toggle_green);
-    rpc_register(MSG_LED_TOGGLE_RED, DEST_CM7, NULL);
-    rpc_register(MSG_SET_GAIN, DEST_CM7, NULL);
-#endif
-#ifdef CORE_CM7
-    rpc_register(MSG_LED_TOGGLE_RED, DEST_CM7, _on_led_toggle_red);
-    rpc_register(MSG_SET_GAIN, DEST_CM7, _on_set_gain);
-#endif
+    rpc_register(MSG_LED_TOGGLE_GREEN, dest, _on_led_toggle_green);
+}
+
+void rpc_register_led_toggle_red(rpc_dest_t dest)
+{
+    rpc_register(MSG_LED_TOGGLE_RED, dest, _on_led_toggle_red);
+}
+
+void rpc_register_set_gain(rpc_dest_t dest)
+{
+    rpc_register(MSG_SET_GAIN, dest, _on_set_gain);
 }
 
 /* -- Payload size guards ------------------------------------------- */
 
+_Static_assert(sizeof(set_gain_t) <= RPC_FRAME_MAX_PAYLOAD, "set_gain_t exceeds RPC_FRAME_MAX_PAYLOAD");
 _Static_assert(sizeof(heartbeat_cm4_t) <= RPC_FRAME_MAX_PAYLOAD, "heartbeat_cm4_t exceeds RPC_FRAME_MAX_PAYLOAD");
 _Static_assert(sizeof(heartbeat_cm7_t) <= RPC_FRAME_MAX_PAYLOAD, "heartbeat_cm7_t exceeds RPC_FRAME_MAX_PAYLOAD");
-_Static_assert(sizeof(set_gain_t) <= RPC_FRAME_MAX_PAYLOAD, "set_gain_t exceeds RPC_FRAME_MAX_PAYLOAD");
 _Static_assert(sizeof(peak_meter_t) <= RPC_FRAME_MAX_PAYLOAD, "peak_meter_t exceeds RPC_FRAME_MAX_PAYLOAD");
