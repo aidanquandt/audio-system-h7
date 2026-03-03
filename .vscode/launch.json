@@ -26,10 +26,6 @@
                 "set substitute-path C:\\\\github\\\\ash7 C:/github/ash7"
             ],
             "showDevDebugOutput": "raw",
-            // "liveWatch": {
-            //     "enabled": true,
-            //     "samplesPerSecond": 4
-            // }
         },
         {
             "name": "Debug CM4 (OpenOCD)",
@@ -52,10 +48,6 @@
                 "set substitute-path C:\\\\github\\\\ash7 C:/github/ash7"
             ],
             "showDevDebugOutput": "raw",
-            // "liveWatch": {
-            //     "enabled": true,
-            //     "samplesPerSecond": 4
-            // }
         },
         {
             "name": "Debug CM4 (OpenOCD, Standalone)",
@@ -82,10 +74,6 @@
                 "set substitute-path C:\\\\github\\\\ash7 C:/github/ash7"
             ],
             "showDevDebugOutput": "raw",
-            "liveWatch": {
-                "enabled": true,
-                "samplesPerSecond": 4
-            }
         },
         {
             "name": "Attach CM7 (OpenOCD)",
@@ -111,10 +99,6 @@
                 "set substitute-path C:\\\\github\\\\ash7 C:/github/ash7"
             ],
             "showDevDebugOutput": "raw",
-            "liveWatch": {
-                "enabled": true,
-                "samplesPerSecond": 4
-            }
         }
     ],
     "compounds": [
