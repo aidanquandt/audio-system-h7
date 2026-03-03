@@ -10,6 +10,9 @@ build/
 *.lst
 *.su
 
+# Local env (tool paths for launch.json)
+.env
+
 # IDE files
 .idea/
 *.iws
