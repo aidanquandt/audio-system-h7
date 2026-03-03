@@ -1,5 +1,4 @@
-#ifndef BSP_GPIO_H
-#define BSP_GPIO_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,5 +18,3 @@ void bsp_gpio_toggle(bsp_gpio_t pin);
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* BSP_GPIO_H */

@@ -7,3 +7,8 @@
 
 /* Depth of each inter-core RPC queue in SRAM3 — must be a power of 2. */
 #define RPC_QUEUE_DEPTH 8U
+
+/* Fallback poll period (ms) for the IPC RX task.
+ * The semaphore is normally signalled immediately by the HSEM ISR; this
+ * timeout is a safety net that catches any missed HSEM notifications. */
+#define IPC_POLL_PERIOD_MS 50U

@@ -3,8 +3,6 @@
         "*.h": "c",
         "*.c": "c"
     },
-    // Disable C/C++ IntelliSense (using clangd instead)
-    "C_Cpp.intelliSenseEngine": "disabled",
     "C_Cpp.formatting": "disabled",
     "C_Cpp.errorSquiggles": "disabled",
     "C_Cpp.autocomplete": "disabled",

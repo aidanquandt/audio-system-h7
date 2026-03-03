@@ -1,4 +1,4 @@
-.PHONY: all build flash rebuild clean build-and-flash configure help
+.PHONY: all build flash rebuild clean build-and-flash configure codegen help
 
 all: build
 
@@ -10,6 +10,7 @@ help:
 	@echo "  rebuild          Clean, configure, and build"
 	@echo "  clean            Remove build artifacts"
 	@echo "  configure        Run CMake configuration"
+	@echo "  codegen          Regenerate RPC code from proto/messages.yaml"
 
 build:
 	./scripts/build.sh
@@ -28,3 +29,6 @@ build-and-flash:
 
 configure:
 	./scripts/configure.sh
+
+codegen:
+	./scripts/codegen.sh

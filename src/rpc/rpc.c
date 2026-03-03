@@ -142,7 +142,7 @@ static void ipc_rx_task(void *arg)
 
     for (;;)
     {
-        xSemaphoreTake(s_ipc_wakeup, pdMS_TO_TICKS(50));
+        xSemaphoreTake(s_ipc_wakeup, pdMS_TO_TICKS(IPC_POLL_PERIOD_MS));
 
         rpc_frame_t frame;
         while (rpc_frame_pop(q, &frame) == 0)

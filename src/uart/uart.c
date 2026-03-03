@@ -93,9 +93,9 @@ uint32_t uart_get_drop_count(void)
     taskENTER_CRITICAL();
     n_rx              = rx_ctx.drop_count;
     rx_ctx.drop_count = 0;
-    taskEXIT_CRITICAL();
     n_tx              = tx_ctx.drop_count;
     tx_ctx.drop_count = 0;
+    taskEXIT_CRITICAL();
     return n_rx + n_tx;
 }
 
