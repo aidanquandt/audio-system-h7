@@ -21,12 +21,29 @@ static const gpio_descriptor_t gpio_map[BSP_GPIO_COUNT] = {
  * STM32H7 dual-core: concurrent AHB4 reads from CM7 and CM4 can return
  * corrupted data (errata ES0396 2.2.9).  All writes go through BSRR
  * (via HAL_GPIO_WritePin) which is a pure write — no read required.
+ *
+ * Shadow is synced in bsp_gpio_init() by driving every owned pin to a
+ * known state, so this array needs no explicit initializer.
  */
 static uint8_t shadow_state[BSP_GPIO_COUNT];
 
 static inline bool is_owned(bsp_gpio_t pin)
 {
     return pin < BSP_GPIO_COUNT && gpio_map[pin].port != NULL;
+}
+
+void bsp_gpio_init(void)
+{
+    /* Drive every pin owned by this core to a known initial state (off).
+     * This syncs shadow_state with the hardware regardless of what
+     * MX_GPIO_Init() did, removing any coupling to cube-generated init. */
+    for (bsp_gpio_t pin = 0; pin < BSP_GPIO_COUNT; pin++)
+    {
+        if (is_owned(pin))
+        {
+            bsp_gpio_reset(pin);
+        }
+    }
 }
 
 void bsp_gpio_set(bsp_gpio_t pin)

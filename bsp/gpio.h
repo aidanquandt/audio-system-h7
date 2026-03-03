@@ -11,6 +11,7 @@ typedef enum {
     BSP_GPIO_COUNT
 } bsp_gpio_t;
 
+void bsp_gpio_init(void);
 void bsp_gpio_set(bsp_gpio_t pin);
 void bsp_gpio_reset(bsp_gpio_t pin);
 void bsp_gpio_toggle(bsp_gpio_t pin);

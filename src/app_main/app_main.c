@@ -1,4 +1,5 @@
 #include "app_main/app_main.h"
+#include "bsp/gpio.h"
 #include "heartbeat/heartbeat.h"
 #include "led/led.h"
 #include "rpc/rpc.h"
@@ -20,6 +21,7 @@ void app_main(void)
     transport_register(&uart_transport);
 #endif
 
+    bsp_gpio_init();
     rpc_init();
     led_init();
     heartbeat_init();
