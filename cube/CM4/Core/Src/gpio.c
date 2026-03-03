@@ -37,16 +37,23 @@
      PI5   ------> SAI2_SCK_A
      PI4   ------> SAI2_MCLK_A
      PB5   ------> FDCAN2_RX
+     PK5   ------> LTDC_B6
      PG10   ------> SAI2_SD_B
      PC10   ------> SDMMC1_D2
+     PI1   ------> LTDC_G6
+     PI0   ------> LTDC_G5
      PI7   ------> SAI2_FS_A
      PE1   ------> FMC_NBL1
      PB6   ------> QUADSPI_BK1_NCS
+     PK4   ------> LTDC_B5
      PG11   ------> ETH_TX_EN
+     PJ15   ------> LTDC_B3
      PC11   ------> SDMMC1_D3
      PH14   ------> FDCAN1_RX
      PE2   ------> ETH_TXD3
      PE0   ------> FMC_NBL0
+     PK6   ------> LTDC_B7
+     PK3   ------> LTDC_B4
      PG12   ------> ETH_TXD1
      PC12   ------> SDMMC1_CK
      PE5   ------> SAI4_CK2
@@ -54,11 +61,16 @@
      PB9   ------> SDMMC1_D5
      PB8   ------> SDMMC1_D4
      PG15   ------> FMC_SDNCAS
+     PK7   ------> LTDC_DE
      PG13   ------> ETH_TXD0
+     PJ14   ------> LTDC_B2
+     PJ12   ------> LTDC_B0
      PD2   ------> SDMMC1_CMD
      PD0   ------> FMC_D2_DA2
      PA9   ------> USB_OTG_FS_VBUS
      PH13   ------> FDCAN1_TX
+     PI9   ------> LTDC_VSYNC
+     PJ13   ------> LTDC_B1
      PD1   ------> FMC_D3_DA3
      PC8   ------> SDMMC1_D0
      PC9   ------> SDMMC1_D1
@@ -72,23 +84,35 @@
      PF1   ------> FMC_A1
      PF0   ------> FMC_A0
      PG5   ------> FMC_A15_BA1
+     PI12   ------> LTDC_HSYNC
+     PI14   ------> LTDC_CLK
      PF3   ------> FMC_A3
      PG4   ------> FMC_A14_BA0
+     PK2   ------> LTDC_G7
      PF5   ------> FMC_A5
      PF4   ------> FMC_A4
      PF6   ------> QUADSPI_BK1_IO3
      PF7   ------> QUADSPI_BK1_IO2
+     PJ11   ------> LTDC_G4
      PF10   ------> QUADSPI_CLK
      PF9   ------> QUADSPI_BK1_IO1
+     PJ10   ------> LTDC_G3
      PC1   ------> ETH_MDC
      PC2   ------> ETH_TXD2
      PC3   ------> ETH_TX_CLK
+     PJ9   ------> LTDC_G2
      PH2   ------> ETH_CRS
      PA2   ------> ETH_MDIO
      PA1   ------> ETH_RX_CLK
+     PJ0   ------> LTDC_R1
      PE10   ------> FMC_D7_DA7
+     PJ8   ------> LTDC_G1
+     PJ7   ------> LTDC_G0
+     PJ6   ------> LTDC_R7
      PH3   ------> ETH_COL
      PH5   ------> FMC_SDNWE
+     PI15   ------> LTDC_R0
+     PJ1   ------> LTDC_R2
      PF13   ------> FMC_A7
      PF14   ------> FMC_A8
      PE9   ------> FMC_D6_DA6
@@ -100,6 +124,8 @@
      PF15   ------> FMC_A9
      PE12   ------> FMC_D9_DA9
      PE15   ------> FMC_D12_DA12
+     PJ5   ------> LTDC_R6
+     PH9   ------> LTDC_R3
      PD11   ------> QUADSPI_BK1_IO0
      PC4   ------> ETH_RXD0
      PB1   ------> ETH_RXD3
@@ -112,6 +138,8 @@
      PD9   ------> FMC_D14_DA14
      PC5   ------> ETH_RXD1
      PB0   ------> ETH_RXD2
+     PJ3   ------> LTDC_R4
+     PJ4   ------> LTDC_R5
      PG1   ------> FMC_A11
      PE7   ------> FMC_D4_DA4
      PE14   ------> FMC_D11_DA11
@@ -159,6 +187,16 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Alternate = GPIO_AF9_FDCAN2;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+  /*Configure GPIO pins : PK5 PK4 PK6 PK3
+                           PK7 PK2 */
+  GPIO_InitStruct.Pin = GPIO_PIN_5|GPIO_PIN_4|GPIO_PIN_6|GPIO_PIN_3
+                          |GPIO_PIN_7|GPIO_PIN_2;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Alternate = GPIO_AF14_LTDC;
+  HAL_GPIO_Init(GPIOK, &GPIO_InitStruct);
+
   /*Configure GPIO pin : PG10 */
   GPIO_InitStruct.Pin = GPIO_PIN_10;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -176,6 +214,16 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   GPIO_InitStruct.Alternate = GPIO_AF12_SDIO1;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PI1 PI0 PI9 PI12
+                           PI14 PI15 */
+  GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_0|GPIO_PIN_9|GPIO_PIN_12
+                          |GPIO_PIN_14|GPIO_PIN_15;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Alternate = GPIO_AF14_LTDC;
+  HAL_GPIO_Init(GPIOI, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PE1 PE0 PE10 PE9
                            PE11 PE12 PE15 PE8
@@ -205,6 +253,20 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Alternate = GPIO_AF11_ETH;
   HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 
+  /*Configure GPIO pins : PJ15 PJ14 PJ12 PJ13
+                           PJ11 PJ10 PJ9 PJ0
+                           PJ8 PJ7 PJ6 PJ1
+                           PJ5 PJ3 PJ4 */
+  GPIO_InitStruct.Pin = GPIO_PIN_15|GPIO_PIN_14|GPIO_PIN_12|GPIO_PIN_13
+                          |GPIO_PIN_11|GPIO_PIN_10|GPIO_PIN_9|GPIO_PIN_0
+                          |GPIO_PIN_8|GPIO_PIN_7|GPIO_PIN_6|GPIO_PIN_1
+                          |GPIO_PIN_5|GPIO_PIN_3|GPIO_PIN_4;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Alternate = GPIO_AF14_LTDC;
+  HAL_GPIO_Init(GPIOJ, &GPIO_InitStruct);
+
   /*Configure GPIO pins : PH14 PH13 */
   GPIO_InitStruct.Pin = GPIO_PIN_14|GPIO_PIN_13;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -221,11 +283,11 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Alternate = GPIO_AF11_ETH;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : LCD_DISPD7_Pin */
-  GPIO_InitStruct.Pin = LCD_DISPD7_Pin;
+  /*Configure GPIO pin : LCD_DISP_Pin */
+  GPIO_InitStruct.Pin = LCD_DISP_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(LCD_DISPD7_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(LCD_DISP_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PE5 PE4 */
   GPIO_InitStruct.Pin = GPIO_PIN_5|GPIO_PIN_4;
@@ -392,6 +454,14 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(USB_OTG_FS2_OverCurrent_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PH9 */
+  GPIO_InitStruct.Pin = GPIO_PIN_9;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Alternate = GPIO_AF14_LTDC;
+  HAL_GPIO_Init(GPIOH, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PD11 */
   GPIO_InitStruct.Pin = GPIO_PIN_11;
