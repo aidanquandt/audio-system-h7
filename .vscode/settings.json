@@ -11,7 +11,8 @@
         "--compile-commands-dir=${workspaceFolder}/build",
         "--background-index",
         "--clang-tidy",
-        "--header-insertion=never"
+        "--header-insertion=never",
+        "--query-driver=C:/msys64/ucrt64/bin/arm-none-eabi-gcc.exe"
     ],
     "editor.formatOnSave": false,
     "[c]": {
@@ -19,5 +20,6 @@
         "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
     },
     "files.eol": "\n",
-    "cmake.ignoreCMakeListsMissing": true
+    "cmake.ignoreCMakeListsMissing": true,
+    "makefile.configureOnOpen": false
 }

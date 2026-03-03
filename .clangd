@@ -1,0 +1,18 @@
+If:
+  PathMatch: .*\.h
+CompileFlags:
+  Add:
+    - -x
+    - c-header
+    - -DCORE_CM7
+    - -DSTM32H745xx
+    - -DUSE_HAL_DRIVER
+    - -DDEBUG
+    - -IC:/github/ash7/include
+    - -IC:/github/ash7/src
+    - -IC:/github/ash7/bsp/..
+    - -std=gnu11
+
+---
+Index:
+  Background: Build
