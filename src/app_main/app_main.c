@@ -1,6 +1,5 @@
 #include "app_main/app_main.h"
 #include "bsp/gpio.h"
-#include "bsp/sdram.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include "heartbeat/heartbeat.h"
@@ -23,10 +22,9 @@ void app_main(void)
     bsp_gpio_init();
 
 #ifdef CORE_CM4
-    sdram_init();
-    if (bsp_sdram_test())
+    if (sdram_init())
     {
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < 20; i++)
         {
             bsp_gpio_toggle(BSP_GPIO_LED_GREEN);
             vTaskDelay(pdMS_TO_TICKS(150));

@@ -1,8 +1,11 @@
 #pragma once
 
+#include <stdbool.h>
+
 /**
- * SDRAM driver — runs power-up sequence and timing.
- * Call once after MX_FMC_Init(), from task context (uses osDelay).
- * No-op when not built for CM4.
+ * Run the SDRAM power-up sequence and verify with a read/write test.
+ * Call once after MX_FMC_Init(), from task context (uses vTaskDelay).
+ * @return true if the post-init test passes, false otherwise.
+ * Returns true unconditionally on non-CM4 cores.
  */
-void sdram_init(void);
+bool sdram_init(void);
