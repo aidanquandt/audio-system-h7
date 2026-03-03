@@ -1,8 +1,8 @@
 #include "rpc/rpc.h"
-#include "rpc/rpc_config.h"
 #include "cobs/cobs.h"
 #include "transport/transport.h"
-#include "shared_mem.h"
+#include "platform/shared_mem.h"
+#include "platform/ipc_channels.h"
 #include "bsp/hsem.h"
 #include "FreeRTOS.h"
 #include "task.h"
@@ -11,6 +11,7 @@
 
 #define MAX_HANDLERS        16U
 #define IPC_BOOT_TIMEOUT_MS 5000U
+#define IPC_POLL_PERIOD_MS  50U
 
 /* Raw COBS bytes fit in this; caller synthesises the [msg_id | payload] before encoding. */
 #define COBS_FRAME_BUF_LEN COBS_ENCODED_LEN(1U + RPC_FRAME_MAX_PAYLOAD)
@@ -68,9 +69,20 @@ static void on_ipc_hsem(uint32_t sem_mask)
     portYIELD_FROM_ISR(woken);
 }
 
-/* ── Wire RX task — CM4 only, one instance per registered transport ───────── */
+/* ── Wire helpers — CM4 only ─────────────────────────────────────────────── */
 
 #ifdef CORE_CM4
+static void wire_send_frame(uint8_t msg_id, const uint8_t *payload, size_t len)
+{
+    uint8_t buf[1U + RPC_FRAME_MAX_PAYLOAD];
+    uint8_t encoded[COBS_FRAME_BUF_LEN + 1U];
+    buf[0] = msg_id;
+    memcpy(buf + 1, payload, len);
+    size_t elen   = cobs_encode(buf, 1U + len, encoded);
+    encoded[elen] = 0x00;
+    transport_send(encoded, elen + 1U);
+}
+
 static void wire_task(void *arg)
 {
     const transport_t   *t      = (const transport_t *)arg;
@@ -149,13 +161,7 @@ static void ipc_rx_task(void *arg)
         {
 #ifdef CORE_CM4
             /* Forward CM7-originated messages to the host over the wire. */
-            uint8_t buf[1U + RPC_FRAME_MAX_PAYLOAD];
-            uint8_t encoded[COBS_FRAME_BUF_LEN + 1U];
-            buf[0] = frame.msg_id;
-            memcpy(buf + 1, frame.data, frame.len);
-            size_t elen   = cobs_encode(buf, 1U + frame.len, encoded);
-            encoded[elen] = 0x00;
-            transport_send(encoded, elen + 1U);
+            wire_send_frame(frame.msg_id, frame.data, frame.len);
 #else
             rpc_dispatch(frame.msg_id, frame.data, frame.len);
 #endif
@@ -225,13 +231,7 @@ int rpc_transmit(uint8_t msg_id, const void *payload, size_t len)
     configASSERT(len <= RPC_FRAME_MAX_PAYLOAD);
 
 #ifdef CORE_CM4
-    uint8_t buf[1U + RPC_FRAME_MAX_PAYLOAD];
-    uint8_t encoded[COBS_FRAME_BUF_LEN + 1U];
-    buf[0] = msg_id;
-    memcpy(buf + 1, payload, len);
-    size_t elen   = cobs_encode(buf, 1U + len, encoded);
-    encoded[elen] = 0x00;
-    transport_send(encoded, elen + 1U);
+    wire_send_frame(msg_id, payload, len);
     return 0; /* uart_transmit blocks until queued — never drops */
 #else
     rpc_frame_t frame = {.msg_id = msg_id, .len = (uint8_t)len};

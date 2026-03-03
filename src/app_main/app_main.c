@@ -22,9 +22,9 @@ void app_main(void)
     bsp_gpio_init();
 
 #ifdef CORE_CM4
-    if (sdram_init())
+    if (!sdram_init())
     {
-        for (int i = 0; i < 20; i++)
+        for (;;)
         {
             bsp_gpio_toggle(BSP_GPIO_LED_GREEN);
             vTaskDelay(pdMS_TO_TICKS(150));

@@ -2,7 +2,7 @@
 /* clang-format off */
 #include "rpc/generated/rpc_generated.h"
 #include "rpc/rpc.h"
-#include "rpc/rpc_config.h"
+#include "protocol/rpc_types.h"
 #include <stddef.h>
 
 /* -- Weak default handlers ------------------------------------------ */
@@ -46,6 +46,23 @@ void rpc_register_led_toggle_red(rpc_dest_t dest)
 void rpc_register_set_gain(rpc_dest_t dest)
 {
     rpc_register(MSG_SET_GAIN, dest, _on_set_gain);
+}
+
+/* -- Typed transmit helpers ----------------------------------------- */
+
+int rpc_transmit_heartbeat_cm4(const heartbeat_cm4_t *msg)
+{
+    return rpc_transmit(MSG_HEARTBEAT_CM4, msg, sizeof(*msg));
+}
+
+int rpc_transmit_heartbeat_cm7(const heartbeat_cm7_t *msg)
+{
+    return rpc_transmit(MSG_HEARTBEAT_CM7, msg, sizeof(*msg));
+}
+
+int rpc_transmit_peak_meter(const peak_meter_t *msg)
+{
+    return rpc_transmit(MSG_PEAK_METER, msg, sizeof(*msg));
 }
 
 /* -- Payload size guards ------------------------------------------- */

@@ -106,8 +106,17 @@ void uart_transmit(const uint8_t *buf, size_t len)
         return;
     }
 
+    if (len > UART_TX_MAX_MSG_LEN)
+    {
+        /* Truncating would emit a corrupted frame. Count as a drop and bail. */
+        taskENTER_CRITICAL();
+        tx_ctx.drop_count++;
+        taskEXIT_CRITICAL();
+        return;
+    }
+
     uart_msg_t msg;
-    msg.len = (uint16_t)(len > UART_TX_MAX_MSG_LEN ? UART_TX_MAX_MSG_LEN : len);
+    msg.len = (uint16_t)len;
     memcpy(msg.data, buf, msg.len);
 
     xQueueSend(tx_ctx.queue, &msg, portMAX_DELAY);
