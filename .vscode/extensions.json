@@ -1,8 +1,12 @@
 {
     "recommendations": [
         "llvm-vs-code-extensions.vscode-clangd",
-        "ms-vscode.cpptools",
         "marus25.cortex-debug",
-        "twxs.cmake"
+        "twxs.cmake",
+        "ms-python.python",
+        "ms-vscode.makefile-tools"
+    ],
+    "unwantedRecommendations": [
+        "ms-vscode.cpptools"
     ]
 }

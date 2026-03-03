@@ -1,3 +1,11 @@
 # Force LF line endings
 * text=auto eol=lf
 *.sh text eol=lf
+
+# Vendor and generated code — exclude from GitHub language stats
+cube/Drivers/** linguist-vendored
+cube/Middlewares/** linguist-vendored
+cube/** linguist-generated
+
+# CMake file language detection
+*.cmake linguist-language=CMake

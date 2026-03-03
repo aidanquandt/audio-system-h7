@@ -8,9 +8,9 @@ CompileFlags:
     - -DSTM32H745xx
     - -DUSE_HAL_DRIVER
     - -DDEBUG
-    - -IC:/github/ash7/include
-    - -IC:/github/ash7/src
-    - -IC:/github/ash7/bsp/..
+    - -Iinclude
+    - -Isrc
+    - -Ibsp
     - -std=gnu11
 
 ---

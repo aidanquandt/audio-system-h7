@@ -6,20 +6,24 @@
     "C_Cpp.formatting": "disabled",
     "C_Cpp.errorSquiggles": "disabled",
     "C_Cpp.autocomplete": "disabled",
+    "C_Cpp.intelliSenseEngine": "disabled",
     // clangd settings
+    // Set CLANGD_QUERY_DRIVER in your .env to point at arm-none-eabi-gcc
+    // e.g. C:/msys64/ucrt64/bin/arm-none-eabi-gcc.exe
     "clangd.arguments": [
         "--compile-commands-dir=${workspaceFolder}/build",
         "--background-index",
         "--clang-tidy",
-        "--header-insertion=never",
-        "--query-driver=C:/msys64/ucrt64/bin/arm-none-eabi-gcc.exe"
+        "--header-insertion=never"
     ],
     "editor.formatOnSave": false,
+    "editor.rulers": [100],
+    "files.trimTrailingWhitespace": true,
+    "files.eol": "\n",
     "[c]": {
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
     },
-    "files.eol": "\n",
     "cmake.ignoreCMakeListsMissing": true,
     "makefile.configureOnOpen": false
 }
