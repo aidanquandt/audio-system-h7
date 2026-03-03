@@ -9,9 +9,9 @@ typedef struct {
 
 static const gpio_descriptor_t gpio_map[BSP_GPIO_COUNT] = {
 #if defined(CORE_CM7)
-    [BSP_GPIO_LED_RED]   = { LD6_GPIO_Port, LD6_Pin },
+    [BSP_GPIO_LED_RED] = {LD6_GPIO_Port, LD6_Pin},
 #elif defined(CORE_CM4)
-    [BSP_GPIO_LED_GREEN] = { LD7_GPIO_Port, LD7_Pin },
+    [BSP_GPIO_LED_GREEN] = {LD7_GPIO_Port, LD7_Pin},
 #endif
 };
 
@@ -48,22 +48,32 @@ void bsp_gpio_init(void)
 
 void bsp_gpio_set(bsp_gpio_t pin)
 {
-    if (!is_owned(pin)) return;
+    if (!is_owned(pin))
+    {
+        return;
+    }
     shadow_state[pin] = 1;
     HAL_GPIO_WritePin(gpio_map[pin].port, gpio_map[pin].pin, GPIO_PIN_SET);
 }
 
 void bsp_gpio_reset(bsp_gpio_t pin)
 {
-    if (!is_owned(pin)) return;
+    if (!is_owned(pin))
+    {
+        return;
+    }
     shadow_state[pin] = 0;
     HAL_GPIO_WritePin(gpio_map[pin].port, gpio_map[pin].pin, GPIO_PIN_RESET);
 }
 
 void bsp_gpio_toggle(bsp_gpio_t pin)
 {
-    if (!is_owned(pin)) return;
+    if (!is_owned(pin))
+    {
+        return;
+    }
     shadow_state[pin] ^= 1;
-    HAL_GPIO_WritePin(gpio_map[pin].port, gpio_map[pin].pin,
+    HAL_GPIO_WritePin(gpio_map[pin].port,
+                      gpio_map[pin].pin,
                       shadow_state[pin] ? GPIO_PIN_SET : GPIO_PIN_RESET);
 }

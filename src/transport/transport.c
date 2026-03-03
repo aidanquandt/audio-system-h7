@@ -15,14 +15,19 @@ void transport_register(const transport_t *t)
 
 void transport_send(const uint8_t *buf, size_t len)
 {
-    for (size_t i = 0; i < s_count; i++) {
-        if (s_transports[i]->send) {
+    for (size_t i = 0; i < s_count; i++)
+    {
+        if (s_transports[i]->send)
+        {
             s_transports[i]->send(buf, len);
         }
     }
 }
 
-size_t transport_count(void) { return s_count; }
+size_t transport_count(void)
+{
+    return s_count;
+}
 
 const transport_t *transport_get(size_t idx)
 {

@@ -6,7 +6,7 @@
 #include "stream_buffer.h"
 
 typedef struct {
-    void                 (*send)(const uint8_t *buf, size_t len);
+    void (*send)(const uint8_t *buf, size_t len);
     StreamBufferHandle_t (*get_rx_stream)(void);
 } transport_t;
 

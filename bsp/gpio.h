@@ -6,8 +6,8 @@ extern "C" {
 #endif
 
 typedef enum {
-    BSP_GPIO_LED_RED   = 0,  /* LD1 - PJ2  */
-    BSP_GPIO_LED_GREEN = 1,  /* LD2 - PI13 */
+    BSP_GPIO_LED_RED   = 0, /* LD1 - PJ2  */
+    BSP_GPIO_LED_GREEN = 1, /* LD2 - PI13 */
     BSP_GPIO_COUNT
 } bsp_gpio_t;
 

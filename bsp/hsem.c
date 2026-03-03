@@ -24,8 +24,10 @@ void bsp_hsem_arm(uint32_t channel_mask)
 
 void bsp_hsem_register_callback(uint32_t channel_mask, bsp_hsem_callback_t cb)
 {
-    for (uint32_t i = 0; i < HSEM_NUM_CHANNELS; i++) {
-        if (channel_mask & (1U << i)) {
+    for (uint32_t i = 0; i < HSEM_NUM_CHANNELS; i++)
+    {
+        if (channel_mask & (1U << i))
+        {
             hsem_callbacks[i] = cb;
         }
     }
@@ -38,11 +40,13 @@ void HAL_HSEM_FreeCallback(uint32_t SemMask)
     HAL_HSEM_ActivateNotification(SemMask);
 
     uint32_t mask = SemMask;
-    while (mask) {
+    while (mask)
+    {
         uint32_t i = (uint32_t)__builtin_ctz(mask);
-        if (hsem_callbacks[i]) {
+        if (hsem_callbacks[i])
+        {
             hsem_callbacks[i](1U << i);
         }
-        mask &= mask - 1U;  /* clear lowest set bit */
+        mask &= mask - 1U; /* clear lowest set bit */
     }
 }

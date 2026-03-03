@@ -7,7 +7,7 @@
 #include "task.h"
 #include <string.h>
 
-#define UART_DMA_TIMEOUT_MS  50U
+#define UART_DMA_TIMEOUT_MS 50U
 
 typedef struct {
     uint8_t  data[UART_TX_MAX_MSG_LEN];
@@ -35,9 +35,12 @@ static void tx_cplt_handler(void)
 
 static void rx_cplt_handler(uint16_t received)
 {
-    BaseType_t woken = pdFALSE;
-    size_t written = xStreamBufferSendFromISR(rx_ctx.stream, rx_ctx.buf, received, &woken);
-    if (written < received) rx_ctx.drop_count += received - written;
+    BaseType_t woken   = pdFALSE;
+    size_t     written = xStreamBufferSendFromISR(rx_ctx.stream, rx_ctx.buf, received, &woken);
+    if (written < received)
+    {
+        rx_ctx.drop_count += received - written;
+    }
     bsp_uart_receive_dma(rx_ctx.buf, UART_RX_BUF_LEN);
     portYIELD_FROM_ISR(woken);
 }
@@ -47,13 +50,18 @@ static void uart_drain_task(void *arg)
     (void)arg;
     uart_msg_t msg;
 
-    for (;;) {
+    for (;;)
+    {
         xQueueReceive(tx_ctx.queue, &msg, portMAX_DELAY);
-        if (bsp_uart_transmit_dma(msg.data, msg.len)) {
-            if (!xSemaphoreTake(tx_ctx.complete, pdMS_TO_TICKS(UART_DMA_TIMEOUT_MS))) {
+        if (bsp_uart_transmit_dma(msg.data, msg.len))
+        {
+            if (!xSemaphoreTake(tx_ctx.complete, pdMS_TO_TICKS(UART_DMA_TIMEOUT_MS)))
+            {
                 tx_ctx.drop_count++;
             }
-        } else {
+        }
+        else
+        {
             tx_ctx.drop_count++;
         }
     }
@@ -83,15 +91,20 @@ uint32_t uart_get_drop_count(void)
 {
     uint32_t n_rx, n_tx;
     taskENTER_CRITICAL();
-    n_rx = rx_ctx.drop_count; rx_ctx.drop_count = 0;
+    n_rx              = rx_ctx.drop_count;
+    rx_ctx.drop_count = 0;
     taskEXIT_CRITICAL();
-    n_tx = tx_ctx.drop_count; tx_ctx.drop_count = 0;
+    n_tx              = tx_ctx.drop_count;
+    tx_ctx.drop_count = 0;
     return n_rx + n_tx;
 }
 
 void uart_transmit(const uint8_t *buf, size_t len)
 {
-    if (buf == NULL || len == 0) return;
+    if (buf == NULL || len == 0)
+    {
+        return;
+    }
 
     uart_msg_t msg;
     msg.len = (uint16_t)(len > UART_TX_MAX_MSG_LEN ? UART_TX_MAX_MSG_LEN : len);

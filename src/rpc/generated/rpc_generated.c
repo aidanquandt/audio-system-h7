@@ -8,26 +8,36 @@
 
 __attribute__((weak)) void rpc_handle_led_toggle_green(void) {}
 __attribute__((weak)) void rpc_handle_led_toggle_red(void) {}
-__attribute__((weak)) void rpc_handle_set_gain(const set_gain_t *msg) { (void)msg; }
+__attribute__((weak)) void rpc_handle_set_gain(const set_gain_t *msg)
+{
+    (void)msg;
+}
 
 /* -- Dispatch shims (private) --------------------------------------- */
 
 static void _on_led_toggle_green(uint8_t id, const uint8_t *buf, size_t len)
 {
-    (void)id; (void)buf; (void)len;
+    (void)id;
+    (void)buf;
+    (void)len;
     rpc_handle_led_toggle_green();
 }
 
 static void _on_led_toggle_red(uint8_t id, const uint8_t *buf, size_t len)
 {
-    (void)id; (void)buf; (void)len;
+    (void)id;
+    (void)buf;
+    (void)len;
     rpc_handle_led_toggle_red();
 }
 
 static void _on_set_gain(uint8_t id, const uint8_t *buf, size_t len)
 {
     (void)id;
-    if (len >= sizeof(set_gain_t)) rpc_handle_set_gain((const set_gain_t *)buf);
+    if (len >= sizeof(set_gain_t))
+    {
+        rpc_handle_set_gain((const set_gain_t *)buf);
+    }
 }
 
 /* -- Per-message registration functions ----------------------------- */
@@ -49,7 +59,11 @@ void rpc_register_set_gain(rpc_dest_t dest)
 
 /* -- Payload size guards ------------------------------------------- */
 
-_Static_assert(sizeof(set_gain_t) <= RPC_FRAME_MAX_PAYLOAD, "set_gain_t exceeds RPC_FRAME_MAX_PAYLOAD");
-_Static_assert(sizeof(heartbeat_cm4_t) <= RPC_FRAME_MAX_PAYLOAD, "heartbeat_cm4_t exceeds RPC_FRAME_MAX_PAYLOAD");
-_Static_assert(sizeof(heartbeat_cm7_t) <= RPC_FRAME_MAX_PAYLOAD, "heartbeat_cm7_t exceeds RPC_FRAME_MAX_PAYLOAD");
-_Static_assert(sizeof(peak_meter_t) <= RPC_FRAME_MAX_PAYLOAD, "peak_meter_t exceeds RPC_FRAME_MAX_PAYLOAD");
+_Static_assert(sizeof(set_gain_t) <= RPC_FRAME_MAX_PAYLOAD,
+               "set_gain_t exceeds RPC_FRAME_MAX_PAYLOAD");
+_Static_assert(sizeof(heartbeat_cm4_t) <= RPC_FRAME_MAX_PAYLOAD,
+               "heartbeat_cm4_t exceeds RPC_FRAME_MAX_PAYLOAD");
+_Static_assert(sizeof(heartbeat_cm7_t) <= RPC_FRAME_MAX_PAYLOAD,
+               "heartbeat_cm7_t exceeds RPC_FRAME_MAX_PAYLOAD");
+_Static_assert(sizeof(peak_meter_t) <= RPC_FRAME_MAX_PAYLOAD,
+               "peak_meter_t exceeds RPC_FRAME_MAX_PAYLOAD");

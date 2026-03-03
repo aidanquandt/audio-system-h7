@@ -1,0 +1,4 @@
+---
+# Do not format STM32CubeMX-generated code
+DisableFormat: true
+...

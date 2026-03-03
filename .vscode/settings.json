@@ -16,6 +16,10 @@
         "--header-insertion=never"
     ],
     "editor.formatOnSave": false,
+    "[c]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
+    },
     "files.eol": "\n",
     "cmake.ignoreCMakeListsMissing": true
 }
