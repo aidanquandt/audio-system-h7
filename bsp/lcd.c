@@ -9,7 +9,7 @@
 
 void bsp_lcd_enable(void)
 {
-    HAL_GPIO_WritePin(LCD_DISP_GPIO_Port, LCD_DISP_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(LCD_DISPD7_GPIO_Port, LCD_DISPD7_Pin, GPIO_PIN_SET);
 }
 
 void bsp_lcd_backlight_on(void)
