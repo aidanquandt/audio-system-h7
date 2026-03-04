@@ -23,14 +23,7 @@ void app_main(void)
     bsp_gpio_init();
 
 #ifdef CORE_CM4
-    if (!sdram_init())
-    {
-        for (;;)
-        {
-            bsp_gpio_toggle(BSP_GPIO_LED_GREEN);
-            vTaskDelay(pdMS_TO_TICKS(150));
-        }
-    }
+    sdram_init();
     /* Display uses SDRAM framebuffer; init order must stay after sdram_init(). */
     display_init();
     display_test();

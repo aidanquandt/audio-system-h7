@@ -9,16 +9,15 @@
 
 #ifdef CORE_CM4
 
-bool sdram_init(void)
+void sdram_init(void)
 {
     bsp_sdram_enable_clock();
     vTaskDelay(pdMS_TO_TICKS(1));
     bsp_sdram_configure();
-    return bsp_sdram_test();
 }
 
 #else
 
-bool sdram_init(void) { return true; }
+void sdram_init(void) {}
 
 #endif /* CORE_CM4 */
