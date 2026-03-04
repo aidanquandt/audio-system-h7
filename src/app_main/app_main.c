@@ -9,7 +9,7 @@
 #ifdef CORE_CM4
 #include "display/display.h"
 #include "sdram/sdram.h"
-#include "uart/uart.h"
+#include "drivers/uart.h"
 #include "transport/transport.h"
 
 static const transport_t uart_transport = {

@@ -1,4 +1,4 @@
-#include "uart/uart.h"
+#include "drivers/uart.h"
 #include "bsp/uart.h"
 #include "FreeRTOS.h"
 #include "semphr.h"
@@ -6,6 +6,8 @@
 #include "stream_buffer.h"
 #include "task.h"
 #include <string.h>
+
+#ifdef CORE_CM4
 
 #define UART_DMA_TIMEOUT_MS 50U
 
@@ -121,3 +123,12 @@ void uart_transmit(const uint8_t *buf, size_t len)
 
     xQueueSend(tx_ctx.queue, &msg, portMAX_DELAY);
 }
+
+#else
+
+void uart_init(void) {}
+void uart_transmit(const uint8_t *buf, size_t len) { (void)buf; (void)len; }
+uint32_t uart_get_drop_count(void) { return 0U; }
+StreamBufferHandle_t uart_get_rx_stream(void) { return NULL; }
+
+#endif /* CORE_CM4 */

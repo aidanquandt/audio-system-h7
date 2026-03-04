@@ -10,7 +10,7 @@
 #define FRAMEBUFFER ((volatile uint16_t *)0xD0000000UL)
 
 static void (*fill_callback)(void *) = NULL;
-static void *fill_user_data = NULL;
+static void *fill_user_data          = NULL;
 
 static void dma2d_fill_cplt_shim(DMA2D_HandleTypeDef *hdma2d)
 {
@@ -18,9 +18,9 @@ static void dma2d_fill_cplt_shim(DMA2D_HandleTypeDef *hdma2d)
     if (fill_callback != NULL)
     {
         void (*cb)(void *) = fill_callback;
-        void *ud = fill_user_data;
-        fill_callback = NULL;
-        fill_user_data = NULL;
+        void *ud           = fill_user_data;
+        fill_callback      = NULL;
+        fill_user_data     = NULL;
         cb(ud);
     }
 }
@@ -55,16 +55,18 @@ bool bsp_lcd_fill_async(uint16_t colour, void (*callback)(void *), void *user_da
     {
         return false;
     }
-    fill_callback = callback;
-    fill_user_data = user_data;
-    hdma2d.XferCpltCallback = dma2d_fill_cplt_shim;
+    fill_callback            = callback;
+    fill_user_data           = user_data;
+    hdma2d.XferCpltCallback  = dma2d_fill_cplt_shim;
     hdma2d.XferErrorCallback = dma2d_fill_cplt_shim;
 
-    if (HAL_DMA2D_Start_IT(&hdma2d, (uint32_t)colour,
-                            (uint32_t)bsp_lcd_framebuffer(),
-                            BSP_LCD_WIDTH, BSP_LCD_HEIGHT) != HAL_OK)
+    if (HAL_DMA2D_Start_IT(&hdma2d,
+                           (uint32_t)colour,
+                           (uint32_t)bsp_lcd_framebuffer(),
+                           BSP_LCD_WIDTH,
+                           BSP_LCD_HEIGHT) != HAL_OK)
     {
-        fill_callback = NULL;
+        fill_callback  = NULL;
         fill_user_data = NULL;
         return false;
     }

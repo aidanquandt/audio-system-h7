@@ -5,7 +5,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "bsp/lcd.h"
-#include "drivers/lcd_driver.h"
+#include "drivers/lcd.h"
 
 /* RGB565 colour constants */
 #define RGB565_RED   0xF800U
@@ -15,10 +15,10 @@
 
 void display_init(void)
 {
-    lcd_driver_init();
+    lcd_init();
     bsp_lcd_release_reset();
     vTaskDelay(pdMS_TO_TICKS(20));
-    lcd_driver_fill_sync(RGB565_BLACK);
+    lcd_fill_sync(RGB565_BLACK);
     bsp_lcd_enable();
     bsp_lcd_backlight_on();
 }
@@ -29,11 +29,11 @@ void display_test(void)
 
     for (uint32_t i = 0; i < 3; i++)
     {
-        lcd_driver_fill_sync(colours[i]);
+        lcd_fill_sync(colours[i]);
         vTaskDelay(pdMS_TO_TICKS(500));
     }
 
-    lcd_driver_fill_sync(RGB565_BLACK);
+    lcd_fill_sync(RGB565_BLACK);
 }
 
 #else

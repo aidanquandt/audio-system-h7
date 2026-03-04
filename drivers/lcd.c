@@ -1,4 +1,4 @@
-#include "drivers/lcd_driver.h"
+#include "drivers/lcd.h"
 
 #ifdef CORE_CM4
 
@@ -10,7 +10,7 @@ static SemaphoreHandle_t fill_done_sem = NULL;
 static void (*user_callback)(void *) = NULL;
 static void *user_callback_data = NULL;
 
-static void driver_fill_done_cb(void *user_data)
+static void fill_done_cb(void *user_data)
 {
     (void)user_data;
     BaseType_t wake = pdFALSE;
@@ -29,7 +29,7 @@ static void driver_fill_done_cb(void *user_data)
     }
 }
 
-void lcd_driver_init(void)
+void lcd_init(void)
 {
     if (fill_done_sem == NULL)
     {
@@ -39,7 +39,7 @@ void lcd_driver_init(void)
     }
 }
 
-bool lcd_driver_fill_async(uint16_t colour, void (*callback)(void *), void *user_data)
+bool lcd_fill_async(uint16_t colour, void (*callback)(void *), void *user_data)
 {
     if (fill_done_sem == NULL)
     {
@@ -51,7 +51,7 @@ bool lcd_driver_fill_async(uint16_t colour, void (*callback)(void *), void *user
     }
     user_callback = callback;
     user_callback_data = user_data;
-    if (!bsp_lcd_fill_async(colour, driver_fill_done_cb, NULL))
+    if (!bsp_lcd_fill_async(colour, fill_done_cb, NULL))
     {
         user_callback = NULL;
         user_callback_data = NULL;
@@ -61,7 +61,7 @@ bool lcd_driver_fill_async(uint16_t colour, void (*callback)(void *), void *user
     return true;
 }
 
-void lcd_driver_fill_sync(uint16_t colour)
+void lcd_fill_sync(uint16_t colour)
 {
     if (fill_done_sem == NULL)
     {
@@ -73,7 +73,7 @@ void lcd_driver_fill_sync(uint16_t colour)
     }
     user_callback = NULL;
     user_callback_data = NULL;
-    if (!bsp_lcd_fill_async(colour, driver_fill_done_cb, NULL))
+    if (!bsp_lcd_fill_async(colour, fill_done_cb, NULL))
     {
         xSemaphoreGive(fill_done_sem);
         return;
@@ -84,14 +84,14 @@ void lcd_driver_fill_sync(uint16_t colour)
 
 #else
 
-void lcd_driver_init(void) {}
-bool lcd_driver_fill_async(uint16_t colour, void (*callback)(void *), void *user_data)
+void lcd_init(void) {}
+bool lcd_fill_async(uint16_t colour, void (*callback)(void *), void *user_data)
 {
     (void)colour;
     (void)callback;
     (void)user_data;
     return false;
 }
-void lcd_driver_fill_sync(uint16_t colour) { (void)colour; }
+void lcd_fill_sync(uint16_t colour) { (void)colour; }
 
 #endif /* CORE_CM4 */
