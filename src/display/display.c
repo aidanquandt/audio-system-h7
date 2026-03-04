@@ -14,6 +14,8 @@
 
 void display_init(void)
 {
+    bsp_lcd_release_reset();
+    vTaskDelay(pdMS_TO_TICKS(20));
     bsp_lcd_fill(RGB565_BLACK);
     bsp_lcd_enable();
     bsp_lcd_backlight_on();
@@ -21,9 +23,10 @@ void display_init(void)
 
 void display_test(void)
 {
-    static const uint16_t colours[] = { RGB565_RED, RGB565_GREEN, RGB565_BLUE };
+    static const uint16_t colours[] = {RGB565_RED, RGB565_GREEN, RGB565_BLUE};
 
-    for (uint32_t i = 0; i < 3; i++) {
+    for (uint32_t i = 0; i < 3; i++)
+    {
         bsp_lcd_fill(colours[i]);
         vTaskDelay(pdMS_TO_TICKS(500));
     }
