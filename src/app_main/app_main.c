@@ -7,6 +7,7 @@
 #include "rpc/rpc.h"
 
 #ifdef CORE_CM4
+#include "display/display.h"
 #include "sdram/sdram.h"
 #include "uart/uart.h"
 #include "transport/transport.h"
@@ -30,6 +31,8 @@ void app_main(void)
             vTaskDelay(pdMS_TO_TICKS(150));
         }
     }
+    display_init();
+    display_test();
     uart_init();
     transport_register(&uart_transport);
 #endif

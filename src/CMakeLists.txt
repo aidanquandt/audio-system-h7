@@ -25,6 +25,7 @@ set(_sources
 # ── CM4-only sources ──────────────────────────────────────────────────────────
 if(APP_CORE STREQUAL "CM4")
     list(APPEND _sources
+        display/display.c
         sdram/sdram.c
         uart/uart.c
         transport/transport.c
