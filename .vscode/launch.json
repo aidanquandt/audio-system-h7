@@ -6,23 +6,24 @@
             "type": "cortex-debug",
             "request": "launch",
             "servertype": "openocd",
-            "serverpath": "${env:OPENOCD_PATH}",
+            "serverpath": "C:\\msys64\\ucrt64\\bin\\openocd.exe",
             "cwd": "${workspaceFolder}",
             "executable": "${workspaceFolder}/build/CM7/cube_CM7.elf",
             "configFiles": [
                 "${workspaceFolder}/tools/openocd/openocd.cfg"
             ],
-            "gdbPath": "${env:GDB_PATH}",
-            "armToolchainPath": "${env:ARM_TOOLCHAIN_PATH}",
+            "gdbPath": "C:\\msys64\\ucrt64\\bin\\gdb-multiarch.exe",
+            "armToolchainPath": "C:\\msys64\\ucrt64\\bin",
             "toolchainPrefix": "arm-none-eabi",
-            "objdumpPath": "${env:OBJDUMP_PATH}",
+            "objdumpPath": "C:\\msys64\\ucrt64\\bin\\arm-none-eabi-objdump.exe",
             "device": "STM32H745XI",
             "svdFile": "",
             "numberOfProcessors": 2,
             "targetProcessor": 0,
             "preLaunchTask": "Build",
             "preLaunchCommands": [
-                "set substitute-path ${env:BUILD_SOURCE_PATH} ${workspaceFolder}"
+                "set substitute-path c:\\\\github\\\\ash7 C:/github/ash7",
+                "set substitute-path C:\\\\github\\\\ash7 C:/github/ash7"
             ],
             "showDevDebugOutput": "raw",
         },
@@ -34,16 +35,17 @@
             "cwd": "${workspaceFolder}",
             "executable": "${workspaceFolder}/build/CM4/cube_CM4.elf",
             "gdbTarget": "localhost:50001",
-            "gdbPath": "${env:GDB_PATH}",
-            "armToolchainPath": "${env:ARM_TOOLCHAIN_PATH}",
+            "gdbPath": "C:\\msys64\\ucrt64\\bin\\gdb-multiarch.exe",
+            "armToolchainPath": "C:\\msys64\\ucrt64\\bin",
             "toolchainPrefix": "arm-none-eabi",
-            "objdumpPath": "${env:OBJDUMP_PATH}",
+            "objdumpPath": "C:\\msys64\\ucrt64\\bin\\arm-none-eabi-objdump.exe",
             "device": "STM32H745XI",
             "svdFile": "",
             "numberOfProcessors": 2,
             "targetProcessor": 1,
             "preAttachCommands": [
-                "set substitute-path ${env:BUILD_SOURCE_PATH} ${workspaceFolder}"
+                "set substitute-path c:\\\\github\\\\ash7 C:/github/ash7",
+                "set substitute-path C:\\\\github\\\\ash7 C:/github/ash7"
             ],
             "showDevDebugOutput": "raw",
         },
@@ -52,23 +54,24 @@
             "type": "cortex-debug",
             "request": "launch",
             "servertype": "openocd",
-            "serverpath": "${env:OPENOCD_PATH}",
+            "serverpath": "C:\\msys64\\ucrt64\\bin\\openocd.exe",
             "cwd": "${workspaceFolder}",
             "executable": "${workspaceFolder}/build/CM4/cube_CM4.elf",
             "configFiles": [
                 "${workspaceFolder}/tools/openocd/openocd.cfg"
             ],
-            "gdbPath": "${env:GDB_PATH}",
-            "armToolchainPath": "${env:ARM_TOOLCHAIN_PATH}",
+            "gdbPath": "C:\\msys64\\ucrt64\\bin\\gdb-multiarch.exe",
+            "armToolchainPath": "C:\\msys64\\ucrt64\\bin",
             "toolchainPrefix": "arm-none-eabi",
-            "objdumpPath": "${env:OBJDUMP_PATH}",
+            "objdumpPath": "C:\\msys64\\ucrt64\\bin\\arm-none-eabi-objdump.exe",
             "device": "STM32H745XI",
             "svdFile": "",
             "numberOfProcessors": 2,
             "targetProcessor": 1,
             "preLaunchTask": "Build",
             "preLaunchCommands": [
-                "set substitute-path ${env:BUILD_SOURCE_PATH} ${workspaceFolder}"
+                "set substitute-path c:\\\\github\\\\ash7 C:/github/ash7",
+                "set substitute-path C:\\\\github\\\\ash7 C:/github/ash7"
             ],
             "showDevDebugOutput": "raw",
         },
@@ -77,22 +80,23 @@
             "type": "cortex-debug",
             "request": "attach",
             "servertype": "openocd",
-            "serverpath": "${env:OPENOCD_PATH}",
+            "serverpath": "C:\\msys64\\ucrt64\\bin\\openocd.exe",
             "cwd": "${workspaceFolder}",
             "executable": "${workspaceFolder}/build/CM7/cube_CM7.elf",
             "configFiles": [
                 "${workspaceFolder}/tools/openocd/openocd.cfg"
             ],
-            "gdbPath": "${env:GDB_PATH}",
-            "armToolchainPath": "${env:ARM_TOOLCHAIN_PATH}",
+            "gdbPath": "C:\\msys64\\ucrt64\\bin\\gdb-multiarch.exe",
+            "armToolchainPath": "C:\\msys64\\ucrt64\\bin",
             "toolchainPrefix": "arm-none-eabi",
-            "objdumpPath": "${env:OBJDUMP_PATH}",
+            "objdumpPath": "C:\\msys64\\ucrt64\\bin\\arm-none-eabi-objdump.exe",
             "device": "STM32H745XI",
             "svdFile": "",
             "numberOfProcessors": 2,
             "targetProcessor": 0,
             "preAttachCommands": [
-                "set substitute-path ${env:BUILD_SOURCE_PATH} ${workspaceFolder}"
+                "set substitute-path c:\\\\github\\\\ash7 C:/github/ash7",
+                "set substitute-path C:\\\\github\\\\ash7 C:/github/ash7"
             ],
             "showDevDebugOutput": "raw",
         }

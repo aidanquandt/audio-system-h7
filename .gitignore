@@ -10,8 +10,9 @@ build/
 *.lst
 *.su
 
-# Local env (tool paths for launch.json)
-.env
+# Local machine-specific tool paths — edit .vscode/launch.json directly, it is gitignored
+.vscode/launch.json
+env
 
 # IDE files
 .idea/
