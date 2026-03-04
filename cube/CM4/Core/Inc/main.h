@@ -57,12 +57,14 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define LCD_DISP_Pin GPIO_PIN_15
+#define LCD_DISP_GPIO_Port GPIOJ
 #define OSC32_OUT_Pin GPIO_PIN_15
 #define OSC32_OUT_GPIO_Port GPIOC
 #define OSC32_IN_Pin GPIO_PIN_14
 #define OSC32_IN_GPIO_Port GPIOC
-#define LCD_DISP_Pin GPIO_PIN_7
-#define LCD_DISP_GPIO_Port GPIOD
+#define LCD_DISPD7_Pin GPIO_PIN_7
+#define LCD_DISPD7_GPIO_Port GPIOD
 #define USB_OTG_FS2_ID_Pin GPIO_PIN_10
 #define USB_OTG_FS2_ID_GPIO_Port GPIOA
 #define B1_Pin GPIO_PIN_13

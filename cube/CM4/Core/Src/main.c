@@ -20,6 +20,7 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "dma.h"
+#include "ltdc.h"
 #include "usart.h"
 #include "gpio.h"
 #include "fmc.h"
@@ -123,6 +124,7 @@ int main(void)
   MX_DMA_Init();
   MX_USART3_UART_Init();
   MX_FMC_Init();
+  MX_LTDC_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
