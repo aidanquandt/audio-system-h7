@@ -1,8 +1,8 @@
 #pragma once
 
 /**
- * Display (CM4 only). Depends on SDRAM being initialized first; call after
- * sdram_init() from the same task.
+ * Display. Real implementation on CM4 (depends on SDRAM; call after sdram_init()).
+ * No-op stubs on CM7.
  */
 void display_init(void);
 void display_test(void);

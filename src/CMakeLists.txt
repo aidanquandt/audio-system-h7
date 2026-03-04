@@ -13,22 +13,16 @@ endif()
 string(TOLOWER "${APP_CORE}" _core_lower)
 set(_target app_${_core_lower})
 
-# ── Sources compiled for every core ──────────────────────────────────────────
+# ── Sources compiled for every core (display/sdram/transport use CORE_CM4 stubs on CM7) ──
 set(_sources
     app_main.c
+    display.c
     heartbeat.c
     led.c
     rpc.c
+    sdram.c
+    transport.c
 )
-
-# ── CM4-only sources ──────────────────────────────────────────────────────────
-if(APP_CORE STREQUAL "CM4")
-    list(APPEND _sources
-        display.c
-        sdram.c
-        transport.c
-    )
-endif()
 
 # ──────────────────────────────────────────────────────────────────────────────
 
