@@ -1,5 +1,5 @@
 #include "src/led.h"
-#include "src/rpc_generated.h"
+#include "generated/rpc.h"
 #include "bsp/gpio.h"
 
 /* Handlers are core-gated because each LED is owned by one core.

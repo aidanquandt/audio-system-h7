@@ -19,7 +19,6 @@ set(_sources
     heartbeat.c
     led.c
     rpc.c
-    rpc_generated.c
 )
 
 # ── CM4-only sources ──────────────────────────────────────────────────────────
@@ -37,9 +36,9 @@ add_library(${_target} STATIC ${_sources})
 
 target_include_directories(${_target}
     PUBLIC
-        # Repo root so includes use top-level folder: #include "src/display.h", "bsp/...", "drivers/..."
+        # Repo root so includes use top-level folder: #include "src/display.h", "generated/...", "bsp/...", "drivers/..."
         ${CMAKE_CURRENT_SOURCE_DIR}/..
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_link_libraries(${_target} PRIVATE bsp drivers freertos_iface project_includes cobs)
+target_link_libraries(${_target} PRIVATE bsp drivers generated freertos_iface project_includes cobs)

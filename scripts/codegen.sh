@@ -15,6 +15,6 @@ echo
 echo "✓ Codegen complete"
 echo "  Generated files:"
 echo "    - include/messages.h"
-echo "    - src/rpc/generated/rpc_generated.h"
-echo "    - src/rpc/generated/rpc_generated.c"
+echo "    - generated/rpc.h"
+echo "    - generated/rpc.c"
 echo "    - tools/host/rpc_messages.py"

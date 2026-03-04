@@ -1,6 +1,6 @@
 #include "src/heartbeat.h"
 #include "bsp/gpio.h"
-#include "src/rpc_generated.h"
+#include "generated/rpc.h"
 #include "FreeRTOS.h"
 #include "task.h"
 

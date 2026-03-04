@@ -63,11 +63,12 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/../../bsp ${CMAKE_BINARY_DIR}/bsp)
 add_subdirectory(${CMAKE_SOURCE_DIR}/../../drivers ${CMAKE_BINARY_DIR}/drivers)
 add_subdirectory(${CMAKE_SOURCE_DIR}/../../include ${CMAKE_BINARY_DIR}/includes)
 add_subdirectory(${CMAKE_SOURCE_DIR}/../../lib/cobs ${CMAKE_BINARY_DIR}/cobs)
+add_subdirectory(${CMAKE_SOURCE_DIR}/../../generated ${CMAKE_BINARY_DIR}/generated)
 
 set(APP_CORE CM7)
 add_subdirectory(${CMAKE_SOURCE_DIR}/../../src ${CMAKE_BINARY_DIR}/app)
 
-target_link_libraries(${CMAKE_PROJECT_NAME} app_cm7)
+target_link_libraries(${CMAKE_PROJECT_NAME} app_cm7 generated)
 
 # Remove wrong libob.a library dependency when using cpp files
 list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
