@@ -1,4 +1,5 @@
 #include "bsp/lcd.h"
+#include <stddef.h>
 
 #ifdef CORE_CM4
 
@@ -36,6 +37,11 @@ void bsp_lcd_fill(uint16_t colour)
     }
 }
 
+volatile uint16_t *bsp_lcd_framebuffer(void)
+{
+    return FRAMEBUFFER;
+}
+
 #else
 
 void bsp_lcd_release_reset(void) {}
@@ -45,6 +51,11 @@ void bsp_lcd_backlight_off(void) {}
 void bsp_lcd_fill(uint16_t colour)
 {
     (void)colour;
+}
+
+volatile uint16_t *bsp_lcd_framebuffer(void)
+{
+    return NULL;
 }
 
 #endif /* CORE_CM4 */

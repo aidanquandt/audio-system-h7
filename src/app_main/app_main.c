@@ -31,6 +31,7 @@ void app_main(void)
             vTaskDelay(pdMS_TO_TICKS(150));
         }
     }
+    /* Display uses SDRAM framebuffer; init order must stay after sdram_init(). */
     display_init();
     display_test();
     uart_init();
