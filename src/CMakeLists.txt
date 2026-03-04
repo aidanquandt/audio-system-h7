@@ -15,19 +15,19 @@ set(_target app_${_core_lower})
 
 # ── Sources compiled for every core ──────────────────────────────────────────
 set(_sources
-    app_main/app_main.c
-    heartbeat/heartbeat.c
-    led/led.c
-    rpc/rpc.c
-    rpc/generated/rpc_generated.c
+    app_main.c
+    heartbeat.c
+    led.c
+    rpc.c
+    rpc_generated.c
 )
 
 # ── CM4-only sources ──────────────────────────────────────────────────────────
 if(APP_CORE STREQUAL "CM4")
     list(APPEND _sources
-        display/display.c
-        sdram/sdram.c
-        transport/transport.c
+        display.c
+        sdram.c
+        transport.c
     )
 endif()
 
@@ -37,10 +37,8 @@ add_library(${_target} STATIC ${_sources})
 
 target_include_directories(${_target}
     PUBLIC
-        # Module headers via full path from src/ root:
-        #   #include "app_main/app_main.h"
-        #   #include "rpc/rpc.h"
-        #   #include "uart/uart.h"
+        # Repo root so includes use top-level folder: #include "src/display.h", "bsp/...", "drivers/..."
+        ${CMAKE_CURRENT_SOURCE_DIR}/..
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 

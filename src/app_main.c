@@ -1,21 +1,16 @@
-#include "app_main/app_main.h"
+#include "src/app_main.h"
 #include "bsp/gpio.h"
 #include "FreeRTOS.h"
 #include "task.h"
-#include "heartbeat/heartbeat.h"
-#include "led/led.h"
-#include "rpc/rpc.h"
+#include "src/heartbeat.h"
+#include "src/led.h"
+#include "src/rpc.h"
 
 #ifdef CORE_CM4
-#include "display/display.h"
-#include "sdram/sdram.h"
+#include "src/display.h"
+#include "src/sdram.h"
 #include "drivers/uart.h"
-#include "transport/transport.h"
-
-static const transport_t uart_transport = {
-    .send          = uart_transmit,
-    .get_rx_stream = uart_get_rx_stream,
-};
+#include "src/transport.h"
 #endif /* CORE_CM4 */
 
 void app_main(void)
@@ -28,7 +23,7 @@ void app_main(void)
     display_init();
     display_test();
     uart_init();
-    transport_register(&uart_transport);
+    transport_init();
 #endif
     rpc_init();
     led_init();

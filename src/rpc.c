@@ -1,6 +1,6 @@
-#include "rpc/rpc.h"
+#include "src/rpc.h"
 #include "cobs/cobs.h"
-#include "transport/transport.h"
+#include "src/transport.h"
 #include "platform/shared_mem.h"
 #include "platform/ipc_channels.h"
 #include "bsp/hsem.h"

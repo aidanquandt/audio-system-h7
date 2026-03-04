@@ -2,7 +2,7 @@
 #pragma once
 /* clang-format off */
 #include "protocol/messages.h"
-#include "rpc/rpc.h"
+#include "src/rpc.h"
 
 /* Per-message typed registration helpers.
    Call from the module that owns the handler, passing the routing dest:
