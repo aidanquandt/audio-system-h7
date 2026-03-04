@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -21,8 +22,14 @@ void bsp_lcd_enable(void);
 void bsp_lcd_backlight_on(void);
 void bsp_lcd_backlight_off(void);
 
-/** Fill entire framebuffer with one RGB565 colour. */
-void bsp_lcd_fill(uint16_t colour);
+/**
+ * Start a DMA2D fill of the entire framebuffer with one RGB565 colour (non-blocking).
+ * When the transfer completes or errors, callback is invoked with user_data.
+ * Callback may run in interrupt context; keep it short (e.g. give a semaphore).
+ *
+ * @return true if the transfer was started, false if DMA2D was busy or callback was NULL.
+ */
+bool bsp_lcd_fill_async(uint16_t colour, void (*callback)(void *), void *user_data);
 
 /**
  * Pointer to the LTDC layer 0 framebuffer (RGB565). Valid only after

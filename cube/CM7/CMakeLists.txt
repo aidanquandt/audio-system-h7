@@ -60,6 +60,7 @@ target_include_directories(freertos_iface INTERFACE
 target_compile_definitions(freertos_iface INTERFACE ${MX_Defines_Syms})
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/../../bsp ${CMAKE_BINARY_DIR}/bsp)
+add_subdirectory(${CMAKE_SOURCE_DIR}/../../drivers ${CMAKE_BINARY_DIR}/drivers)
 add_subdirectory(${CMAKE_SOURCE_DIR}/../../include ${CMAKE_BINARY_DIR}/includes)
 add_subdirectory(${CMAKE_SOURCE_DIR}/../../lib/cobs ${CMAKE_BINARY_DIR}/cobs)
 

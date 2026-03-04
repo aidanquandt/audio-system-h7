@@ -45,4 +45,4 @@ target_include_directories(${_target}
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_link_libraries(${_target} PRIVATE bsp freertos_iface project_includes cobs)
+target_link_libraries(${_target} PRIVATE bsp drivers freertos_iface project_includes cobs)
