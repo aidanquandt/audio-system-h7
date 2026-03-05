@@ -45,6 +45,18 @@ void bsp_lcd_backlight_off(void)
     HAL_GPIO_WritePin(LCD_BL_GPIO_Port, LCD_BL_Pin, GPIO_PIN_RESET);
 }
 
+/* HAL_DMA2D_Start_IT R2M mode expects colour in 32-bit ARGB8888; framebuffer is RGB565. */
+static uint32_t rgb565_to_argb8888(uint16_t c)
+{
+    uint32_t r5 = (c >> 11U) & 0x1FU;
+    uint32_t g6 = (c >> 5U) & 0x3FU;
+    uint32_t b5 = c & 0x1FU;
+    uint32_t r8 = (r5 << 3U) | (r5 >> 2U);
+    uint32_t g8 = (g6 << 2U) | (g6 >> 4U);
+    uint32_t b8 = (b5 << 3U) | (b5 >> 2U);
+    return (r8 << 16U) | (g8 << 8U) | b8;
+}
+
 bool bsp_lcd_fill_async(uint16_t colour, void (*callback)(void *), void *user_data)
 {
     if (hdma2d.State != HAL_DMA2D_STATE_READY)
@@ -61,7 +73,7 @@ bool bsp_lcd_fill_async(uint16_t colour, void (*callback)(void *), void *user_da
     hdma2d.XferErrorCallback = dma2d_fill_cplt_shim;
 
     if (HAL_DMA2D_Start_IT(&hdma2d,
-                           (uint32_t)colour,
+                           rgb565_to_argb8888(colour),
                            (uint32_t)bsp_lcd_framebuffer(),
                            BSP_LCD_WIDTH,
                            BSP_LCD_HEIGHT) != HAL_OK)

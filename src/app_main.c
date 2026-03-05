@@ -22,5 +22,8 @@ void app_main(void)
     led_init();
     heartbeat_init();
 
-    display_test();
+    for (int i = 0; i < 10; i++)
+    {
+        display_test();
+    }
 }
