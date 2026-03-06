@@ -21,6 +21,7 @@
 #include "cmsis_os.h"
 #include "dma.h"
 #include "dma2d.h"
+#include "i2c.h"
 #include "ltdc.h"
 #include "usart.h"
 #include "gpio.h"
@@ -127,6 +128,7 @@ int main(void)
   MX_FMC_Init();
   MX_LTDC_Init();
   MX_DMA2D_Init();
+  MX_I2C4_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */

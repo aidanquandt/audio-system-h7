@@ -11,10 +11,16 @@
 
 static void (*fill_callback)(void *) = NULL;
 static void *fill_user_data          = NULL;
+static bool  rect_restore_offset      = false;
 
 static void dma2d_fill_cplt_shim(DMA2D_HandleTypeDef *hdma2d)
 {
     (void)hdma2d;
+    if (rect_restore_offset)
+    {
+        hdma2d->Init.OutputOffset = 0;
+        rect_restore_offset       = false;
+    }
     if (fill_callback != NULL)
     {
         void (*cb)(void *) = fill_callback;
@@ -90,6 +96,48 @@ volatile uint16_t *bsp_lcd_framebuffer(void)
     return FRAMEBUFFER;
 }
 
+bool bsp_lcd_fill_rect_async(uint16_t x, uint16_t y, uint16_t w, uint16_t h,
+                             uint16_t colour, void (*callback)(void *), void *user_data)
+{
+    if (hdma2d.State != HAL_DMA2D_STATE_READY || callback == NULL || w == 0 || h == 0)
+    {
+        return false;
+    }
+    if (x >= BSP_LCD_WIDTH || y >= BSP_LCD_HEIGHT)
+    {
+        return false;
+    }
+    if (x + w > BSP_LCD_WIDTH)
+    {
+        w = (uint16_t)(BSP_LCD_WIDTH - x);
+    }
+    if (y + h > BSP_LCD_HEIGHT)
+    {
+        h = (uint16_t)(BSP_LCD_HEIGHT - y);
+    }
+    fill_callback       = callback;
+    fill_user_data     = user_data;
+    rect_restore_offset = true;
+    hdma2d.XferCpltCallback  = dma2d_fill_cplt_shim;
+    hdma2d.XferErrorCallback = dma2d_fill_cplt_shim;
+    hdma2d.Init.OutputOffset = BSP_LCD_WIDTH - w;
+    volatile uint16_t *fb = bsp_lcd_framebuffer();
+    uint32_t dst = (uint32_t)(fb + (uint32_t)y * BSP_LCD_WIDTH + x);
+    if (HAL_DMA2D_Start_IT(&hdma2d,
+                           rgb565_to_argb8888(colour),
+                           dst,
+                           w,
+                           h) != HAL_OK)
+    {
+        hdma2d.Init.OutputOffset = 0;
+        rect_restore_offset      = false;
+        fill_callback            = NULL;
+        fill_user_data           = NULL;
+        return false;
+    }
+    return true;
+}
+
 #else
 
 void bsp_lcd_release_reset(void) {}
@@ -108,6 +156,19 @@ bool bsp_lcd_fill_async(uint16_t colour, void (*callback)(void *), void *user_da
 volatile uint16_t *bsp_lcd_framebuffer(void)
 {
     return NULL;
+}
+
+bool bsp_lcd_fill_rect_async(uint16_t x, uint16_t y, uint16_t w, uint16_t h,
+                             uint16_t colour, void (*callback)(void *), void *user_data)
+{
+    (void)x;
+    (void)y;
+    (void)w;
+    (void)h;
+    (void)colour;
+    (void)callback;
+    (void)user_data;
+    return false;
 }
 
 #endif /* CORE_CM4 */

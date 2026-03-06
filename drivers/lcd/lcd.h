@@ -29,6 +29,11 @@ bool lcd_fill_async(uint16_t colour, void (*callback)(void *), void *user_data);
  */
 void lcd_fill_sync(uint16_t colour);
 
+/**
+ * Fill a rectangle and block until done. Safe to call from any task.
+ */
+void lcd_fill_rect_sync(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t colour);
+
 #ifdef __cplusplus
 }
 #endif

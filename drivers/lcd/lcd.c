@@ -82,6 +82,27 @@ void lcd_fill_sync(uint16_t colour)
     xSemaphoreGive(fill_done_sem);                 /* release so next fill_sync or fill_async can proceed */
 }
 
+void lcd_fill_rect_sync(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t colour)
+{
+    if (fill_done_sem == NULL)
+    {
+        return;
+    }
+    if (xSemaphoreTake(fill_done_sem, portMAX_DELAY) != pdTRUE)
+    {
+        return;
+    }
+    user_callback = NULL;
+    user_callback_data = NULL;
+    if (!bsp_lcd_fill_rect_async(x, y, w, h, colour, fill_done_cb, NULL))
+    {
+        xSemaphoreGive(fill_done_sem);
+        return;
+    }
+    xSemaphoreTake(fill_done_sem, portMAX_DELAY);
+    xSemaphoreGive(fill_done_sem);
+}
+
 #else
 
 void lcd_init(void) {}
@@ -93,5 +114,13 @@ bool lcd_fill_async(uint16_t colour, void (*callback)(void *), void *user_data)
     return false;
 }
 void lcd_fill_sync(uint16_t colour) { (void)colour; }
+void lcd_fill_rect_sync(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t colour)
+{
+    (void)x;
+    (void)y;
+    (void)w;
+    (void)h;
+    (void)colour;
+}
 
 #endif /* CORE_CM4 */

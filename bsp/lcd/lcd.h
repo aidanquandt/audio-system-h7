@@ -37,6 +37,13 @@ bool bsp_lcd_fill_async(uint16_t colour, void (*callback)(void *), void *user_da
  */
 volatile uint16_t *bsp_lcd_framebuffer(void);
 
+/**
+ * Fill a rectangle with one RGB565 colour (non-blocking). Same callback
+ * semantics as bsp_lcd_fill_async. Clamped to framebuffer bounds.
+ */
+bool bsp_lcd_fill_rect_async(uint16_t x, uint16_t y, uint16_t w, uint16_t h,
+                             uint16_t colour, void (*callback)(void *), void *user_data);
+
 #ifdef __cplusplus
 }
 #endif

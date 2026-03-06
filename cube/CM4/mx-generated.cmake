@@ -27,6 +27,7 @@ set(MX_Application_Src
     ${CMAKE_CURRENT_SOURCE_DIR}/Core/Src/dma2d.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Core/Src/fmc.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Core/Src/freertos.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Core/Src/i2c.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Core/Src/ltdc.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Core/Src/usart.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Core/Src/stm32h7xx_it.c
