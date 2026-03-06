@@ -26,19 +26,6 @@ void display_init(void)
     display_draw_corner_markers();
 }
 
-void display_test(void)
-{
-    static const uint16_t colours[] = {RGB565_RED, RGB565_GREEN, RGB565_BLUE};
-
-    for (uint32_t i = 0; i < 3; i++)
-    {
-        lcd_driver_fill_sync(colours[i]);
-        vTaskDelay(pdMS_TO_TICKS(500));
-    }
-
-    lcd_driver_fill_sync(RGB565_BLACK);
-}
-
 #define CORNER_SIZE 40U
 
 void display_draw_corner_markers(void)
@@ -99,7 +86,6 @@ void display_draw_edge_boxes(void)
 #else
 
 void display_init(void) {}
-void display_test(void) {}
 void display_draw_corner_markers(void) {}
 void display_draw_edge_boxes(void) {}
 

@@ -52,10 +52,9 @@ void MemManage_Handler(void);
 void BusFault_Handler(void);
 void UsageFault_Handler(void);
 void DebugMon_Handler(void);
-void TIM6_DAC_IRQHandler(void);
 void HSEM1_IRQHandler(void);
 /* USER CODE BEGIN EFP */
-
+void TIM6_DAC_IRQHandler(void);
 /* USER CODE END EFP */
 
 #ifdef __cplusplus
