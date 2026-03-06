@@ -1,9 +1,9 @@
-#include "src/transport.h"
+#include "src/transport/transport.h"
 #include "FreeRTOS.h"
 #include "task.h"
 
 #ifdef CORE_CM4
-#include "drivers/uart.h"
+#include "drivers/uart/uart.h"
 #endif
 
 #define MAX_TRANSPORTS 4U

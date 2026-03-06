@@ -1,4 +1,4 @@
-#include "bsp/gpio.h"
+#include "bsp/gpio/gpio.h"
 #include "main.h"
 #include <stdbool.h>
 

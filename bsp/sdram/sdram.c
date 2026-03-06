@@ -1,4 +1,4 @@
-#include "bsp/sdram.h"
+#include "bsp/sdram/sdram.h"
 
 #ifdef CORE_CM4
 

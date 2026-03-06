@@ -1,4 +1,4 @@
-#include "bsp/lcd.h"
+#include "bsp/lcd/lcd.h"
 #include <stdbool.h>
 #include <stddef.h>
 

@@ -1,4 +1,4 @@
-#include "bsp/uart.h"
+#include "bsp/uart/uart.h"
 #include <stdbool.h>
 
 #ifdef CORE_CM4

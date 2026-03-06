@@ -1,5 +1,5 @@
-#include "drivers/uart.h"
-#include "bsp/uart.h"
+#include "drivers/uart/uart.h"
+#include "bsp/uart/uart.h"
 #include "FreeRTOS.h"
 #include "semphr.h"
 #include "queue.h"

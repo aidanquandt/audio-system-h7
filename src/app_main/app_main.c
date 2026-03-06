@@ -1,14 +1,14 @@
-#include "src/app_main.h"
-#include "bsp/gpio.h"
+#include "src/app_main/app_main.h"
+#include "bsp/gpio/gpio.h"
 #include "FreeRTOS.h"
 #include "task.h"
-#include "src/heartbeat.h"
-#include "src/led.h"
-#include "src/rpc.h"
-#include "src/display.h"
-#include "src/sdram.h"
-#include "drivers/uart.h"
-#include "src/transport.h"
+#include "src/heartbeat/heartbeat.h"
+#include "src/led/led.h"
+#include "src/rpc/rpc.h"
+#include "src/display/display.h"
+#include "src/sdram/sdram.h"
+#include "drivers/uart/uart.h"
+#include "src/transport/transport.h"
 
 void app_main(void)
 {

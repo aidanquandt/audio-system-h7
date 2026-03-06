@@ -1,8 +1,8 @@
-#include "drivers/lcd.h"
+#include "drivers/lcd/lcd.h"
 
 #ifdef CORE_CM4
 
-#include "bsp/lcd.h"
+#include "bsp/lcd/lcd.h"
 #include "FreeRTOS.h"
 #include "semphr.h"
 

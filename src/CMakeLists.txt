@@ -15,13 +15,13 @@ set(_target app_${_core_lower})
 
 # ── Sources compiled for every core (display/sdram/transport use CORE_CM4 stubs on CM7) ──
 set(_sources
-    app_main.c
-    display.c
-    heartbeat.c
-    led.c
-    rpc.c
-    sdram.c
-    transport.c
+    app_main/app_main.c
+    display/display.c
+    heartbeat/heartbeat.c
+    led/led.c
+    rpc/rpc.c
+    sdram/sdram.c
+    transport/transport.c
 )
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -30,7 +30,7 @@ add_library(${_target} STATIC ${_sources})
 
 target_include_directories(${_target}
     PUBLIC
-        # Repo root so includes use top-level folder: #include "src/display.h", "generated/...", "bsp/...", "drivers/..."
+        # Repo root so includes use top-level folder: #include "src/display/display.h", "generated/...", "bsp/...", "drivers/..."
         ${CMAKE_CURRENT_SOURCE_DIR}/..
         ${CMAKE_CURRENT_SOURCE_DIR}
 )

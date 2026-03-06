@@ -1,4 +1,4 @@
-#include "bsp/hsem.h"
+#include "bsp/hsem/hsem.h"
 #include "stm32h7xx_hal.h"
 
 #define HSEM_NUM_CHANNELS 32U

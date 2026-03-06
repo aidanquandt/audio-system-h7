@@ -2,8 +2,8 @@
  * SDRAM power-up sequence and timing.
  * Uses BSP primitives and vTaskDelay; no HAL or timing logic here.
  */
-#include "src/sdram.h"
-#include "bsp/sdram.h"
+#include "src/sdram/sdram.h"
+#include "bsp/sdram/sdram.h"
 #include "FreeRTOS.h"
 #include "task.h"
 

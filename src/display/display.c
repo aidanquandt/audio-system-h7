@@ -1,11 +1,11 @@
-#include "src/display.h"
+#include "src/display/display.h"
 
 #ifdef CORE_CM4
 
 #include "FreeRTOS.h"
 #include "task.h"
-#include "bsp/lcd.h"
-#include "drivers/lcd.h"
+#include "bsp/lcd/lcd.h"
+#include "drivers/lcd/lcd.h"
 
 /* RGB565 colour constants */
 #define RGB565_RED   0xF800U
