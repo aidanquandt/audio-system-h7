@@ -2,10 +2,6 @@
 
 #include <stdbool.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Enable the SDRAM clock.
  * Caller must delay ≥1 ms before calling bsp_sdram_configure().
@@ -24,7 +20,3 @@ void bsp_sdram_configure(void);
  * Returns true unconditionally on non-CM4 cores.
  */
 bool bsp_sdram_test(void);
-
-#ifdef __cplusplus
-}
-#endif

@@ -3,10 +3,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * I2C4 bus (touch controller on STM32H745I-DISCO).
  * CubeMX must call MX_I2C4_Init() before any bsp_i2c_* call (e.g. from main).
@@ -43,7 +39,3 @@ bool bsp_i2c_write(uint8_t addr, uint8_t reg, const uint8_t *buf, uint16_t len);
  * Write to an I2C device (16-bit register address).
  */
 bool bsp_i2c_write16(uint8_t addr, uint16_t reg, const uint8_t *buf, uint16_t len);
-
-#ifdef __cplusplus
-}
-#endif

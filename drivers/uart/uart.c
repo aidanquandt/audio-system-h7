@@ -28,14 +28,14 @@ static struct {
     volatile uint32_t    drop_count;
 } rx_ctx;
 
-static void tx_cplt_handler(void)
+static void uart_driver_tx_cplt_handler(void)
 {
     BaseType_t woken = pdFALSE;
     xSemaphoreGiveFromISR(tx_ctx.complete, &woken);
     portYIELD_FROM_ISR(woken);
 }
 
-static void rx_cplt_handler(uint16_t received)
+static void uart_driver_rx_cplt_handler(uint16_t received)
 {
     BaseType_t woken   = pdFALSE;
     size_t     written = xStreamBufferSendFromISR(rx_ctx.stream, rx_ctx.buf, received, &woken);
@@ -47,7 +47,7 @@ static void rx_cplt_handler(uint16_t received)
     portYIELD_FROM_ISR(woken);
 }
 
-static void uart_drain_task(void *arg)
+static void uart_driver_drain_task(void *arg)
 {
     (void)arg;
     uart_msg_t msg;
@@ -69,12 +69,12 @@ static void uart_drain_task(void *arg)
     }
 }
 
-StreamBufferHandle_t uart_get_rx_stream(void)
+StreamBufferHandle_t uart_driver_get_rx_stream(void)
 {
     return rx_ctx.stream;
 }
 
-void uart_init(void)
+void uart_driver_init(void)
 {
     tx_ctx.complete = xSemaphoreCreateBinary();
     tx_ctx.queue    = xQueueCreate(UART_TX_QUEUE_DEPTH, sizeof(uart_msg_t));
@@ -82,14 +82,14 @@ void uart_init(void)
     configASSERT(tx_ctx.complete);
     configASSERT(tx_ctx.queue);
     configASSERT(rx_ctx.stream);
-    bsp_uart_set_tx_cplt_cb(tx_cplt_handler);
-    bsp_uart_set_rx_cplt_cb(rx_cplt_handler);
+    bsp_uart_set_tx_cplt_cb(uart_driver_tx_cplt_handler);
+    bsp_uart_set_rx_cplt_cb(uart_driver_rx_cplt_handler);
     bool ok = bsp_uart_receive_dma(rx_ctx.buf, UART_RX_BUF_LEN);
     configASSERT(ok);
-    xTaskCreate(uart_drain_task, "UART_tx", 256, NULL, tskIDLE_PRIORITY + 2, NULL);
+    xTaskCreate(uart_driver_drain_task, "UART_tx", 256, NULL, tskIDLE_PRIORITY + 2, NULL);
 }
 
-uint32_t uart_get_drop_count(void)
+uint32_t uart_driver_get_drop_count(void)
 {
     uint32_t n_rx, n_tx;
     taskENTER_CRITICAL();
@@ -101,7 +101,7 @@ uint32_t uart_get_drop_count(void)
     return n_rx + n_tx;
 }
 
-void uart_transmit(const uint8_t *buf, size_t len)
+void uart_driver_transmit(const uint8_t *buf, size_t len)
 {
     if (buf == NULL || len == 0)
     {
@@ -126,9 +126,9 @@ void uart_transmit(const uint8_t *buf, size_t len)
 
 #else
 
-void uart_init(void) {}
-void uart_transmit(const uint8_t *buf, size_t len) { (void)buf; (void)len; }
-uint32_t uart_get_drop_count(void) { return 0U; }
-StreamBufferHandle_t uart_get_rx_stream(void) { return NULL; }
+void uart_driver_init(void) {}
+void uart_driver_transmit(const uint8_t *buf, size_t len) { (void)buf; (void)len; }
+uint32_t uart_driver_get_drop_count(void) { return 0U; }
+StreamBufferHandle_t uart_driver_get_rx_stream(void) { return NULL; }
 
 #endif /* CORE_CM4 */

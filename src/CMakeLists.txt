@@ -21,6 +21,7 @@ set(_sources
     led/led.c
     rpc/rpc.c
     sdram/sdram.c
+    touch/touch.c
     transport/transport.c
 )
 

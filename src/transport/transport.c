@@ -13,8 +13,8 @@ static size_t             count = 0;
 
 #ifdef CORE_CM4
 static const transport_t uart_transport = {
-    .send          = uart_transmit,
-    .get_rx_stream = uart_get_rx_stream,
+    .send          = uart_driver_transmit,
+    .get_rx_stream = uart_driver_get_rx_stream,
 };
 #endif
 

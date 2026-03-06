@@ -20,7 +20,7 @@
 static bool s_gt911_ok = false;
 static touch_state_t s_last = {0, 0, false};
 
-static bool probe_gt911(void)
+static bool touch_driver_probe_gt911(void)
 {
     uint8_t id[4];
     if (!bsp_i2c_read16(GT911_ADDR, GT911_REG_PID, id, sizeof(id)))
@@ -34,7 +34,7 @@ static bool probe_gt911(void)
  * Clear buffer status (0x814E) so the IC can set bit 7 on next touch.
  * Required after power-up / probe; some boards need this before touches are reported.
  */
-static void gt911_clear_buffer(void)
+static void touch_driver_gt911_clear_buffer(void)
 {
     uint8_t zero = 0;
     for (int i = 0; i < 3; i++)
@@ -44,7 +44,7 @@ static void gt911_clear_buffer(void)
     }
 }
 
-static bool read_gt911(touch_state_t *out)
+static bool touch_driver_read_gt911(touch_state_t *out)
 {
     /* 0x814E: one byte, bit 7 = new data, bits 3:0 = point count.
      * Read 2 bytes in one transaction; some GT911 variants behave better this way. */
@@ -63,7 +63,7 @@ static bool read_gt911(touch_state_t *out)
     if (count == 0)
     {
         out->pressed = false;
-        gt911_clear_buffer();
+        touch_driver_gt911_clear_buffer();
         return true;
     }
     /* First point at 0x814F: 8 bytes = TrackID(1), X_lo,X_hi(2), Y_lo,Y_hi(2), Area(2), reserved.
@@ -86,34 +86,34 @@ static bool read_gt911(touch_state_t *out)
         out->y = TOUCH_DISPLAY_H - 1;
     }
     out->pressed = true;
-    gt911_clear_buffer();
+    touch_driver_gt911_clear_buffer();
     return true;
 }
 
-bool touch_init(void)
+bool touch_driver_init(void)
 {
     bsp_i2c_init();
     vTaskDelay(pdMS_TO_TICKS(10));
-    if (!probe_gt911())
+    if (!touch_driver_probe_gt911())
     {
         return false;
     }
     s_gt911_ok = true;
     /* Clear buffer so first touch sets bit 7; many boards never report until we do this. */
-    gt911_clear_buffer();
+    touch_driver_gt911_clear_buffer();
     /* Give the IC time to be ready for the next touch (datasheet suggests ~50ms after config). */
     vTaskDelay(pdMS_TO_TICKS(50));
     return true;
 }
 
-bool touch_get_last(touch_state_t *out)
+bool touch_driver_get_last(touch_state_t *out)
 {
     if (out == NULL || !s_gt911_ok)
     {
         return false;
     }
     touch_state_t t = {0, 0, false};
-    bool ok = read_gt911(&t);
+    bool ok = touch_driver_read_gt911(&t);
     if (ok)
     {
         s_last = t;
@@ -128,12 +128,12 @@ bool touch_get_last(touch_state_t *out)
 
 #else
 
-bool touch_init(void)
+bool touch_driver_init(void)
 {
     return false;
 }
 
-bool touch_get_last(touch_state_t *out)
+bool touch_driver_get_last(touch_state_t *out)
 {
     (void)out;
     return false;

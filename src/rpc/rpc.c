@@ -232,7 +232,7 @@ int rpc_transmit(uint8_t msg_id, const void *payload, size_t len)
 
 #ifdef CORE_CM4
     wire_send_frame(msg_id, payload, len);
-    return 0; /* uart_transmit blocks until queued — never drops */
+    return 0; /* uart_driver_transmit blocks until queued — never drops */
 #else
     rpc_frame_t frame = {.msg_id = msg_id, .len = (uint8_t)len};
     memcpy(frame.data, payload, len);

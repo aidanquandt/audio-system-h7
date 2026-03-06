@@ -10,7 +10,7 @@ static SemaphoreHandle_t fill_done_sem = NULL;
 static void (*user_callback)(void *) = NULL;
 static void *user_callback_data = NULL;
 
-static void fill_done_cb(void *user_data)
+static void lcd_driver_fill_done_cb(void *user_data)
 {
     (void)user_data;
     BaseType_t wake = pdFALSE;
@@ -29,7 +29,7 @@ static void fill_done_cb(void *user_data)
     }
 }
 
-void lcd_init(void)
+void lcd_driver_init(void)
 {
     if (fill_done_sem == NULL)
     {
@@ -39,7 +39,7 @@ void lcd_init(void)
     }
 }
 
-bool lcd_fill_async(uint16_t colour, void (*callback)(void *), void *user_data)
+bool lcd_driver_fill_async(uint16_t colour, void (*callback)(void *), void *user_data)
 {
     if (fill_done_sem == NULL)
     {
@@ -51,7 +51,7 @@ bool lcd_fill_async(uint16_t colour, void (*callback)(void *), void *user_data)
     }
     user_callback = callback;
     user_callback_data = user_data;
-    if (!bsp_lcd_fill_async(colour, fill_done_cb, NULL))
+    if (!bsp_lcd_fill_async(colour, lcd_driver_fill_done_cb, NULL))
     {
         user_callback = NULL;
         user_callback_data = NULL;
@@ -61,7 +61,7 @@ bool lcd_fill_async(uint16_t colour, void (*callback)(void *), void *user_data)
     return true;
 }
 
-void lcd_fill_sync(uint16_t colour)
+void lcd_driver_fill_sync(uint16_t colour)
 {
     if (fill_done_sem == NULL)
     {
@@ -73,7 +73,7 @@ void lcd_fill_sync(uint16_t colour)
     }
     user_callback = NULL;
     user_callback_data = NULL;
-    if (!bsp_lcd_fill_async(colour, fill_done_cb, NULL))
+    if (!bsp_lcd_fill_async(colour, lcd_driver_fill_done_cb, NULL))
     {
         xSemaphoreGive(fill_done_sem);
         return;
@@ -82,7 +82,7 @@ void lcd_fill_sync(uint16_t colour)
     xSemaphoreGive(fill_done_sem);                 /* release so next fill_sync or fill_async can proceed */
 }
 
-void lcd_fill_rect_sync(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t colour)
+void lcd_driver_fill_rect_sync(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t colour)
 {
     if (fill_done_sem == NULL)
     {
@@ -94,7 +94,7 @@ void lcd_fill_rect_sync(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t
     }
     user_callback = NULL;
     user_callback_data = NULL;
-    if (!bsp_lcd_fill_rect_async(x, y, w, h, colour, fill_done_cb, NULL))
+    if (!bsp_lcd_fill_rect_async(x, y, w, h, colour, lcd_driver_fill_done_cb, NULL))
     {
         xSemaphoreGive(fill_done_sem);
         return;
@@ -105,16 +105,16 @@ void lcd_fill_rect_sync(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t
 
 #else
 
-void lcd_init(void) {}
-bool lcd_fill_async(uint16_t colour, void (*callback)(void *), void *user_data)
+void lcd_driver_init(void) {}
+bool lcd_driver_fill_async(uint16_t colour, void (*callback)(void *), void *user_data)
 {
     (void)colour;
     (void)callback;
     (void)user_data;
     return false;
 }
-void lcd_fill_sync(uint16_t colour) { (void)colour; }
-void lcd_fill_rect_sync(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t colour)
+void lcd_driver_fill_sync(uint16_t colour) { (void)colour; }
+void lcd_driver_fill_rect_sync(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t colour)
 {
     (void)x;
     (void)y;

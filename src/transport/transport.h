@@ -10,7 +10,7 @@ typedef struct {
     StreamBufferHandle_t (*get_rx_stream)(void);
 } transport_t;
 
-/** Initialise transport layer and register built-in transports (e.g. UART). Call after uart_init() on CM4. */
+/** Initialise transport layer and register built-in transports (e.g. UART). Call after uart_driver_init() on CM4. */
 void               transport_init(void);
 void               transport_register(const transport_t *t);
 void               transport_send(const uint8_t *buf, size_t len);

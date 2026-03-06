@@ -18,15 +18,15 @@ typedef struct touch_state {
 } touch_state_t;
 
 /**
- * Initialise touch controller (probes GT911 then FT5336).
+ * Initialise touch controller (probes GT911).
  * Call after display/I2C are up (e.g. after display_init).
  * @return true if a known touch IC was detected, false otherwise.
  */
-bool touch_init(void);
+bool touch_driver_init(void);
 
 /**
  * Read last touch state (polling). Call periodically from a task.
  * @param out  Filled with last coordinates and pressed flag.
  * @return true if out was updated, false on read error or no touch.
  */
-bool touch_get_last(touch_state_t *out);
+bool touch_driver_get_last(touch_state_t *out);
