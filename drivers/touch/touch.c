@@ -64,7 +64,8 @@ static bool read_gt911(touch_state_t *out)
         gt911_clear_buffer();
         return true;
     }
-    /* First point at 0x814F: 8 bytes, first 4 = X_L, X_H, Y_L, Y_H (little-endian) */
+    /* First point at 0x814F: 8 bytes. Using first 4 bytes as X_L,X_H,Y_L,Y_H (little-endian).
+     * Revert to this when debugging: confirm display corners first, then touch. */
     uint8_t pt[8];
     if (!bsp_i2c_read16(GT911_ADDR, GT911_REG_P1_DATA, pt, 8))
     {

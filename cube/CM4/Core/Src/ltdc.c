@@ -46,9 +46,10 @@ void MX_LTDC_Init(void)
   hltdc.Init.PCPolarity = LTDC_PCPOLARITY_IPC;
   hltdc.Init.HorizontalSync = 40;
   hltdc.Init.VerticalSync = 9;
-  hltdc.Init.AccumulatedHBP = 53;
+  /* Reduced HBP to shift image left (was 53); panel showed black strip on left, overflow on right */
+  hltdc.Init.AccumulatedHBP = 42;
   hltdc.Init.AccumulatedVBP = 11;
-  hltdc.Init.AccumulatedActiveW = 533;
+  hltdc.Init.AccumulatedActiveW = 522;  /* must be AccumulatedHBP + 480 */
   hltdc.Init.AccumulatedActiveH = 283;
   hltdc.Init.TotalWidth = 565;
   hltdc.Init.TotalHeigh = 285;

@@ -3,10 +3,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /** Display dimensions for scaling touch coordinates (480x272). */
 #define TOUCH_DISPLAY_W 480U
 #define TOUCH_DISPLAY_H 272U
@@ -15,8 +11,7 @@ extern "C" {
  * Touch event: last sampled state.
  * Coordinates are in display space [0, TOUCH_DISPLAY_W) x [0, TOUCH_DISPLAY_H).
  */
-typedef struct touch_state
-{
+typedef struct touch_state {
     uint16_t x;
     uint16_t y;
     bool     pressed;
@@ -35,7 +30,3 @@ bool touch_init(void);
  * @return true if out was updated, false on read error or no touch.
  */
 bool touch_get_last(touch_state_t *out);
-
-#ifdef __cplusplus
-}
-#endif

@@ -48,11 +48,12 @@ void app_main(void)
     led_init();
     heartbeat_init();
 
-    display_test();
+    /* Draw corner markers first: red=top-left, green=top-right, blue=bottom-left, white=bottom-right.
+     * Confirm these match the physical panel so we know display coords are correct. */
+    display_draw_edge_boxes();
 
     if (touch_init())
     {
-        lcd_fill_sync(RGB565_BLACK);
         xTaskCreate(touch_test_task, "touch", 128, NULL, 1, NULL);
     }
 }

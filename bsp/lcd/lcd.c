@@ -19,6 +19,7 @@ static void dma2d_fill_cplt_shim(DMA2D_HandleTypeDef *hdma2d)
     if (rect_restore_offset)
     {
         hdma2d->Init.OutputOffset = 0;
+        hdma2d->Instance->OOR     = 0U;
         rect_restore_offset       = false;
     }
     if (fill_callback != NULL)
@@ -121,6 +122,10 @@ bool bsp_lcd_fill_rect_async(uint16_t x, uint16_t y, uint16_t w, uint16_t h,
     hdma2d.XferCpltCallback  = dma2d_fill_cplt_shim;
     hdma2d.XferErrorCallback = dma2d_fill_cplt_shim;
     hdma2d.Init.OutputOffset = BSP_LCD_WIDTH - w;
+    /* HAL_DMA2D_Start_IT does not update OOR; it is only set in HAL_DMA2D_Init.
+     * With OOR=0 the engine advances by Width after each line, drawing one long
+     * horizontal strip. Program OOR here so each line advances by a full row. */
+    hdma2d.Instance->OOR = (uint32_t)(BSP_LCD_WIDTH - w);
     volatile uint16_t *fb = bsp_lcd_framebuffer();
     uint32_t dst = (uint32_t)(fb + (uint32_t)y * BSP_LCD_WIDTH + x);
     if (HAL_DMA2D_Start_IT(&hdma2d,
