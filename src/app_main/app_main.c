@@ -17,15 +17,18 @@ void app_main(void)
     bsp_gpio_init();
     sdram_init();
     /* Display uses SDRAM framebuffer; init order must stay after sdram_init(). */
-    display_init();
+    if (!display_init())
+    {
+        /* Display init failed; continue without display. */
+    }
     uart_driver_init();
     transport_init();
     rpc_init();
     led_init();
     heartbeat_init();
 
-    if (touch_driver_init())
+    if (touch_driver_init() && touch_init())
     {
-        touch_init();
+        /* Touch task running. */
     }
 }

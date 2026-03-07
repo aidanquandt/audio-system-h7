@@ -3,13 +3,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-/** Display dimensions for scaling touch coordinates (480x272). */
-#define TOUCH_DISPLAY_W 480U
-#define TOUCH_DISPLAY_H 272U
-
 /**
  * Touch event: last sampled state.
- * Coordinates are in display space [0, TOUCH_DISPLAY_W) x [0, TOUCH_DISPLAY_H).
+ * Coordinates are in display space; use lcd_driver_width/height or BSP_LCD_* for bounds.
  */
 typedef struct touch_state {
     uint16_t x;
@@ -25,8 +21,8 @@ typedef struct touch_state {
 bool touch_driver_init(void);
 
 /**
- * Read last touch state (polling). Call periodically from a task.
- * @param out  Filled with last coordinates and pressed flag.
- * @return true if out was updated, false on read error or no touch.
+ * Read touch state from device (I2C poll). Call from a task when notified (e.g. EXTI).
+ * @param out  Filled with coordinates and pressed flag.
+ * @return true if a valid read completed (out updated), false on read error.
  */
-bool touch_driver_get_last(touch_state_t *out);
+bool touch_driver_read(touch_state_t *out);

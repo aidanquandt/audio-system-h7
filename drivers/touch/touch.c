@@ -3,6 +3,7 @@
 #ifdef CORE_CM4
 
 #include "bsp/i2c/i2c.h"
+#include "bsp/lcd/lcd.h"
 #include "FreeRTOS.h"
 #include "task.h"
 
@@ -13,9 +14,7 @@
 #define GT911_REG_PID       0x8140U
 #define GT911_REG_BUF_STAT  0x814EU  /* bit 7 = buffer ready, bits 3:0 = point count */
 #define GT911_REG_P1_DATA   0x814FU  /* first touch point: 8 bytes (TrackID, X_L,X_H, Y_L,Y_H, Area, reserved) */
-/* This panel reports in display resolution (0..479, 0..271); use 1:1 mapping. */
-#define GT911_RAW_MAX_X     480U
-#define GT911_RAW_MAX_Y     272U
+/* Panel reports in display resolution; scale using BSP_LCD_* as single source of truth. */
 
 static bool s_gt911_ok = false;
 static touch_state_t s_last = {0, 0, false};
@@ -75,16 +74,9 @@ static bool touch_driver_read_gt911(touch_state_t *out)
     }
     uint16_t raw_x = (uint16_t)pt[1] | ((uint16_t)pt[2] << 8U);
     uint16_t raw_y = (uint16_t)pt[3] | ((uint16_t)pt[4] << 8U);
-    out->x = (uint32_t)raw_x * TOUCH_DISPLAY_W / GT911_RAW_MAX_X;
-    out->y = (uint32_t)raw_y * TOUCH_DISPLAY_H / GT911_RAW_MAX_Y;
-    if (out->x >= TOUCH_DISPLAY_W)
-    {
-        out->x = TOUCH_DISPLAY_W - 1;
-    }
-    if (out->y >= TOUCH_DISPLAY_H)
-    {
-        out->y = TOUCH_DISPLAY_H - 1;
-    }
+    /* Panel reports in display resolution; use BSP dimensions as single source of truth. */
+    out->x = raw_x >= BSP_LCD_WIDTH ? BSP_LCD_WIDTH - 1U : raw_x;
+    out->y = raw_y >= BSP_LCD_HEIGHT ? BSP_LCD_HEIGHT - 1U : raw_y;
     out->pressed = true;
     touch_driver_gt911_clear_buffer();
     return true;
@@ -106,7 +98,7 @@ bool touch_driver_init(void)
     return true;
 }
 
-bool touch_driver_get_last(touch_state_t *out)
+bool touch_driver_read(touch_state_t *out)
 {
     if (out == NULL || !s_gt911_ok)
     {
@@ -133,7 +125,7 @@ bool touch_driver_init(void)
     return false;
 }
 
-bool touch_driver_get_last(touch_state_t *out)
+bool touch_driver_read(touch_state_t *out)
 {
     (void)out;
     return false;

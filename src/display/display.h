@@ -1,10 +1,13 @@
 #pragma once
 
+#include <stdbool.h>
+
 /**
  * Display. Real implementation on CM4 (depends on SDRAM; call after sdram_init()).
  * No-op stubs on CM7.
+ * @return true on success, false on init failure.
  */
-void display_init(void);
+bool display_init(void);
 
 /**
  * Draw four coloured squares at the screen corners to verify display coordinates.

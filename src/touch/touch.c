@@ -9,8 +9,9 @@
 #include "drivers/touch/touch.h"
 #include "drivers/lcd/lcd.h"
 
-#define TOUCH_DOT_SIZE 12U
-#define RGB565_WHITE   0xFFFFU
+#define TOUCH_DOT_SIZE        12U
+#define TOUCH_TASK_STACK_WORDS 256U
+#define RGB565_WHITE           0xFFFFU
 
 static SemaphoreHandle_t s_touch_sem;
 
@@ -35,7 +36,7 @@ static void touch_task(void *pvParameters)
     {
         if (xSemaphoreTake(s_touch_sem, portMAX_DELAY) == pdTRUE)
         {
-            if (touch_driver_get_last(&state))
+            if (touch_driver_read(&state))
             {
                 if (state.pressed)
                 {
@@ -48,26 +49,28 @@ static void touch_task(void *pvParameters)
     }
 }
 
-void touch_init(void)
+bool touch_init(void)
 {
     s_touch_sem = xSemaphoreCreateBinary();
     if (s_touch_sem == NULL)
     {
-        return;
+        return false;
     }
     if (!bsp_exti_register(BSP_GPIO_TOUCH_INT, touch_exti_cb))
     {
         vSemaphoreDelete(s_touch_sem);
-        return;
+        s_touch_sem = NULL;
+        return false;
     }
-    xTaskCreate(touch_task, "touch", 128, NULL, 1, NULL);
+    xTaskCreate(touch_task, "touch", TOUCH_TASK_STACK_WORDS, NULL, 1, NULL);
+    return true;
 }
 
 #else
 
-void touch_init(void)
+bool touch_init(void)
 {
-    (void)0;
+    return false;
 }
 
 #endif /* CORE_CM4 */

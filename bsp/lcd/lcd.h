@@ -3,6 +3,11 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+/**
+ * BSP LCD: panel control and DMA2D-backed framebuffer fills.
+ * DMA2D is dedicated to this LCD; do not use it elsewhere without coordinating
+ * with the LCD driver (which serializes fill operations).
+ */
 #define BSP_LCD_WIDTH  480U
 #define BSP_LCD_HEIGHT 272U
 

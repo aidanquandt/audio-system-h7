@@ -12,8 +12,8 @@ void lcd_driver_init(void);
 /**
  * Start a DMA2D fill of the entire LCD framebuffer (non-blocking).
  * Takes the driver semaphore to serialise with other fills, starts the transfer
- * via BSP, and returns. When the transfer completes, the driver gives the
- * semaphore and calls callback with user_data. Callback may run in ISR context.
+ * via BSP, and returns. When the transfer completes, callback is invoked in
+ * task context (driver worker task).
  *
  * @return true if the fill was started, false if the driver was busy (semaphore held).
  */
@@ -29,3 +29,18 @@ void lcd_driver_fill_sync(uint16_t colour);
  * Fill a rectangle and block until done. Safe to call from any task.
  */
 void lcd_driver_fill_rect_sync(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t colour);
+
+/**
+ * Panel control: release reset, enable display, turn backlight on.
+ * Call after lcd_driver_init(); may block briefly (e.g. 20 ms delay).
+ */
+void lcd_driver_panel_init(void);
+
+/** Turn backlight off. */
+void lcd_driver_panel_off(void);
+
+/** Display width in pixels (e.g. 480). */
+uint16_t lcd_driver_width(void);
+
+/** Display height in pixels (e.g. 272). */
+uint16_t lcd_driver_height(void);
