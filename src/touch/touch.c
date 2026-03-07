@@ -5,7 +5,7 @@
 #include "FreeRTOS.h"
 #include "semphr.h"
 #include "task.h"
-#include "bsp/gpio/gpio.h"
+#include "drivers/gpio/gpio.h"
 #include "drivers/touch/touch.h"
 #include "drivers/lcd/lcd.h"
 
@@ -16,7 +16,7 @@
 static SemaphoreHandle_t s_touch_sem;
 
 /* Called from ISR when touch INT (PG2) fires. Keep minimal: only unblock the task. */
-static void touch_exti_cb(bsp_gpio_t pin)
+static void touch_exti_cb(gpio_driver_pin_t pin)
 {
     (void)pin;
     if (s_touch_sem == NULL)
@@ -56,7 +56,7 @@ bool touch_init(void)
     {
         return false;
     }
-    if (!bsp_exti_register(BSP_GPIO_TOUCH_INT, touch_exti_cb))
+    if (!gpio_driver_exti_register(GPIO_DRIVER_TOUCH_INT, touch_exti_cb))
     {
         vSemaphoreDelete(s_touch_sem);
         s_touch_sem = NULL;

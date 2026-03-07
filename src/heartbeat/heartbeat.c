@@ -1,5 +1,5 @@
 #include "src/heartbeat/heartbeat.h"
-#include "bsp/gpio/gpio.h"
+#include "drivers/gpio/gpio.h"
 #include "generated/rpc.h"
 #include "FreeRTOS.h"
 #include "task.h"
@@ -13,11 +13,11 @@ static void heartbeat_task(void *pvParameters)
     for (;;)
     {
 #ifdef CORE_CM4
-        bsp_gpio_toggle(BSP_GPIO_LED_GREEN);
+        gpio_driver_toggle(GPIO_DRIVER_LED_GREEN);
         heartbeat_cm4_t hb = {.seq = s_seq++};
         (void)rpc_transmit_heartbeat_cm4(&hb);
 #else
-        bsp_gpio_toggle(BSP_GPIO_LED_RED);
+        gpio_driver_toggle(GPIO_DRIVER_LED_RED);
         heartbeat_cm7_t hb = {.seq = s_seq++};
         (void)rpc_transmit_heartbeat_cm7(&hb);
 #endif

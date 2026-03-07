@@ -1,28 +1,28 @@
-#include "bsp/hsem/hsem.h"
+#include "drivers/hsem/hsem.h"
 #include "stm32h7xx_hal.h"
 
 #define HSEM_NUM_CHANNELS 32U
 
-static bsp_hsem_callback_t hsem_callbacks[HSEM_NUM_CHANNELS];
+static hsem_driver_callback_t hsem_callbacks[HSEM_NUM_CHANNELS];
 
-void bsp_hsem_init(void)
+void hsem_driver_init(void)
 {
     __HAL_RCC_HSEM_CLK_ENABLE();
     __HAL_RCC_D2SRAM3_CLK_ENABLE();
 }
 
-void bsp_hsem_notify(uint32_t channel)
+void hsem_driver_notify(uint32_t channel)
 {
     HAL_HSEM_FastTake(channel);
     HAL_HSEM_Release(channel, 0);
 }
 
-void bsp_hsem_arm(uint32_t channel_mask)
+void hsem_driver_arm(uint32_t channel_mask)
 {
     HAL_HSEM_ActivateNotification(channel_mask);
 }
 
-void bsp_hsem_register_callback(uint32_t channel_mask, bsp_hsem_callback_t cb)
+void hsem_driver_register_callback(uint32_t channel_mask, hsem_driver_callback_t cb)
 {
     for (uint32_t i = 0; i < HSEM_NUM_CHANNELS; i++)
     {

@@ -2,8 +2,8 @@
 
 #ifdef CORE_CM4
 
-#include "bsp/i2c/i2c.h"
-#include "bsp/lcd/lcd.h"
+#include "drivers/i2c/i2c.h"
+#include "drivers/lcd/lcd.h"
 #include "FreeRTOS.h"
 #include "task.h"
 
@@ -14,7 +14,7 @@
 #define GT911_REG_PID       0x8140U
 #define GT911_REG_BUF_STAT  0x814EU  /* bit 7 = buffer ready, bits 3:0 = point count */
 #define GT911_REG_P1_DATA   0x814FU  /* first touch point: 8 bytes (TrackID, X_L,X_H, Y_L,Y_H, Area, reserved) */
-/* Panel reports in display resolution; scale using BSP_LCD_* as single source of truth. */
+/* Panel reports in display resolution; scale using LCD_DRIVER_* as single source of truth. */
 
 static bool s_gt911_ok = false;
 static touch_state_t s_last = {0, 0, false};
@@ -22,7 +22,7 @@ static touch_state_t s_last = {0, 0, false};
 static bool touch_driver_probe_gt911(void)
 {
     uint8_t id[4];
-    if (!bsp_i2c_read16(GT911_ADDR, GT911_REG_PID, id, sizeof(id)))
+    if (!i2c_driver_read16(GT911_ADDR, GT911_REG_PID, id, sizeof(id)))
     {
         return false;
     }
@@ -38,7 +38,7 @@ static void touch_driver_gt911_clear_buffer(void)
     uint8_t zero = 0;
     for (int i = 0; i < 3; i++)
     {
-        (void)bsp_i2c_write16(GT911_ADDR, GT911_REG_BUF_STAT, &zero, 1);
+        (void)i2c_driver_write16(GT911_ADDR, GT911_REG_BUF_STAT, &zero, 1);
         vTaskDelay(pdMS_TO_TICKS(2));
     }
 }
@@ -48,7 +48,7 @@ static bool touch_driver_read_gt911(touch_state_t *out)
     /* 0x814E: one byte, bit 7 = new data, bits 3:0 = point count.
      * Read 2 bytes in one transaction; some GT911 variants behave better this way. */
     uint8_t buf[2];
-    if (!bsp_i2c_read16(GT911_ADDR, GT911_REG_BUF_STAT, buf, 2))
+    if (!i2c_driver_read16(GT911_ADDR, GT911_REG_BUF_STAT, buf, 2))
     {
         return false;
     }
@@ -68,15 +68,15 @@ static bool touch_driver_read_gt911(touch_state_t *out)
     /* First point at 0x814F: 8 bytes = TrackID(1), X_lo,X_hi(2), Y_lo,Y_hi(2), Area(2), reserved.
      * Byte order from GT911: buf[0]=TrackID, buf[1..2]=X LE, buf[3..4]=Y LE. */
     uint8_t pt[8];
-    if (!bsp_i2c_read16(GT911_ADDR, GT911_REG_P1_DATA, pt, 8))
+    if (!i2c_driver_read16(GT911_ADDR, GT911_REG_P1_DATA, pt, 8))
     {
         return false;
     }
     uint16_t raw_x = (uint16_t)pt[1] | ((uint16_t)pt[2] << 8U);
     uint16_t raw_y = (uint16_t)pt[3] | ((uint16_t)pt[4] << 8U);
-    /* Panel reports in display resolution; use BSP dimensions as single source of truth. */
-    out->x = raw_x >= BSP_LCD_WIDTH ? BSP_LCD_WIDTH - 1U : raw_x;
-    out->y = raw_y >= BSP_LCD_HEIGHT ? BSP_LCD_HEIGHT - 1U : raw_y;
+    /* Panel reports in display resolution; use LCD_DRIVER_* dimensions as single source of truth. */
+    out->x = raw_x >= LCD_DRIVER_WIDTH ? LCD_DRIVER_WIDTH - 1U : raw_x;
+    out->y = raw_y >= LCD_DRIVER_HEIGHT ? LCD_DRIVER_HEIGHT - 1U : raw_y;
     out->pressed = true;
     touch_driver_gt911_clear_buffer();
     return true;
@@ -84,7 +84,7 @@ static bool touch_driver_read_gt911(touch_state_t *out)
 
 bool touch_driver_init(void)
 {
-    bsp_i2c_init();
+    i2c_driver_init();
     vTaskDelay(pdMS_TO_TICKS(10));
     if (!touch_driver_probe_gt911())
     {

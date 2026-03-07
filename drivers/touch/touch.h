@@ -5,7 +5,7 @@
 
 /**
  * Touch event: last sampled state.
- * Coordinates are in display space; use lcd_driver_width/height or BSP_LCD_* for bounds.
+ * Coordinates are in display space; use lcd_driver_width/height or LCD_DRIVER_* for bounds.
  */
 typedef struct touch_state {
     uint16_t x;

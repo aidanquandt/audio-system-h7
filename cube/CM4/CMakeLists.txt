@@ -46,7 +46,7 @@ set(CMAKE_CXX_COMPILER_FORCED "true")
 enable_language(C ASM)
 
 # INTERFACE library for application code: FreeRTOS + CMSIS-core + defines.
-# Deliberately excludes STM32H7xx_HAL_Driver/Inc to enforce the BSP boundary.
+# Deliberately excludes STM32H7xx_HAL_Driver/Inc to enforce the drivers boundary.
 add_library(freertos_iface INTERFACE)
 target_include_directories(freertos_iface INTERFACE
     ${CMAKE_SOURCE_DIR}/Core/Inc
@@ -58,7 +58,6 @@ target_include_directories(freertos_iface INTERFACE
 )
 target_compile_definitions(freertos_iface INTERFACE ${MX_Defines_Syms})
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/../../bsp ${CMAKE_BINARY_DIR}/bsp)
 add_subdirectory(${CMAKE_SOURCE_DIR}/../../drivers ${CMAKE_BINARY_DIR}/drivers)
 add_subdirectory(${CMAKE_SOURCE_DIR}/../../include ${CMAKE_BINARY_DIR}/includes)
 add_subdirectory(${CMAKE_SOURCE_DIR}/../../lib/cobs ${CMAKE_BINARY_DIR}/cobs)
@@ -67,7 +66,7 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/../../generated ${CMAKE_BINARY_DIR}/generat
 set(APP_CORE CM4)
 add_subdirectory(${CMAKE_SOURCE_DIR}/../../src ${CMAKE_BINARY_DIR}/app)
 
-target_link_libraries(${CMAKE_PROJECT_NAME} bsp app_cm4 drivers generated)
+target_link_libraries(${CMAKE_PROJECT_NAME} app_cm4 drivers generated)
 
 # Remove wrong libob.a library dependency when using cpp files
 list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)

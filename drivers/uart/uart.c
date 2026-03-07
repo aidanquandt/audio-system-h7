@@ -1,5 +1,4 @@
 #include "drivers/uart/uart.h"
-#include "bsp/uart/uart.h"
 #include "FreeRTOS.h"
 #include "semphr.h"
 #include "queue.h"
@@ -8,6 +7,9 @@
 #include <string.h>
 
 #ifdef CORE_CM4
+
+#include <stdbool.h>
+#include "usart.h"
 
 #define UART_DMA_TIMEOUT_MS 50U
 
@@ -28,6 +30,52 @@ static struct {
     volatile uint32_t    drop_count;
 } rx_ctx;
 
+/* HAL-level callbacks (set during init). */
+static void (*uart_tx_cplt_cb)(void);
+static void (*uart_rx_cplt_cb)(uint16_t);
+
+static bool uart_hal_transmit_dma(const uint8_t *buf, uint16_t len)
+{
+    if (buf == NULL || len == 0)
+    {
+        return false;
+    }
+    return HAL_UART_Transmit_DMA(&huart3, (uint8_t *)buf, len) == HAL_OK;
+}
+
+static bool uart_hal_receive_dma(uint8_t *buf, uint16_t len)
+{
+    if (buf == NULL || len == 0)
+    {
+        return false;
+    }
+    return HAL_UARTEx_ReceiveToIdle_DMA(&huart3, buf, len) == HAL_OK;
+}
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+    if (huart->Instance != USART3)
+    {
+        return;
+    }
+    if (uart_tx_cplt_cb != NULL)
+    {
+        uart_tx_cplt_cb();
+    }
+}
+
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t size)
+{
+    if (huart->Instance != USART3)
+    {
+        return;
+    }
+    if (uart_rx_cplt_cb != NULL)
+    {
+        uart_rx_cplt_cb(size);
+    }
+}
+
 static void uart_driver_tx_cplt_handler(void)
 {
     BaseType_t woken = pdFALSE;
@@ -43,7 +91,7 @@ static void uart_driver_rx_cplt_handler(uint16_t received)
     {
         rx_ctx.drop_count += received - written;
     }
-    bsp_uart_receive_dma(rx_ctx.buf, UART_RX_BUF_LEN);
+    uart_hal_receive_dma(rx_ctx.buf, UART_RX_BUF_LEN);
     portYIELD_FROM_ISR(woken);
 }
 
@@ -55,7 +103,7 @@ static void uart_driver_drain_task(void *arg)
     for (;;)
     {
         xQueueReceive(tx_ctx.queue, &msg, portMAX_DELAY);
-        if (bsp_uart_transmit_dma(msg.data, msg.len))
+        if (uart_hal_transmit_dma(msg.data, msg.len))
         {
             if (!xSemaphoreTake(tx_ctx.complete, pdMS_TO_TICKS(UART_DMA_TIMEOUT_MS)))
             {
@@ -82,9 +130,9 @@ void uart_driver_init(void)
     configASSERT(tx_ctx.complete);
     configASSERT(tx_ctx.queue);
     configASSERT(rx_ctx.stream);
-    bsp_uart_set_tx_cplt_cb(uart_driver_tx_cplt_handler);
-    bsp_uart_set_rx_cplt_cb(uart_driver_rx_cplt_handler);
-    bool ok = bsp_uart_receive_dma(rx_ctx.buf, UART_RX_BUF_LEN);
+    uart_tx_cplt_cb = uart_driver_tx_cplt_handler;
+    uart_rx_cplt_cb = uart_driver_rx_cplt_handler;
+    bool ok = uart_hal_receive_dma(rx_ctx.buf, UART_RX_BUF_LEN);
     configASSERT(ok);
     xTaskCreate(uart_driver_drain_task, "UART_tx", 256, NULL, tskIDLE_PRIORITY + 2, NULL);
 }

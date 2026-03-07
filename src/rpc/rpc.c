@@ -3,7 +3,7 @@
 #include "src/transport/transport.h"
 #include "platform/shared_mem.h"
 #include "platform/ipc_channels.h"
-#include "bsp/hsem/hsem.h"
+#include "drivers/hsem/hsem.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include "semphr.h"
@@ -149,8 +149,8 @@ static void ipc_rx_task(void *arg)
     uint32_t                    channel = HSEM_CH_RPC_CM4_TO_CM7;
 #endif
 
-    bsp_hsem_register_callback(1U << channel, on_ipc_hsem);
-    bsp_hsem_arm(1U << channel);
+    hsem_driver_register_callback(1U << channel, on_ipc_hsem);
+    hsem_driver_arm(1U << channel);
 
     for (;;)
     {
@@ -194,7 +194,7 @@ static void rpc_dispatch(uint8_t msg_id, const uint8_t *payload, size_t len)
 
             if (rc == 0)
             {
-                bsp_hsem_notify(HSEM_CH_RPC_CM4_TO_CM7);
+                hsem_driver_notify(HSEM_CH_RPC_CM4_TO_CM7);
             }
         }
         if (s_handlers[i].dest == DEST_CM4 || s_handlers[i].dest == DEST_BOTH)
@@ -243,7 +243,7 @@ int rpc_transmit(uint8_t msg_id, const void *payload, size_t len)
 
     if (rc == 0)
     {
-        bsp_hsem_notify(HSEM_CH_RPC_CM7_TO_CM4);
+        hsem_driver_notify(HSEM_CH_RPC_CM7_TO_CM4);
     }
     return rc; /* 0 = queued, -1 = queue full (caller may retry or drop) */
 #endif
@@ -256,7 +256,7 @@ uint32_t rpc_get_wire_overrun_count(void)
 
 void rpc_init(void)
 {
-    bsp_hsem_init();
+    hsem_driver_init();
 
 #ifdef CORE_CM7
     /* CM7 owns shared-memory initialisation. Zero both queues, stamp the
