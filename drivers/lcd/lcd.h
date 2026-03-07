@@ -4,43 +4,48 @@
 #include <stdint.h>
 
 /**
- * Initialise the LCD driver (binary semaphore for DMA2D fill serialisation).
- * Call once before any lcd_driver_fill_async or lcd_driver_fill_sync (e.g. from display_init).
+ * LCD driver: serialises DMA2D (R2M fill + M2M copy) and runs callbacks in task context.
+ * Call lcd_driver_init() once before any other API (e.g. from display_init).
+ *
+ * LVGL: use lcd_driver_copy_rect_sync (or _async) for the flush callback (copy render
+ * buffer to framebuffer); lcd_driver_fill_rect_* for solid fill; lcd_driver_width/height
+ * and bsp_lcd_framebuffer() for display size and direct-fb access if needed.
  */
+
 void lcd_driver_init(void);
 
-/**
- * Start a DMA2D fill of the entire LCD framebuffer (non-blocking).
- * Takes the driver semaphore to serialise with other fills, starts the transfer
- * via BSP, and returns. When the transfer completes, callback is invoked in
- * task context (driver worker task).
- *
- * @return true if the fill was started, false if the driver was busy (semaphore held).
- */
-bool lcd_driver_fill_async(uint16_t colour, void (*callback)(void *), void *user_data);
+/** Panel: release reset, enable, backlight on. Call after init; may block ~20 ms. */
+void lcd_driver_panel_init(void);
+void lcd_driver_panel_off(void);
 
-/**
- * Fill the framebuffer and block until the DMA2D transfer completes.
- * Convenience wrapper over lcd_driver_fill_async; safe to call from any task.
- */
+uint16_t lcd_driver_width(void);
+uint16_t lcd_driver_height(void);
+
+/* ----- R2M: fill rect with solid colour ----- */
+
+/** Fill full screen; blocks until done. */
 void lcd_driver_fill_sync(uint16_t colour);
 
-/**
- * Fill a rectangle and block until done. Safe to call from any task.
- */
+/** Fill rectangle; blocks until done. */
 void lcd_driver_fill_rect_sync(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t colour);
 
 /**
- * Panel control: release reset, enable display, turn backlight on.
- * Call after lcd_driver_init(); may block briefly (e.g. 20 ms delay).
+ * Fill rectangle (non-blocking). Callback runs in task context when done.
+ * @return true if started, false if busy.
  */
-void lcd_driver_panel_init(void);
+bool lcd_driver_fill_rect_async(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t colour,
+                                void (*callback)(void *), void *user_data);
 
-/** Turn backlight off. */
-void lcd_driver_panel_off(void);
+/* ----- M2M: copy buffer to framebuffer ----- */
 
-/** Display width in pixels (e.g. 480). */
-uint16_t lcd_driver_width(void);
+/** Copy rectangle from buffer to display; blocks until done. */
+void lcd_driver_copy_rect_sync(const uint16_t *src, uint32_t src_stride,
+                               uint16_t dst_x, uint16_t dst_y, uint16_t w, uint16_t h);
 
-/** Display height in pixels (e.g. 272). */
-uint16_t lcd_driver_height(void);
+/**
+ * Copy rectangle (non-blocking). Callback runs in task context when done.
+ * @return true if started, false if busy.
+ */
+bool lcd_driver_copy_rect_async(const uint16_t *src, uint32_t src_stride,
+                                uint16_t dst_x, uint16_t dst_y, uint16_t w, uint16_t h,
+                                void (*callback)(void *), void *user_data);
