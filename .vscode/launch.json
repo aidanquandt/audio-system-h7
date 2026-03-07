@@ -8,7 +8,7 @@
             "servertype": "openocd",
             "serverpath": "C:\\msys64\\ucrt64\\bin\\openocd.exe",
             "cwd": "${workspaceFolder}",
-            "executable": "${workspaceFolder}/build/CM7/cube_CM7.elf",
+            "executable": "${workspaceFolder}/build/CM7/stm32_hw_CM7.elf",
             "configFiles": [
                 "${workspaceFolder}/tools/openocd/openocd.cfg"
             ],
@@ -33,7 +33,7 @@
             "request": "attach",
             "servertype": "external",
             "cwd": "${workspaceFolder}",
-            "executable": "${workspaceFolder}/build/CM4/cube_CM4.elf",
+            "executable": "${workspaceFolder}/build/CM4/stm32_hw_CM4.elf",
             "gdbTarget": "localhost:50001",
             "gdbPath": "C:\\msys64\\ucrt64\\bin\\gdb-multiarch.exe",
             "armToolchainPath": "C:\\msys64\\ucrt64\\bin",
@@ -56,7 +56,7 @@
             "servertype": "openocd",
             "serverpath": "C:\\msys64\\ucrt64\\bin\\openocd.exe",
             "cwd": "${workspaceFolder}",
-            "executable": "${workspaceFolder}/build/CM4/cube_CM4.elf",
+            "executable": "${workspaceFolder}/build/CM4/stm32_hw_CM4.elf",
             "configFiles": [
                 "${workspaceFolder}/tools/openocd/openocd.cfg"
             ],
@@ -82,7 +82,7 @@
             "servertype": "openocd",
             "serverpath": "C:\\msys64\\ucrt64\\bin\\openocd.exe",
             "cwd": "${workspaceFolder}",
-            "executable": "${workspaceFolder}/build/CM7/cube_CM7.elf",
+            "executable": "${workspaceFolder}/build/CM7/stm32_hw_CM7.elf",
             "configFiles": [
                 "${workspaceFolder}/tools/openocd/openocd.cfg"
             ],

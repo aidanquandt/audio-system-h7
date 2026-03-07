@@ -32,8 +32,8 @@ cmake --build "$PROJECT_ROOT/build/CM7" -j"$JOBS"
 echo
 echo "✓ Build complete"
 echo "  Outputs:"
-echo "    - build/CM4/cube_CM4.elf"
-echo "    - build/CM7/cube_CM7.elf"
+echo "    - build/CM4/stm32_hw_CM4.elf"
+echo "    - build/CM7/stm32_hw_CM7.elf"
 
 # Update IntelliSense
 "$SCRIPT_DIR/merge-compile-commands.sh"

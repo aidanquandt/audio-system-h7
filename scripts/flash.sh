@@ -9,8 +9,8 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 # Change to project root for relative paths
 cd "$PROJECT_ROOT"
 
-CM4_ELF="build/CM4/cube_CM4.elf"
-CM7_ELF="build/CM7/cube_CM7.elf"
+CM4_ELF="build/CM4/stm32_hw_CM4.elf"
+CM7_ELF="build/CM7/stm32_hw_CM7.elf"
 
 # Check if both ELF files exist
 if [[ ! -f "$CM4_ELF" ]]; then
