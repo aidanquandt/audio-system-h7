@@ -237,7 +237,8 @@ static bool lcd_hal_copy_rect_async(const uint16_t *src,
 
 /* ----- RTOS wrapper ----- */
 
-static SemaphoreHandle_t xfer_done_sem = NULL;
+static SemaphoreHandle_t xfer_done_sem = NULL;  /* Signalled by ISR when DMA transfer completes */
+static SemaphoreHandle_t resource_sem  = NULL;  /* Taken by caller before DMA, given by worker when done */
 static SemaphoreHandle_t sync_done_sem = NULL;
 static void (*user_callback)(void *)   = NULL;
 static void *user_callback_data        = NULL;
@@ -275,19 +276,21 @@ static void lcd_driver_worker_task(void *pvParameters)
         {
             xSemaphoreGive(sync_done_sem);
         }
-        xSemaphoreGive(xfer_done_sem);
+        xSemaphoreGive(resource_sem);  /* Release DMA2D for next caller; do not give xfer_done_sem */
     }
 }
 
 void lcd_driver_init(void)
 {
-    if (xfer_done_sem == NULL)
+    if (resource_sem == NULL)
     {
         xfer_done_sem = xSemaphoreCreateBinary();
         configASSERT(xfer_done_sem != NULL);
+        resource_sem = xSemaphoreCreateBinary();
+        configASSERT(resource_sem != NULL);
         sync_done_sem = xSemaphoreCreateBinary();
         configASSERT(sync_done_sem != NULL);
-        xSemaphoreGive(xfer_done_sem);
+        xSemaphoreGive(resource_sem);  /* DMA2D free for first caller; xfer_done_sem only given by ISR */
         xTaskCreate(lcd_driver_worker_task, "lcd_worker", 256, NULL, 1, NULL);
     }
     lcd_driver_panel_init();
@@ -323,11 +326,11 @@ void lcd_driver_fill_sync(uint16_t colour)
 
 void lcd_driver_fill_rect_sync(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t colour)
 {
-    if (xfer_done_sem == NULL || sync_done_sem == NULL)
+    if (resource_sem == NULL || sync_done_sem == NULL)
     {
         return;
     }
-    if (xSemaphoreTake(xfer_done_sem, portMAX_DELAY) != pdTRUE)
+    if (xSemaphoreTake(resource_sem, portMAX_DELAY) != pdTRUE)
     {
         return;
     }
@@ -337,7 +340,7 @@ void lcd_driver_fill_rect_sync(uint16_t x, uint16_t y, uint16_t w, uint16_t h, u
     if (!lcd_hal_fill_rect_async(x, y, w, h, colour, lcd_driver_xfer_done_cb, NULL))
     {
         sync_pending = false;
-        xSemaphoreGive(xfer_done_sem);
+        xSemaphoreGive(resource_sem);
         return;
     }
     xSemaphoreTake(sync_done_sem, portMAX_DELAY);
@@ -347,11 +350,11 @@ void lcd_driver_fill_rect_sync(uint16_t x, uint16_t y, uint16_t w, uint16_t h, u
 bool lcd_driver_fill_rect_async(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t colour,
                                 void (*callback)(void *), void *user_data)
 {
-    if (xfer_done_sem == NULL)
+    if (resource_sem == NULL)
     {
         return false;
     }
-    if (xSemaphoreTake(xfer_done_sem, 0) != pdTRUE)
+    if (xSemaphoreTake(resource_sem, 0) != pdTRUE)
     {
         return false;
     }
@@ -361,7 +364,7 @@ bool lcd_driver_fill_rect_async(uint16_t x, uint16_t y, uint16_t w, uint16_t h, 
     {
         user_callback      = NULL;
         user_callback_data = NULL;
-        xSemaphoreGive(xfer_done_sem);
+        xSemaphoreGive(resource_sem);
         return false;
     }
     return true;
@@ -370,11 +373,11 @@ bool lcd_driver_fill_rect_async(uint16_t x, uint16_t y, uint16_t w, uint16_t h, 
 void lcd_driver_copy_rect_sync(const uint16_t *src, uint32_t src_stride,
                               uint16_t dst_x, uint16_t dst_y, uint16_t w, uint16_t h)
 {
-    if (xfer_done_sem == NULL || sync_done_sem == NULL || src == NULL)
+    if (resource_sem == NULL || sync_done_sem == NULL || src == NULL)
     {
         return;
     }
-    if (xSemaphoreTake(xfer_done_sem, portMAX_DELAY) != pdTRUE)
+    if (xSemaphoreTake(resource_sem, portMAX_DELAY) != pdTRUE)
     {
         return;
     }
@@ -385,7 +388,7 @@ void lcd_driver_copy_rect_sync(const uint16_t *src, uint32_t src_stride,
                                 lcd_driver_xfer_done_cb, NULL))
     {
         sync_pending = false;
-        xSemaphoreGive(xfer_done_sem);
+        xSemaphoreGive(resource_sem);
         return;
     }
     xSemaphoreTake(sync_done_sem, portMAX_DELAY);
@@ -396,11 +399,11 @@ bool lcd_driver_copy_rect_async(const uint16_t *src, uint32_t src_stride,
                                 uint16_t dst_x, uint16_t dst_y, uint16_t w, uint16_t h,
                                 void (*callback)(void *), void *user_data)
 {
-    if (xfer_done_sem == NULL)
+    if (resource_sem == NULL)
     {
         return false;
     }
-    if (xSemaphoreTake(xfer_done_sem, 0) != pdTRUE)
+    if (xSemaphoreTake(resource_sem, 0) != pdTRUE)
     {
         return false;
     }
@@ -411,7 +414,7 @@ bool lcd_driver_copy_rect_async(const uint16_t *src, uint32_t src_stride,
     {
         user_callback      = NULL;
         user_callback_data = NULL;
-        xSemaphoreGive(xfer_done_sem);
+        xSemaphoreGive(resource_sem);
         return false;
     }
     return true;

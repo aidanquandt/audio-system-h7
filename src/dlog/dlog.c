@@ -36,8 +36,9 @@ static void dlog_task(void *pvParameters)
 
     static TaskStatus_t status[DLOG_MAX_TASKS];
     static TaskStatus_t prev_status[DLOG_MAX_TASKS];
-    static UBaseType_t  prev_n     = 0;
-    static uint8_t      first_run  = 1;
+    static UBaseType_t  prev_n         = 0;
+    static uint32_t     prev_total_now = 0;
+    static uint8_t      first_run      = 1;
 
     for (;;)
     {
@@ -53,8 +54,9 @@ static void dlog_task(void *pvParameters)
         if (first_run)
         {
             memcpy(prev_status, status, (size_t)n * sizeof(TaskStatus_t));
-            prev_n     = n;
-            first_run  = 0;
+            prev_n         = n;
+            prev_total_now = total_now;
+            first_run      = 0;
             vTaskDelay(pdMS_TO_TICKS(DLOG_PERIOD_MS));
             continue;
         }
@@ -66,12 +68,10 @@ static void dlog_task(void *pvParameters)
 #endif
 
         /*
-         * First pass: compute run_delta per task (match by handle) and sum.
-         * Use uint64_t for sum_delta and percentage math: at 400MHz, 2s is 800e6
-         * cycles; 100 * run_delta overflows uint32_t, and sum_delta can exceed 2^32.
+         * First pass: compute run_delta per task (match by handle).
+         * Percentage denominator uses kernel total_delta (see below), not sum of deltas.
          */
         uint32_t run_deltas[DLOG_MAX_TASKS];
-        uint64_t sum_delta = 0;
         for (UBaseType_t i = 0; i < n; i++)
         {
             uint32_t prev_run = 0;
@@ -91,12 +91,16 @@ static void dlog_task(void *pvParameters)
             {
                 run_deltas[i] = 0; /* counter wrap or new task */
             }
-            sum_delta += run_deltas[i];
         }
-        if (sum_delta == 0ULL)
-        {
-            sum_delta = 1ULL; /* avoid div by zero; report 0% for all */
-        }
+
+        /*
+         * Use kernel total run-time delta as denominator so percentages are
+         * normalized to actual elapsed time. If we used sum_delta and it
+         * undercounts (e.g. task ordering, new/deleted tasks), percentages
+         * get inflated. total_delta is from the same counter as ulRunTimeCounter.
+         */
+        uint32_t total_delta = (uint32_t)(total_now - prev_total_now);
+        uint64_t denominator = (total_delta > 0U) ? (uint64_t)total_delta : 1ULL;
 
         /*
          * Second pass: compute percentage per task (truncated). Assign rounding
@@ -107,7 +111,7 @@ static void dlog_task(void *pvParameters)
         UBaseType_t idx_max = 0;
         for (UBaseType_t i = 0; i < n; i++)
         {
-            uint32_t pct = (uint32_t)((100ULL * (uint64_t)run_deltas[i]) / sum_delta);
+            uint32_t pct = (uint32_t)((100ULL * (uint64_t)run_deltas[i]) / denominator);
             if (pct > 100U)
             {
                 pct = 100U;
@@ -153,7 +157,8 @@ static void dlog_task(void *pvParameters)
         }
 
         memcpy(prev_status, status, (size_t)n * sizeof(TaskStatus_t));
-        prev_n = n;
+        prev_n         = n;
+        prev_total_now = total_now;
 
         vTaskDelay(pdMS_TO_TICKS(DLOG_PERIOD_MS));
     }
