@@ -16,9 +16,8 @@ typedef struct touch_state {
 /**
  * Initialise touch controller (probes GT911).
  * Call after display/I2C are up (e.g. after display_init).
- * @return true if a known touch IC was detected, false otherwise.
  */
-bool touch_driver_init(void);
+void touch_driver_init(void);
 
 /**
  * Read touch state from device (I2C poll). Call from a task when notified (e.g. EXTI).

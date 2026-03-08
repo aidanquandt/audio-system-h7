@@ -256,8 +256,6 @@ uint32_t rpc_get_wire_overrun_count(void)
 
 void rpc_init(void)
 {
-    hsem_driver_init();
-
 #ifdef CORE_CM7
     /* CM7 owns shared-memory initialisation. Zero both queues, stamp the
      * version, then write ready_flag last as the release barrier that CM4

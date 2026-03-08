@@ -10,15 +10,13 @@
 #define RGB565_BLUE  0x001FU
 #define RGB565_BLACK 0x0000U
 
-bool display_init(void)
+void display_init(void)
 {
-    lcd_driver_init();
     lcd_driver_panel_init();
     lcd_driver_fill_sync(RGB565_BLACK);
 
     display_draw_edge_boxes();
     display_draw_corner_markers();
-    return true;
 }
 
 #define CORNER_SIZE 40U
@@ -70,7 +68,7 @@ void display_draw_edge_boxes(void)
 
 #else
 
-bool display_init(void) { return true; }
+void display_init(void) {}
 void display_draw_corner_markers(void) {}
 void display_draw_edge_boxes(void) {}
 

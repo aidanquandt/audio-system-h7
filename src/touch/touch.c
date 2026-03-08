@@ -49,28 +49,26 @@ static void touch_task(void *pvParameters)
     }
 }
 
-bool touch_init(void)
+void touch_init(void)
 {
     s_touch_sem = xSemaphoreCreateBinary();
     if (s_touch_sem == NULL)
     {
-        return false;
+        return;
     }
     if (!gpio_driver_exti_register(GPIO_DRIVER_TOUCH_INT, touch_exti_cb))
     {
         vSemaphoreDelete(s_touch_sem);
         s_touch_sem = NULL;
-        return false;
+        return;
     }
     xTaskCreate(touch_task, "touch", TOUCH_TASK_STACK_WORDS, NULL, 1, NULL);
-    return true;
 }
 
 #else
 
-bool touch_init(void)
+void touch_init(void)
 {
-    return false;
 }
 
 #endif /* CORE_CM4 */

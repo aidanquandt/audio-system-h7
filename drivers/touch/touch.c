@@ -82,20 +82,19 @@ static bool touch_driver_read_gt911(touch_state_t *out)
     return true;
 }
 
-bool touch_driver_init(void)
+void touch_driver_init(void)
 {
     i2c_driver_init();
     vTaskDelay(pdMS_TO_TICKS(10));
     if (!touch_driver_probe_gt911())
     {
-        return false;
+        return;
     }
     s_gt911_ok = true;
     /* Clear buffer so first touch sets bit 7; many boards never report until we do this. */
     touch_driver_gt911_clear_buffer();
     /* Give the IC time to be ready for the next touch (datasheet suggests ~50ms after config). */
     vTaskDelay(pdMS_TO_TICKS(50));
-    return true;
 }
 
 bool touch_driver_read(touch_state_t *out)
@@ -120,9 +119,8 @@ bool touch_driver_read(touch_state_t *out)
 
 #else
 
-bool touch_driver_init(void)
+void touch_driver_init(void)
 {
-    return false;
 }
 
 bool touch_driver_read(touch_state_t *out)
