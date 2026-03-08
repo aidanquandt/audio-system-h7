@@ -16,6 +16,7 @@ set(_target app_${_core_lower})
 # ── Sources compiled for every core (display/transport use CORE_CM4 stubs on CM7) ──
 set(_sources
     app_main/app_main.c
+    dlog/dlog.c
     display/display.c
     heartbeat/heartbeat.c
     led/led.c

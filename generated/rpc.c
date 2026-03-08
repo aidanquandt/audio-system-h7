@@ -65,9 +65,21 @@ int rpc_transmit_peak_meter(const peak_meter_t *msg)
     return rpc_transmit(MSG_PEAK_METER, msg, sizeof(*msg));
 }
 
+int rpc_transmit_task_util_cm4(const task_util_cm4_t *msg)
+{
+    return rpc_transmit(MSG_TASK_UTIL_CM4, msg, sizeof(*msg));
+}
+
+int rpc_transmit_task_util_cm7(const task_util_cm7_t *msg)
+{
+    return rpc_transmit(MSG_TASK_UTIL_CM7, msg, sizeof(*msg));
+}
+
 /* -- Payload size guards ------------------------------------------- */
 
 _Static_assert(sizeof(set_gain_t) <= RPC_FRAME_MAX_PAYLOAD, "set_gain_t exceeds RPC_FRAME_MAX_PAYLOAD");
 _Static_assert(sizeof(heartbeat_cm4_t) <= RPC_FRAME_MAX_PAYLOAD, "heartbeat_cm4_t exceeds RPC_FRAME_MAX_PAYLOAD");
 _Static_assert(sizeof(heartbeat_cm7_t) <= RPC_FRAME_MAX_PAYLOAD, "heartbeat_cm7_t exceeds RPC_FRAME_MAX_PAYLOAD");
 _Static_assert(sizeof(peak_meter_t) <= RPC_FRAME_MAX_PAYLOAD, "peak_meter_t exceeds RPC_FRAME_MAX_PAYLOAD");
+_Static_assert(sizeof(task_util_cm4_t) <= RPC_FRAME_MAX_PAYLOAD, "task_util_cm4_t exceeds RPC_FRAME_MAX_PAYLOAD");
+_Static_assert(sizeof(task_util_cm7_t) <= RPC_FRAME_MAX_PAYLOAD, "task_util_cm7_t exceeds RPC_FRAME_MAX_PAYLOAD");

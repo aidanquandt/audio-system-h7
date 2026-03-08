@@ -10,11 +10,21 @@ typedef enum {
     MSG_HEARTBEAT_CM4        = 0x01,
     MSG_HEARTBEAT_CM7        = 0x02,
     MSG_PEAK_METER           = 0x80,
+    MSG_TASK_UTIL_CM4        = 0x81,
+    MSG_TASK_UTIL_CM7        = 0x82,
 } msg_id_t;
+
+typedef enum {
+    PROTO_UNIT_NONE,
+    PROTO_UNIT_PERCENT,
+    PROTO_UNIT_DECIBELS,
+} proto_unit_t;
 
 typedef struct __attribute__((packed)) { uint8_t channel; float gain_db; } set_gain_t;
 typedef struct __attribute__((packed)) { uint32_t seq; } heartbeat_cm4_t;
 typedef struct __attribute__((packed)) { uint32_t seq; } heartbeat_cm7_t;
 typedef struct __attribute__((packed)) { uint8_t channel; float peak_db; } peak_meter_t;
+typedef struct __attribute__((packed)) { uint8_t task_name[16]; uint8_t util_pct; } task_util_cm4_t;
+typedef struct __attribute__((packed)) { uint8_t task_name[16]; uint8_t util_pct; } task_util_cm7_t;
 
 /* MSG_LED_TOGGLE_GREEN, MSG_LED_TOGGLE_RED: no payload — pass NULL, 0. */

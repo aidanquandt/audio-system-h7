@@ -4,6 +4,12 @@ version: 1
 # outbound: device → host.  Generate struct + rpc_transmit() helpers only.
 # Routing (which core handles each inbound message) is declared in the
 # module that owns the handler, not here. See src/led/led.c for example.
+# units: optional list of unit names; fields may set "unit" to one of these (metadata only).
+
+units:
+  - none
+  - percent
+  - decibels
 
 inbound:
   - id: 0x10
@@ -16,7 +22,7 @@ inbound:
     name: set_gain
     fields:
       - { name: channel, type: uint8 }
-      - { name: gain_db, type: float32 }
+      - { name: gain_db, type: float32, unit: decibels }
 
 outbound:
   - id: 0x01
@@ -33,4 +39,16 @@ outbound:
     name: peak_meter
     fields:
       - { name: channel, type: uint8 }
-      - { name: peak_db, type: float32 }
+      - { name: peak_db, type: float32, unit: decibels }
+
+  - id: 0x81
+    name: task_util_cm4
+    fields:
+      - { name: task_name, type: bytes16 }
+      - { name: util_pct, type: uint8, unit: percent }
+
+  - id: 0x82
+    name: task_util_cm7
+    fields:
+      - { name: task_name, type: bytes16 }
+      - { name: util_pct, type: uint8, unit: percent }

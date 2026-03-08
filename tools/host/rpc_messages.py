@@ -3,6 +3,13 @@ import struct
 from dataclasses import dataclass, field
 from typing import ClassVar
 
+class ProtoUnit:
+    NONE = 0
+    PERCENT = 1
+    DECIBELS = 2
+
+FIELD_UNITS: dict[tuple[str, str], int] = {}  # (msg_name, field_name) -> ProtoUnit
+
 
 # ── COBS framing ───────────────────────────────────────────────────────
 
@@ -83,14 +90,16 @@ class SetGain:
     MSG_ID: ClassVar[int] = 0x20
     channel: int = 0
     gain_db: float = 0
+    # unit: decibels
 
     @classmethod
     def unpack(cls, data: bytes) -> 'SetGain':
-        channel, gain_db, = struct.unpack_from('<Bf', data)
-        return cls(channel=channel, gain_db=gain_db)
+        values = struct.unpack_from('<Bf', data)
+        return cls(channel=values[0], gain_db=values[1])
 
     def pack(self) -> bytes:
         return struct.pack('<Bf', self.channel, self.gain_db)
+FIELD_UNITS[('set_gain', 'gain_db')] = ProtoUnit.DECIBELS
 
 
 @dataclass
@@ -100,8 +109,8 @@ class HeartbeatCm4:
 
     @classmethod
     def unpack(cls, data: bytes) -> 'HeartbeatCm4':
-        seq, = struct.unpack_from('<I', data)
-        return cls(seq=seq)
+        values = struct.unpack_from('<I', data)
+        return cls(seq=values[0])
 
     def pack(self) -> bytes:
         return struct.pack('<I', self.seq)
@@ -114,8 +123,8 @@ class HeartbeatCm7:
 
     @classmethod
     def unpack(cls, data: bytes) -> 'HeartbeatCm7':
-        seq, = struct.unpack_from('<I', data)
-        return cls(seq=seq)
+        values = struct.unpack_from('<I', data)
+        return cls(seq=values[0])
 
     def pack(self) -> bytes:
         return struct.pack('<I', self.seq)
@@ -126,14 +135,50 @@ class PeakMeter:
     MSG_ID: ClassVar[int] = 0x80
     channel: int = 0
     peak_db: float = 0
+    # unit: decibels
 
     @classmethod
     def unpack(cls, data: bytes) -> 'PeakMeter':
-        channel, peak_db, = struct.unpack_from('<Bf', data)
-        return cls(channel=channel, peak_db=peak_db)
+        values = struct.unpack_from('<Bf', data)
+        return cls(channel=values[0], peak_db=values[1])
 
     def pack(self) -> bytes:
         return struct.pack('<Bf', self.channel, self.peak_db)
+FIELD_UNITS[('peak_meter', 'peak_db')] = ProtoUnit.DECIBELS
+
+
+@dataclass
+class TaskUtilCm4:
+    MSG_ID: ClassVar[int] = 0x81
+    task_name: bytes = field(default_factory=lambda: b'\x00' * 16)
+    util_pct: int = 0
+    # unit: percent
+
+    @classmethod
+    def unpack(cls, data: bytes) -> 'TaskUtilCm4':
+        values = struct.unpack_from('<16sB', data)
+        return cls(task_name=values[0], util_pct=values[1])
+
+    def pack(self) -> bytes:
+        return struct.pack('<16sB', self.task_name, self.util_pct)
+FIELD_UNITS[('task_util_cm4', 'util_pct')] = ProtoUnit.PERCENT
+
+
+@dataclass
+class TaskUtilCm7:
+    MSG_ID: ClassVar[int] = 0x82
+    task_name: bytes = field(default_factory=lambda: b'\x00' * 16)
+    util_pct: int = 0
+    # unit: percent
+
+    @classmethod
+    def unpack(cls, data: bytes) -> 'TaskUtilCm7':
+        values = struct.unpack_from('<16sB', data)
+        return cls(task_name=values[0], util_pct=values[1])
+
+    def pack(self) -> bytes:
+        return struct.pack('<16sB', self.task_name, self.util_pct)
+FIELD_UNITS[('task_util_cm7', 'util_pct')] = ProtoUnit.PERCENT
 
 
 REGISTRY: dict[int, type] = {
@@ -143,6 +188,8 @@ REGISTRY: dict[int, type] = {
     0x01: HeartbeatCm4,
     0x02: HeartbeatCm7,
     0x80: PeakMeter,
+    0x81: TaskUtilCm4,
+    0x82: TaskUtilCm7,
 }
 
 

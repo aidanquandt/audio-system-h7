@@ -25,3 +25,5 @@ void rpc_handle_set_gain(const set_gain_t *msg);
 int rpc_transmit_heartbeat_cm4(const heartbeat_cm4_t *msg);
 int rpc_transmit_heartbeat_cm7(const heartbeat_cm7_t *msg);
 int rpc_transmit_peak_meter(const peak_meter_t *msg);
+int rpc_transmit_task_util_cm4(const task_util_cm4_t *msg);
+int rpc_transmit_task_util_cm7(const task_util_cm7_t *msg);

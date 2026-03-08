@@ -1,0 +1,165 @@
+/**
+ * dlog — diagnostic log: FreeRTOS task CPU utilization over RPC/UART.
+ *
+ * Runs a periodic task on each core; samples uxTaskGetSystemState(), computes
+ * utilization percentage per task, and sends one task_util_cm4 / task_util_cm7
+ * message per task via rpc_transmit (CM4 sends directly to UART, CM7 via IPC to CM4).
+ *
+ * DLOG_MAX_TASKS: max tasks reported per core. If the system has more tasks than
+ * this, uxTaskGetSystemState() returns 0 and we send no utilization for that period.
+ * Must be at least the expected task count (default 16 to match typical builds).
+ *
+ * TASK_NAME_LEN must match configMAX_TASK_NAME_LEN in FreeRTOSConfig.h (wire format).
+ */
+
+#include "src/dlog/dlog.h"
+#include "generated/rpc.h"
+#include "protocol/messages.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include <string.h>
+
+#ifndef DLOG_MAX_TASKS
+#define DLOG_MAX_TASKS 16
+#endif
+
+#ifndef DLOG_PERIOD_MS
+#define DLOG_PERIOD_MS 2000
+#endif
+
+/* Must match configMAX_TASK_NAME_LEN; task_name in proto is 16 bytes. */
+#define TASK_NAME_LEN 16
+
+static void dlog_task(void *pvParameters)
+{
+    (void)pvParameters;
+
+    static TaskStatus_t status[DLOG_MAX_TASKS];
+    static TaskStatus_t prev_status[DLOG_MAX_TASKS];
+    static UBaseType_t  prev_n     = 0;
+    static uint8_t      first_run  = 1;
+
+    for (;;)
+    {
+        uint32_t    total_now = 0;
+        UBaseType_t n         = uxTaskGetSystemState(status, DLOG_MAX_TASKS, &total_now);
+
+        if (n == 0)
+        {
+            vTaskDelay(pdMS_TO_TICKS(DLOG_PERIOD_MS));
+            continue;
+        }
+
+        if (first_run)
+        {
+            memcpy(prev_status, status, (size_t)n * sizeof(TaskStatus_t));
+            prev_n     = n;
+            first_run  = 0;
+            vTaskDelay(pdMS_TO_TICKS(DLOG_PERIOD_MS));
+            continue;
+        }
+
+#ifdef CORE_CM4
+        task_util_cm4_t msg;
+#else
+        task_util_cm7_t msg;
+#endif
+
+        /*
+         * First pass: compute run_delta per task (match by handle) and sum.
+         * Use uint64_t for sum_delta and percentage math: at 400MHz, 2s is 800e6
+         * cycles; 100 * run_delta overflows uint32_t, and sum_delta can exceed 2^32.
+         */
+        uint32_t run_deltas[DLOG_MAX_TASKS];
+        uint64_t sum_delta = 0;
+        for (UBaseType_t i = 0; i < n; i++)
+        {
+            uint32_t prev_run = 0;
+            for (UBaseType_t j = 0; j < prev_n; j++)
+            {
+                if (prev_status[j].xHandle == status[i].xHandle)
+                {
+                    prev_run = prev_status[j].ulRunTimeCounter;
+                    break;
+                }
+            }
+            if (status[i].ulRunTimeCounter >= prev_run)
+            {
+                run_deltas[i] = status[i].ulRunTimeCounter - prev_run;
+            }
+            else
+            {
+                run_deltas[i] = 0; /* counter wrap or new task */
+            }
+            sum_delta += run_deltas[i];
+        }
+        if (sum_delta == 0ULL)
+        {
+            sum_delta = 1ULL; /* avoid div by zero; report 0% for all */
+        }
+
+        /*
+         * Second pass: compute percentage per task (truncated). Assign rounding
+         * remainder to the task with largest run_delta so reported total is 100%.
+         */
+        uint8_t pcts[DLOG_MAX_TASKS];
+        uint32_t sum_pct = 0;
+        UBaseType_t idx_max = 0;
+        for (UBaseType_t i = 0; i < n; i++)
+        {
+            uint32_t pct = (uint32_t)((100ULL * (uint64_t)run_deltas[i]) / sum_delta);
+            if (pct > 100U)
+            {
+                pct = 100U;
+            }
+            pcts[i] = (uint8_t)pct;
+            sum_pct += pcts[i];
+            if (run_deltas[i] > run_deltas[idx_max])
+            {
+                idx_max = i;
+            }
+        }
+        if (sum_pct < 100U && n > 0)
+        {
+            uint32_t rem = 100U - sum_pct;
+            uint32_t new_pct = (uint32_t)pcts[idx_max] + rem;
+            pcts[idx_max] = (uint8_t)(new_pct > 100U ? 100U : new_pct);
+        }
+
+        for (UBaseType_t i = 0; i < n; i++)
+        {
+            memset(msg.task_name, 0, TASK_NAME_LEN);
+            msg.util_pct = pcts[i];
+
+            if (status[i].pcTaskName != NULL)
+            {
+                size_t len = strlen(status[i].pcTaskName);
+                if (len > TASK_NAME_LEN)
+                {
+                    len = TASK_NAME_LEN;
+                }
+                memcpy(msg.task_name, status[i].pcTaskName, len);
+            }
+
+#ifdef CORE_CM4
+            (void)rpc_transmit_task_util_cm4(&msg);
+#else
+            if (rpc_transmit_task_util_cm7(&msg) != 0)
+            {
+                taskYIELD();
+                (void)rpc_transmit_task_util_cm7(&msg); /* retry once if IPC queue was full */
+            }
+#endif
+        }
+
+        memcpy(prev_status, status, (size_t)n * sizeof(TaskStatus_t));
+        prev_n = n;
+
+        vTaskDelay(pdMS_TO_TICKS(DLOG_PERIOD_MS));
+    }
+}
+
+void dlog_init(void)
+{
+    xTaskCreate(dlog_task, "dlog", 384, NULL, tskIDLE_PRIORITY + 1, NULL);
+}

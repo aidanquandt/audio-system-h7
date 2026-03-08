@@ -3,6 +3,7 @@
 add_library(drivers STATIC
     gpio/gpio_driver.c
     hsem/hsem_driver.c
+    timer/timer_driver.c
     i2c/i2c_driver.c
     lcd/lcd_driver.c
     sdram/sdram_driver.c
