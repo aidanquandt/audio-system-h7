@@ -1,6 +1,9 @@
-.PHONY: all build flash rebuild clean build-and-flash configure codegen help
+.PHONY: all build flash rebuild clean build-and-flash configure codegen help host
 
 all: build
+
+# Serial port for host (override: make host PORT=COM3)
+PORT ?= COM5
 
 help:
 	@echo "Available targets:"
@@ -11,6 +14,7 @@ help:
 	@echo "  clean            Remove build artifacts"
 	@echo "  configure        Run CMake configuration"
 	@echo "  codegen          Regenerate RPC code from proto/messages.yaml"
+	@echo "  host             Run app host (web UI at http://127.0.0.1:5000, PORT=$(PORT))"
 
 build:
 	./scripts/build.sh
@@ -32,3 +36,6 @@ configure:
 
 codegen:
 	./scripts/codegen.sh
+
+host:
+	python tools/host/app.py $(PORT)
