@@ -1,4 +1,4 @@
-#include "drivers/uart/uart.h"
+#include "drivers/uart/uart_driver.h"
 #include "FreeRTOS.h"
 #include "semphr.h"
 #include "queue.h"

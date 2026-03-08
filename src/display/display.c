@@ -2,7 +2,7 @@
 
 #ifdef CORE_CM4
 
-#include "drivers/lcd/lcd.h"
+#include "drivers/lcd/lcd_driver.h"
 
 /* RGB565 colour constants */
 #define RGB565_RED   0xF800U
@@ -12,7 +12,6 @@
 
 void display_init(void)
 {
-    lcd_driver_panel_init();
     lcd_driver_fill_sync(RGB565_BLACK);
 
     display_draw_edge_boxes();

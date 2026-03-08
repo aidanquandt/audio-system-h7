@@ -8,7 +8,7 @@
 
 /**
  * LCD driver: serialises DMA2D (R2M fill + M2M copy) and runs callbacks in task context.
- * Call lcd_driver_init() once before any other API (e.g. from display_init).
+ * lcd_driver_init() brings up controller and panel; call once before any other API. Touch can init after.
  *
  * LVGL: use lcd_driver_copy_rect_sync (or _async) for the flush callback (copy render
  * buffer to framebuffer); lcd_driver_fill_rect_* for solid fill; lcd_driver_width/height
@@ -20,7 +20,7 @@ void lcd_driver_init(void);
 /** Framebuffer pointer (RGB565). Valid after SDRAM/LTDC init. NULL on non-CM4. */
 volatile uint16_t *lcd_driver_framebuffer(void);
 
-/** Panel: release reset, enable, backlight on. Call after init; may block ~20 ms. */
+/** Panel: release reset, enable, backlight on. Called from lcd_driver_init(); use after panel_off() to re-enable. */
 void lcd_driver_panel_init(void);
 void lcd_driver_panel_off(void);
 

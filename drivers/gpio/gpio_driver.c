@@ -1,4 +1,4 @@
-#include "drivers/gpio/gpio.h"
+#include "drivers/gpio/gpio_driver.h"
 #include "main.h"
 #include <stdbool.h>
 

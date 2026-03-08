@@ -3,7 +3,7 @@
 #include "task.h"
 
 #ifdef CORE_CM4
-#include "drivers/uart/uart.h"
+#include "drivers/uart/uart_driver.h"
 #endif
 
 #define MAX_TRANSPORTS 4U

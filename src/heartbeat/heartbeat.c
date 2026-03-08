@@ -1,5 +1,5 @@
 #include "src/heartbeat/heartbeat.h"
-#include "drivers/gpio/gpio.h"
+#include "drivers/gpio/gpio_driver.h"
 #include "generated/rpc.h"
 #include "FreeRTOS.h"
 #include "task.h"

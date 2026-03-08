@@ -1,9 +1,9 @@
-#include "drivers/touch/touch.h"
+#include "drivers/touch/touch_driver.h"
 
 #ifdef CORE_CM4
 
-#include "drivers/i2c/i2c.h"
-#include "drivers/lcd/lcd.h"
+#include "drivers/i2c/i2c_driver.h"
+#include "drivers/lcd/lcd_driver.h"
 #include "FreeRTOS.h"
 #include "task.h"
 

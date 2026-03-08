@@ -1,4 +1,4 @@
-#include "drivers/hsem/hsem.h"
+#include "drivers/hsem/hsem_driver.h"
 #include "stm32h7xx_hal.h"
 
 #define HSEM_NUM_CHANNELS 32U

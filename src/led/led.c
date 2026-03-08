@@ -1,6 +1,6 @@
 #include "src/led/led.h"
 #include "generated/rpc.h"
-#include "drivers/gpio/gpio.h"
+#include "drivers/gpio/gpio_driver.h"
 
 /* Handlers are core-gated because each LED is owned by one core.
    Routing is declared via led_init() — no dest coupling in the schema. */

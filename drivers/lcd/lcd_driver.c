@@ -1,4 +1,4 @@
-#include "drivers/lcd/lcd.h"
+#include "drivers/lcd/lcd_driver.h"
 #include <stdbool.h>
 #include <stddef.h>
 
@@ -290,6 +290,7 @@ void lcd_driver_init(void)
         xSemaphoreGive(xfer_done_sem);
         xTaskCreate(lcd_driver_worker_task, "lcd_worker", 256, NULL, 1, NULL);
     }
+    lcd_driver_panel_init();
 }
 
 void lcd_driver_panel_init(void)

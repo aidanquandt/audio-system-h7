@@ -5,9 +5,9 @@
 #include "FreeRTOS.h"
 #include "semphr.h"
 #include "task.h"
-#include "drivers/gpio/gpio.h"
-#include "drivers/touch/touch.h"
-#include "drivers/lcd/lcd.h"
+#include "drivers/gpio/gpio_driver.h"
+#include "drivers/touch/touch_driver.h"
+#include "drivers/lcd/lcd_driver.h"
 
 #define TOUCH_DOT_SIZE        12U
 #define TOUCH_TASK_STACK_WORDS 256U

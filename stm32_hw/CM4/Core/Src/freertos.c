@@ -115,7 +115,6 @@ void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
   app_main();
-  vTaskDelete(NULL);
   /* USER CODE END StartDefaultTask */
 }
 

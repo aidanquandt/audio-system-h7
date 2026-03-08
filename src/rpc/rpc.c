@@ -3,7 +3,7 @@
 #include "src/transport/transport.h"
 #include "platform/shared_mem.h"
 #include "platform/ipc_channels.h"
-#include "drivers/hsem/hsem.h"
+#include "drivers/hsem/hsem_driver.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include "semphr.h"

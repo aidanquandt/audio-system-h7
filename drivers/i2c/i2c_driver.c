@@ -1,4 +1,4 @@
-#include "drivers/i2c/i2c.h"
+#include "drivers/i2c/i2c_driver.h"
 
 #ifdef CORE_CM4
 
