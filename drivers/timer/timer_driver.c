@@ -1,47 +1,25 @@
 /**
- * Timer driver — DWT cycle counter for FreeRTOS run-time stats.
+ * Timer driver — TIM2 counter for FreeRTOS run-time stats.
  *
- * Uses the Cortex-M DWT (Data Watchpoint and Trace) CYCCNT register.
- * Each core (CM4/CM7) has its own DWT, so the same code runs on both;
- * each reads its own cycle counter.
- *
- * Register base addresses match ARM CMSIS: CoreDebug DEMCR 0xE000EDFC,
- * DWT_Type CTRL 0xE0001000, CYCCNT 0xE0001004. When building with CMSIS
- * in the include path, DWT and CoreDebug from core_cm4.h/core_cm7.h
- * could be used instead of the macros below.
+ * Uses the STM32 TIM2 32-bit up-counter (TIM2->CNT) as the run-time stats clock.
+ * TIM2 is configured and started by CM7; both cores can read the counter.
  */
 
 #include "drivers/timer/timer_driver.h"
 #include <stdint.h>
-
-/* DWT and CoreDebug (addresses per ARM CMSIS DWT_Type / CoreDebug_Type) */
-#define DWT_CTRL   (*(volatile uint32_t *)0xE0001000UL)
-#define DWT_CYCCNT (*(volatile uint32_t *)0xE0001004UL)
-#define DEMCR      (*(volatile uint32_t *)0xE000EDFCUL)
-
-#define DEMCR_TRCENA        (1U << 24)
-#define DWT_CTRL_CYCCNTENA  (1U << 0)
-#define DWT_CTRL_NOCYCCNT   (1U << 25)
-
-static void enable_dwt_cycle_counter(void)
-{
-    DEMCR   |= DEMCR_TRCENA;
-    DWT_CYCCNT = 0;
-    DWT_CTRL  &= ~DWT_CTRL_NOCYCCNT;
-    DWT_CTRL  |= DWT_CTRL_CYCCNTENA;
-}
+#include "stm32h7xx.h"
 
 void timer_driver_init(void)
 {
-    enable_dwt_cycle_counter();
+    /* TIM2 is started during CM7 system init; nothing to do here. */
 }
 
 void configureTimerForRunTimeStats(void)
 {
-    enable_dwt_cycle_counter();
+    /* FreeRTOS hook: timebase is TIM2->CNT, owned by CM7. */
 }
 
 unsigned long getRunTimeCounterValue(void)
 {
-    return (unsigned long)DWT_CYCCNT;
+    return (unsigned long)TIM2->CNT;
 }
