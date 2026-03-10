@@ -9,11 +9,6 @@
 #include <stdint.h>
 #include "stm32h7xx.h"
 
-void timer_driver_init(void)
-{
-    /* TIM2 is started during CM7 system init; nothing to do here. */
-}
-
 void configureTimerForRunTimeStats(void)
 {
     /* FreeRTOS hook: timebase is TIM2->CNT, owned by CM7. */
