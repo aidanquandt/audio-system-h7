@@ -53,12 +53,9 @@
      PB8   ------> SDMMC1_D4
      PG13   ------> ETH_TXD0
      PD2   ------> SDMMC1_CMD
-     PA9   ------> USB_OTG_FS_VBUS
      PH13   ------> FDCAN1_TX
      PC8   ------> SDMMC1_D0
      PC9   ------> SDMMC1_D1
-     PA12   ------> USB_OTG_FS_DP
-     PA11   ------> USB_OTG_FS_DM
      PI10   ------> ETH_RX_ER
      PC7   ------> SDMMC1_D7
      PC6   ------> SDMMC1_D6
@@ -219,14 +216,6 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : PA12 PA11 */
-  GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_11;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStruct.Alternate = GPIO_AF10_OTG1_FS;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PI10 */
   GPIO_InitStruct.Pin = GPIO_PIN_10;

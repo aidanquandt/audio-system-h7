@@ -24,6 +24,7 @@
 #include "i2c.h"
 #include "ltdc.h"
 #include "usart.h"
+#include "usb_device.h"
 #include "gpio.h"
 #include "fmc.h"
 
