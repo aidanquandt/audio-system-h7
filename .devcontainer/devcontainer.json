@@ -1,13 +1,30 @@
 {
     "name": "STM32 Dev Environment",
-    "build": { "dockerfile": "Dockerfile" },
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "runArgs": [
+        "--privileged",
+        "-v", "/dev/bus/usb:/dev/bus/usb"
+    ],
     "customizations": {
         "vscode": {
             "extensions": [
-                "ms-vscode.cpptools",
-                "marus25.cortex-debug"
-            ]
+                "llvm-vs-code-extensions.vscode-clangd", // Swap this in
+                "marus25.cortex-debug",
+                "ms-vscode.cmake-tools"
+            ],
+            "settings": {
+                "C_Cpp.intelliSenseEngine": "disabled", // CRITICAL: Turn off the old engine
+                "clangd.arguments": [
+                    "--compile-commands-dir=build", // Point to where your merged JSON lives
+                    "--query-driver=/usr/bin/arm-none-eabi-*" // Allow clangd to "talk" to your ARM compiler
+                ]
+            }
         }
     },
-    "remoteUser": "vscode"
+    "remoteUser": "vscode",
+    "mounts": [
+    "source=${localEnv:HOME}/.gitconfig,target=/home/vscode/.gitconfig,type=bind,consistency=cached"
+    ]
 }
