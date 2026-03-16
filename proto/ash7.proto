@@ -1,0 +1,127 @@
+syntax = "proto3";
+
+package ash7;
+
+// Core status / error codes used in responses.
+enum StatusCode {
+  STATUS_OK               = 0;
+  STATUS_ERROR_GENERIC    = 1;
+  STATUS_INVALID_ARGUMENT = 2;
+  STATUS_UNSUPPORTED      = 3;
+  STATUS_BUSY             = 4;
+}
+
+// Top-level frame envelope ----------------------------------------------------
+//
+// This is the only protobuf message you serialize/deserialize on the wire.
+// All peers may send/receive any of these messages (fully bidirectional).
+message Ash7Frame {
+  // Optional logical ID; your binary frame header may already carry similar info.
+  uint32 logical_id = 1;
+
+  oneof msg {
+    // System / control
+    Heartbeat      heartbeat    = 10;
+    LogMessage     log_message  = 11;
+
+    // Generic request/response
+    GenericRequest  generic_request  = 20;
+    GenericResponse generic_response = 21;
+
+    // Audio control & data
+    AudioStreamOpen   audio_stream_open   = 30;
+    AudioStreamClose  audio_stream_close  = 31;
+    AudioStreamConfig audio_stream_config = 32;
+    AudioChunk        audio_chunk         = 33;
+  }
+}
+
+// Basic system messages -------------------------------------------------------
+
+message Heartbeat {
+  uint32 uptime_ms = 1;
+  uint32 seq       = 2;
+}
+
+message LogMessage {
+  uint32 timestamp_ms = 1;
+  uint32 level        = 2;  // 0=debug,1=info,2=warn,3=error
+  string tag          = 3;
+  string message      = 4;
+}
+
+// LED control / status --------------------------------------------------------
+
+message SetLed {
+  bool   on         = 1;
+  uint32 brightness = 2;  // 0–100
+}
+
+message LedStatus {
+  bool   on         = 1;
+  uint32 brightness = 2;
+}
+
+// Generic request / response envelope ----------------------------------------
+
+message RequestHeader {
+  uint32 request_id = 1;  // chosen by sender; echoed in response
+}
+
+message ResponseHeader {
+  uint32 request_id = 1;
+  StatusCode status = 2;
+  string    error_msg = 3;
+}
+
+message GenericRequest {
+  RequestHeader header = 1;
+
+  oneof payload {
+    SetLed set_led = 10;
+    // Future request payloads go here.
+  }
+}
+
+message GenericResponse {
+  ResponseHeader header = 1;
+
+  oneof payload {
+    LedStatus led_status = 10;
+    // Future response payloads go here.
+  }
+}
+
+// Audio streaming -------------------------------------------------------------
+
+enum AudioFormat {
+  AUDIO_FMT_UNKNOWN   = 0;
+  AUDIO_FMT_PCM_S16LE = 1;
+  AUDIO_FMT_PCM_S8    = 2;
+  // Future: compressed formats (e.g. OPUS) can be added here.
+}
+
+message AudioStreamOpen {
+  uint32      stream_id      = 1;  // chosen by opener
+  AudioFormat format         = 2;
+  uint32      sample_rate_hz = 3;
+  uint32      channels       = 4;  // 1=mono, 2=stereo
+}
+
+message AudioStreamClose {
+  uint32 stream_id = 1;
+  string reason    = 2;
+}
+
+message AudioStreamConfig {
+  uint32 stream_id      = 1;
+  uint32 volume_percent = 2;  // 0–100
+}
+
+// High-rate audio data chunks (best-effort) -----------------------------------
+
+message AudioChunk {
+  uint32 stream_id = 1;
+  uint32 sequence  = 2;
+  bytes  data      = 3;  // raw audio frames per AudioStreamOpen
+}
