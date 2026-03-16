@@ -1,0 +1,13 @@
+{
+    "name": "STM32 Dev Environment",
+    "build": { "dockerfile": "Dockerfile" },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.cpptools",
+                "marus25.cortex-debug"
+            ]
+        }
+    },
+    "remoteUser": "vscode"
+}
