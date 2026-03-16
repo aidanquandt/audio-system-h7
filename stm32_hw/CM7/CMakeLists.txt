@@ -61,7 +61,6 @@ target_compile_definitions(freertos_iface INTERFACE ${MX_Defines_Syms})
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/../../drivers ${CMAKE_BINARY_DIR}/drivers)
 add_subdirectory(${CMAKE_SOURCE_DIR}/../../include ${CMAKE_BINARY_DIR}/includes)
-add_subdirectory(${CMAKE_SOURCE_DIR}/../../lib/cobs ${CMAKE_BINARY_DIR}/cobs)
 add_subdirectory(${CMAKE_SOURCE_DIR}/../../generated ${CMAKE_BINARY_DIR}/generated)
 
 set(APP_CORE CM7)

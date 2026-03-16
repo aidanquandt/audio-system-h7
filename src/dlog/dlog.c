@@ -2,8 +2,7 @@
  * dlog — diagnostic log: FreeRTOS task CPU utilization over RPC/UART.
  *
  * Runs a periodic task on each core; samples uxTaskGetSystemState(), computes
- * utilization percentage per task, and sends one task_util_cm4 / task_util_cm7
- * message per task via rpc_transmit (CM4 sends directly to UART, CM7 via IPC to CM4).
+ * utilization percentage per task. External reporting over RPC has been removed.
  *
  * DLOG_MAX_TASKS: max tasks reported per core. If the system has more tasks than
  * this, uxTaskGetSystemState() returns 0 and we send no utilization for that period.
@@ -13,8 +12,6 @@
  */
 
 #include "src/dlog/dlog.h"
-#include "generated/rpc.h"
-#include "protocol/messages.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include <string.h>
@@ -60,12 +57,6 @@ static void dlog_task(void *pvParameters)
             vTaskDelay(pdMS_TO_TICKS(DLOG_PERIOD_MS));
             continue;
         }
-
-#ifdef CORE_CM4
-        task_util_cm4_t msg;
-#else
-        task_util_cm7_t msg;
-#endif
 
         /*
          * First pass: compute run_delta per task (match by handle).
@@ -132,28 +123,7 @@ static void dlog_task(void *pvParameters)
 
         for (UBaseType_t i = 0; i < n; i++)
         {
-            memset(msg.task_name, 0, TASK_NAME_LEN);
-            msg.util_pct = pcts[i];
-
-            if (status[i].pcTaskName != NULL)
-            {
-                size_t len = strlen(status[i].pcTaskName);
-                if (len > TASK_NAME_LEN)
-                {
-                    len = TASK_NAME_LEN;
-                }
-                memcpy(msg.task_name, status[i].pcTaskName, len);
-            }
-
-#ifdef CORE_CM4
-            (void)rpc_transmit_task_util_cm4(&msg);
-#else
-            if (rpc_transmit_task_util_cm7(&msg) != 0)
-            {
-                taskYIELD();
-                (void)rpc_transmit_task_util_cm7(&msg); /* retry once if IPC queue was full */
-            }
-#endif
+            (void)pcts[i];
         }
 
         memcpy(prev_status, status, (size_t)n * sizeof(TaskStatus_t));

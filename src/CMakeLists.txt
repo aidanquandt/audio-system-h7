@@ -20,7 +20,6 @@ set(_sources
     display/display.c
     heartbeat/heartbeat.c
     led/led.c
-    rpc/rpc.c
     touch/touch.c
     transport/transport.c
 )
@@ -36,4 +35,4 @@ target_include_directories(${_target}
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_link_libraries(${_target} PRIVATE drivers generated freertos_iface project_includes cobs)
+target_link_libraries(${_target} PRIVATE drivers generated freertos_iface project_includes)

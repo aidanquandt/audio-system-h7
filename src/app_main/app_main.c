@@ -7,7 +7,6 @@
 #include "src/heartbeat/heartbeat.h"
 #include "src/led/led.h"
 #include "drivers/lcd/lcd_driver.h"
-#include "src/rpc/rpc.h"
 #include "src/display/display.h"
 #include "src/touch/touch.h"
 #include "drivers/uart/uart_driver.h"
@@ -26,7 +25,6 @@ void app_main(void)
 
     display_init();
     transport_init();
-    rpc_init();
     led_init();
     heartbeat_init();
     dlog_init();
