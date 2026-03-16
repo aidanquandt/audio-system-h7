@@ -12,7 +12,6 @@
 #include "drivers/uart/uart_driver.h"
 #include "drivers/touch/touch_driver.h"
 #include "drivers/hsem/hsem_driver.h"
-#include "src/transport/transport.h"
 
 void app_main(void)
 {
@@ -24,7 +23,6 @@ void app_main(void)
     touch_driver_init();
 
     display_init();
-    transport_init();
     led_init();
     heartbeat_init();
     dlog_init();

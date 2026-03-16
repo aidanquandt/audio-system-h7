@@ -21,7 +21,6 @@ set(_sources
     heartbeat/heartbeat.c
     led/led.c
     touch/touch.c
-    transport/transport.c
 )
 
 # ──────────────────────────────────────────────────────────────────────────────

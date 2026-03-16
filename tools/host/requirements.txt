@@ -1,4 +1,0 @@
-# Pacman (UCRT64): pacman -S mingw-w64-ucrt-x86_64-python-flask mingw-w64-ucrt-x86_64-python-pyserial
-# If using pip (e.g. in a venv):
-flask>=3.0
-pyserial>=3.5

@@ -1,8 +1,8 @@
 /**
- * dlog — diagnostic log: FreeRTOS task CPU utilization over RPC/UART.
+ * dlog — diagnostic log: FreeRTOS task CPU utilization over UART.
  *
  * Runs a periodic task on each core; samples uxTaskGetSystemState(), computes
- * utilization percentage per task. External reporting over RPC has been removed.
+ * utilization percentage per task.
  *
  * DLOG_MAX_TASKS: max tasks reported per core. If the system has more tasks than
  * this, uxTaskGetSystemState() returns 0 and we send no utilization for that period.
@@ -97,8 +97,8 @@ static void dlog_task(void *pvParameters)
          * Second pass: compute percentage per task (truncated). Assign rounding
          * remainder to the task with largest run_delta so reported total is 100%.
          */
-        uint8_t pcts[DLOG_MAX_TASKS];
-        uint32_t sum_pct = 0;
+        uint8_t     pcts[DLOG_MAX_TASKS];
+        uint32_t    sum_pct = 0;
         UBaseType_t idx_max = 0;
         for (UBaseType_t i = 0; i < n; i++)
         {
@@ -116,9 +116,9 @@ static void dlog_task(void *pvParameters)
         }
         if (sum_pct < 100U && n > 0)
         {
-            uint32_t rem = 100U - sum_pct;
+            uint32_t rem     = 100U - sum_pct;
             uint32_t new_pct = (uint32_t)pcts[idx_max] + rem;
-            pcts[idx_max] = (uint8_t)(new_pct > 100U ? 100U : new_pct);
+            pcts[idx_max]    = (uint8_t)(new_pct > 100U ? 100U : new_pct);
         }
 
         for (UBaseType_t i = 0; i < n; i++)
