@@ -3,9 +3,9 @@
 *.sh text eol=lf
 
 # Vendor and generated code — exclude from GitHub language stats
-cube/Drivers/** linguist-vendored
-cube/Middlewares/** linguist-vendored
-cube/** linguist-generated
+stm32_hw/Drivers/** linguist-vendored
+stm32_hw/Middlewares/** linguist-generated
+stm32_hw/** linguist-generated
 
 # CMake file language detection
 *.cmake linguist-language=CMake

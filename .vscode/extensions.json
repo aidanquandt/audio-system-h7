@@ -2,6 +2,7 @@
     "recommendations": [
         "llvm-vs-code-extensions.vscode-clangd",
         "marus25.cortex-debug",
+        "ms-vscode.cmake-tools",
         "twxs.cmake",
         "ms-python.python",
         "ms-vscode.makefile-tools"

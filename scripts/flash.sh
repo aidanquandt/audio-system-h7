@@ -28,17 +28,20 @@ fi
 echo "=== Flashing STM32H745 Dual-Core ==="
 echo
 
+OPENOCD_CFG="$PROJECT_ROOT/tools/openocd/openocd.cfg"
+
 if command -v openocd &> /dev/null; then
-    openocd -f interface/stlink.cfg -f target/stm32h7x_dual_bank.cfg \
+    openocd -f "$OPENOCD_CFG" \
         -c "program $CM7_ELF verify" \
         -c "program $CM4_ELF verify" \
         -c "reset run" \
         -c "exit"
-    
+
     echo
     echo "✓ Flash complete"
 else
     echo "Error: OpenOCD not found!"
-    echo "Install: pacman -S mingw-w64-ucrt-x86_64-openocd"
+    echo "  Linux/Dev Container: apt install openocd"
+    echo "  Windows (MSYS2):    pacman -S mingw-w64-ucrt-x86_64-openocd"
     exit 1
 fi

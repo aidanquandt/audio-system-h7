@@ -61,5 +61,5 @@ SpacesInParentheses: false
 InsertBraces: true
 
 # Don't touch these (generated / vendor code)
-# Use a per-directory .clang-format with DisableFormat: true in cube/
+# Use a per-directory .clang-format with DisableFormat: true in stm32_hw/
 ...

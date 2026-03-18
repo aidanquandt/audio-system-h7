@@ -1,9 +1,6 @@
-.PHONY: all build flash rebuild clean build-and-flash configure codegen help host
+.PHONY: all build flash rebuild clean build-and-flash configure help
 
 all: build
-
-# Serial port for host (override: make host PORT=COM3)
-PORT ?= COM5
 
 help:
 	@echo "Available targets:"

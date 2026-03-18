@@ -10,19 +10,23 @@
     "customizations": {
         "vscode": {
             "extensions": [
-                "llvm-vs-code-extensions.vscode-clangd", // Swap this in
+                "llvm-vs-code-extensions.vscode-clangd",
                 "marus25.cortex-debug",
                 "ms-vscode.cmake-tools"
             ],
             "settings": {
-                "C_Cpp.intelliSenseEngine": "disabled", // CRITICAL: Turn off the old engine
+                "C_Cpp.intelliSenseEngine": "disabled",
                 "clangd.arguments": [
-                    "--compile-commands-dir=build", // Point to where your merged JSON lives
-                    "--query-driver=/usr/bin/arm-none-eabi-*" // Allow clangd to "talk" to your ARM compiler
+                    "--compile-commands-dir=${workspaceFolder}/build",
+                    "--query-driver=/usr/bin/arm-none-eabi-*",
+                    "--background-index",
+                    "--clang-tidy",
+                    "--header-insertion=never"
                 ]
             }
         }
     },
+    "postCreateCommand": "which arm-none-eabi-gcc openocd cmake ninja",
     "remoteUser": "vscode",
     "mounts": [
         "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached"
