@@ -1,7 +1,7 @@
 #!/bin/bash
 # Clean, configure, and build both cores
 
-set -e  # Exit on error
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
