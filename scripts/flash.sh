@@ -1,5 +1,5 @@
 #!/bin/bash
-# Flash both CM4 and CM7 cores to STM32H745
+# Flash both CM4 and CM7 cores to STM32H745 using combined dualcore.hex
 
 set -euo pipefail
 
@@ -9,19 +9,14 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 # Change to project root for relative paths
 cd "$PROJECT_ROOT"
 
-CM4_ELF="build/CM4/stm32_hw_CM4.elf"
-CM7_ELF="build/CM7/stm32_hw_CM7.elf"
+# Ensure dualcore.hex exists (build.sh runs make-dualcore-hex.sh)
+"$SCRIPT_DIR/make-dualcore-hex.sh" >/dev/null 2>&1 || true
 
-# Check if both ELF files exist
-if [[ ! -f "$CM4_ELF" ]]; then
-    echo "Error: CM4 firmware not found: $CM4_ELF"
-    echo "Run: ./scripts/build.sh"
-    exit 1
-fi
+DUALCORE_HEX="build/dualcore.hex"
 
-if [[ ! -f "$CM7_ELF" ]]; then
-    echo "Error: CM7 firmware not found: $CM7_ELF"
-    echo "Run: ./scripts/build.sh"
+if [[ ! -f "$DUALCORE_HEX" ]]; then
+    echo "Error: Dual-core firmware not found: $DUALCORE_HEX"
+    echo "Run: make build"
     exit 1
 fi
 
@@ -34,8 +29,7 @@ OPENOCD_CFG="$PROJECT_ROOT/tools/openocd/openocd.cfg"
 
 if command -v openocd &> /dev/null; then
     openocd -f "$OPENOCD_CFG" \
-        -c "program $CM7_ELF verify" \
-        -c "program $CM4_ELF verify" \
+        -c "program $DUALCORE_HEX verify" \
         -c "reset run" \
         -c "exit"
 
