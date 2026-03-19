@@ -11,6 +11,9 @@ help:
 	@echo "  rebuild          Clean, configure, and build"
 	@echo "  clean            Remove build artifacts"
 	@echo "  configure        Run CMake configuration"
+	@echo "  host-codegen     Generate Python protobuf for host"
+	@echo "  host-run         Run host webapp (uvicorn)"
+	@echo "  host-install     Install host Python package"
 
 codegen:
 	./scripts/gen-proto.sh
@@ -32,3 +35,12 @@ build-and-flash:
 
 configure:
 	./scripts/configure.sh
+
+host-codegen:
+	./scripts/gen-proto-host.sh
+
+host-run:
+	cd host && uvicorn host.main:app --reload --host 0.0.0.0 --port 8000
+
+host-install:
+	cd host && pip install -e .

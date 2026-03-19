@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>audio-system-h7 Host</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <h1>audio-system-h7 Host</h1>
+
+  <section id="connection">
+    <h2>Connection</h2>
+    <div>
+      <label for="port">Port:</label>
+      <select id="port"></select>
+      <button id="connect">Connect</button>
+      <button id="disconnect" disabled>Disconnect</button>
+    </div>
+    <p id="connection-status">Disconnected</p>
+  </section>
+
+  <section id="heartbeat">
+    <h2>Heartbeat</h2>
+    <button id="send-heartbeat" disabled>Send Heartbeat</button>
+    <p id="heartbeat-display">Last: —</p>
+  </section>
+
+  <section id="logs">
+    <h2>Logs</h2>
+    <div id="log-list"></div>
+  </section>
+
+  <section id="led">
+    <h2>LED Control</h2>
+    <div>
+      <label>
+        <input type="checkbox" id="led-on" disabled>
+        On
+      </label>
+      <label>
+        Brightness: <input type="range" id="led-brightness" min="0" max="100" value="50" disabled>
+        <span id="brightness-value">50</span>%
+      </label>
+    </div>
+    <p id="led-status">Status: —</p>
+  </section>
+
+  <script src="/app.js"></script>
+</body>
+</html>
