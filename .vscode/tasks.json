@@ -2,6 +2,18 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Attach USB",
+            "type": "shell",
+            "command": "./scripts/attach-usb.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "Prepare Debug",
+            "dependsOn": ["Attach USB", "Build"],
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        },
+        {
             "label": "Build",
             "type": "shell",
             "command": "./scripts/build.sh",

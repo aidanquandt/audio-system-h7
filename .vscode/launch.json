@@ -6,99 +6,85 @@
             "type": "cortex-debug",
             "request": "launch",
             "servertype": "openocd",
-            "serverpath": "C:\\msys64\\ucrt64\\bin\\openocd.exe",
+            "serverpath": "/usr/bin/openocd",
             "cwd": "${workspaceFolder}",
             "executable": "${workspaceFolder}/build/CM7/stm32_hw_CM7.elf",
             "configFiles": [
                 "${workspaceFolder}/tools/openocd/openocd.cfg"
             ],
-            "gdbPath": "C:\\msys64\\ucrt64\\bin\\gdb-multiarch.exe",
-            "armToolchainPath": "C:\\msys64\\ucrt64\\bin",
+            "gdbPath": "/usr/bin/gdb-multiarch",
+            "armToolchainPath": "/usr/bin",
             "toolchainPrefix": "arm-none-eabi",
-            "objdumpPath": "C:\\msys64\\ucrt64\\bin\\arm-none-eabi-objdump.exe",
+            "objdumpPath": "/usr/bin/arm-none-eabi-objdump",
             "device": "STM32H745XI",
             "svdFile": "",
             "numberOfProcessors": 2,
             "targetProcessor": 0,
-            "preLaunchTask": "Build",
-            "preLaunchCommands": [
-                "set substitute-path c:\\\\github\\\\ash7 C:/github/ash7",
-                "set substitute-path C:\\\\github\\\\ash7 C:/github/ash7"
-            ],
-            "showDevDebugOutput": "raw",
+            "preLaunchTask": "Prepare Debug",
+            "showDevDebugOutput": "raw"
         },
         {
             "name": "Debug CM4 (OpenOCD)",
             "type": "cortex-debug",
             "request": "attach",
             "servertype": "external",
+            "preLaunchTask": "Attach USB",
             "cwd": "${workspaceFolder}",
             "executable": "${workspaceFolder}/build/CM4/stm32_hw_CM4.elf",
             "gdbTarget": "localhost:50001",
-            "gdbPath": "C:\\msys64\\ucrt64\\bin\\gdb-multiarch.exe",
-            "armToolchainPath": "C:\\msys64\\ucrt64\\bin",
+            "gdbPath": "/usr/bin/gdb-multiarch",
+            "armToolchainPath": "/usr/bin",
             "toolchainPrefix": "arm-none-eabi",
-            "objdumpPath": "C:\\msys64\\ucrt64\\bin\\arm-none-eabi-objdump.exe",
+            "objdumpPath": "/usr/bin/arm-none-eabi-objdump",
             "device": "STM32H745XI",
             "svdFile": "",
             "numberOfProcessors": 2,
             "targetProcessor": 1,
-            "preAttachCommands": [
-                "set substitute-path c:\\\\github\\\\ash7 C:/github/ash7",
-                "set substitute-path C:\\\\github\\\\ash7 C:/github/ash7"
-            ],
-            "showDevDebugOutput": "raw",
+            "showDevDebugOutput": "raw"
         },
         {
             "name": "Debug CM4 (OpenOCD, Standalone)",
             "type": "cortex-debug",
             "request": "launch",
             "servertype": "openocd",
-            "serverpath": "C:\\msys64\\ucrt64\\bin\\openocd.exe",
+            "serverpath": "/usr/bin/openocd",
             "cwd": "${workspaceFolder}",
             "executable": "${workspaceFolder}/build/CM4/stm32_hw_CM4.elf",
             "configFiles": [
                 "${workspaceFolder}/tools/openocd/openocd.cfg"
             ],
-            "gdbPath": "C:\\msys64\\ucrt64\\bin\\gdb-multiarch.exe",
-            "armToolchainPath": "C:\\msys64\\ucrt64\\bin",
+            "gdbPath": "/usr/bin/gdb-multiarch",
+            "armToolchainPath": "/usr/bin",
             "toolchainPrefix": "arm-none-eabi",
-            "objdumpPath": "C:\\msys64\\ucrt64\\bin\\arm-none-eabi-objdump.exe",
+            "objdumpPath": "/usr/bin/arm-none-eabi-objdump",
             "device": "STM32H745XI",
             "svdFile": "",
             "numberOfProcessors": 2,
             "targetProcessor": 1,
-            "preLaunchTask": "Build",
-            "preLaunchCommands": [
-                "set substitute-path c:\\\\github\\\\ash7 C:/github/ash7",
-                "set substitute-path C:\\\\github\\\\ash7 C:/github/ash7"
-            ],
-            "showDevDebugOutput": "raw",
+            "preLaunchTask": "Prepare Debug",
+            "showDevDebugOutput": "raw"
         },
         {
             "name": "Attach CM7 (OpenOCD)",
             "type": "cortex-debug",
             "request": "attach",
             "servertype": "openocd",
-            "serverpath": "C:\\msys64\\ucrt64\\bin\\openocd.exe",
+            "preLaunchTask": "Attach USB",
+            "serverpath": "/usr/bin/openocd",
             "cwd": "${workspaceFolder}",
             "executable": "${workspaceFolder}/build/CM7/stm32_hw_CM7.elf",
             "configFiles": [
                 "${workspaceFolder}/tools/openocd/openocd.cfg"
             ],
-            "gdbPath": "C:\\msys64\\ucrt64\\bin\\gdb-multiarch.exe",
-            "armToolchainPath": "C:\\msys64\\ucrt64\\bin",
+            "gdbPath": "/usr/bin/gdb-multiarch",
+            "armToolchainPath": "/usr/bin",
             "toolchainPrefix": "arm-none-eabi",
-            "objdumpPath": "C:\\msys64\\ucrt64\\bin\\arm-none-eabi-objdump.exe",
+            "objdumpPath": "/usr/bin/arm-none-eabi-objdump",
             "device": "STM32H745XI",
             "svdFile": "",
             "numberOfProcessors": 2,
             "targetProcessor": 0,
-            "preAttachCommands": [
-                "set substitute-path c:\\\\github\\\\ash7 C:/github/ash7",
-                "set substitute-path C:\\\\github\\\\ash7 C:/github/ash7"
-            ],
-            "showDevDebugOutput": "raw",
+            "showDevDebugOutput": "raw"
         }
     ],
     "compounds": [

@@ -26,7 +26,7 @@
             }
         }
     },
-    "postCreateCommand": "which arm-none-eabi-gcc openocd cmake ninja",
+    "postCreateCommand": "which arm-none-eabi-gcc arm-none-eabi-objdump openocd gdb-multiarch cmake ninja",
     "remoteUser": "vscode",
     "mounts": [
         "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached"

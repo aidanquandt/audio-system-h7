@@ -1,5 +1,6 @@
-// Copy to launch.json. Dev container/Linux: uses openocd and arm-none-eabi-gdb from PATH.
-// Windows (MSYS2): copy to launch.json and set serverpath, gdbPath, armToolchainPath, objdumpPath to your toolchain (e.g. C:\\msys64\\ucrt64\\bin\\).
+// Copy to launch.json.
+// Ubuntu/WSL: Uses openocd, gdb-multiarch, arm-none-eabi-* from PATH (/usr/bin).
+// Windows: Set serverpath, gdbPath, armToolchainPath, objdumpPath to your toolchain.
 {
     "version": "0.2.0",
     "configurations": [
@@ -14,7 +15,7 @@
             "configFiles": [
                 "${workspaceFolder}/tools/openocd/openocd.cfg"
             ],
-            "gdbPath": "/usr/bin/arm-none-eabi-gdb",
+            "gdbPath": "/usr/bin/gdb-multiarch",
             "armToolchainPath": "/usr/bin",
             "toolchainPrefix": "arm-none-eabi",
             "objdumpPath": "/usr/bin/arm-none-eabi-objdump",
@@ -22,7 +23,7 @@
             "svdFile": "",
             "numberOfProcessors": 2,
             "targetProcessor": 0,
-            "preLaunchTask": "Build",
+            "preLaunchTask": "Prepare Debug",
             "showDevDebugOutput": "raw"
         },
         {
@@ -30,10 +31,11 @@
             "type": "cortex-debug",
             "request": "attach",
             "servertype": "external",
+            "preLaunchTask": "Attach USB",
             "cwd": "${workspaceFolder}",
             "executable": "${workspaceFolder}/build/CM4/stm32_hw_CM4.elf",
             "gdbTarget": "localhost:50001",
-            "gdbPath": "/usr/bin/arm-none-eabi-gdb",
+            "gdbPath": "/usr/bin/gdb-multiarch",
             "armToolchainPath": "/usr/bin",
             "toolchainPrefix": "arm-none-eabi",
             "objdumpPath": "/usr/bin/arm-none-eabi-objdump",
@@ -54,7 +56,7 @@
             "configFiles": [
                 "${workspaceFolder}/tools/openocd/openocd.cfg"
             ],
-            "gdbPath": "/usr/bin/arm-none-eabi-gdb",
+            "gdbPath": "/usr/bin/gdb-multiarch",
             "armToolchainPath": "/usr/bin",
             "toolchainPrefix": "arm-none-eabi",
             "objdumpPath": "/usr/bin/arm-none-eabi-objdump",
@@ -62,7 +64,7 @@
             "svdFile": "",
             "numberOfProcessors": 2,
             "targetProcessor": 1,
-            "preLaunchTask": "Build",
+            "preLaunchTask": "Prepare Debug",
             "showDevDebugOutput": "raw"
         },
         {
@@ -70,13 +72,14 @@
             "type": "cortex-debug",
             "request": "attach",
             "servertype": "openocd",
+            "preLaunchTask": "Attach USB",
             "serverpath": "/usr/bin/openocd",
             "cwd": "${workspaceFolder}",
             "executable": "${workspaceFolder}/build/CM7/stm32_hw_CM7.elf",
             "configFiles": [
                 "${workspaceFolder}/tools/openocd/openocd.cfg"
             ],
-            "gdbPath": "/usr/bin/arm-none-eabi-gdb",
+            "gdbPath": "/usr/bin/gdb-multiarch",
             "armToolchainPath": "/usr/bin",
             "toolchainPrefix": "arm-none-eabi",
             "objdumpPath": "/usr/bin/arm-none-eabi-objdump",

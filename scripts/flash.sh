@@ -37,7 +37,7 @@ if command -v openocd &> /dev/null; then
     echo "✓ Flash complete"
 else
     echo "Error: OpenOCD not found!"
-    echo "  Linux/Dev Container: apt install openocd"
-    echo "  Windows (MSYS2):    pacman -S mingw-w64-ucrt-x86_64-openocd"
+    echo "  Ubuntu/WSL:  sudo apt install openocd"
+    echo "  Dev container: already included"
     exit 1
 fi

@@ -8,8 +8,7 @@
     "C_Cpp.autocomplete": "disabled",
     "C_Cpp.intelliSenseEngine": "disabled",
     // clangd settings
-    // Set CLANGD_QUERY_DRIVER in your .env to point at arm-none-eabi-gcc
-    // e.g. C:/msys64/ucrt64/bin/arm-none-eabi-gcc.exe
+    // Set CLANGD_QUERY_DRIVER in your .env to point at arm-none-eabi-gcc (Ubuntu: /usr/bin/arm-none-eabi-gcc)
     "clangd.arguments": [
         "--compile-commands-dir=${workspaceFolder}/build",
         "--background-index",

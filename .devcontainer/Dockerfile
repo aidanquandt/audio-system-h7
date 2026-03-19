@@ -1,6 +1,7 @@
 FROM mcr.microsoft.com/devcontainers/base:ubuntu
 RUN apt-get update && apt-get install -y \
     gcc-arm-none-eabi \
+    gdb-multiarch \
     libnewlib-arm-none-eabi \
     build-essential \
     cmake \
