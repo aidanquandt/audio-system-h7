@@ -28,6 +28,8 @@ fi
 echo "=== Flashing STM32H745 Dual-Core ==="
 echo
 
+"$SCRIPT_DIR/attach-usb.sh"
+
 OPENOCD_CFG="$PROJECT_ROOT/tools/openocd/openocd.cfg"
 
 if command -v openocd &> /dev/null; then
