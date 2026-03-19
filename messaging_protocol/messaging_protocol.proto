@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package ash7;
+package messaging_protocol;
 
 // Core status / error codes used in responses.
 enum StatusCode {
@@ -15,7 +15,7 @@ enum StatusCode {
 //
 // This is the only protobuf message you serialize/deserialize on the wire.
 // All peers may send/receive any of these messages (fully bidirectional).
-message Ash7Frame {
+message Frame {
   // Optional logical ID; your binary frame header may already carry similar info.
   uint32 logical_id = 1;
 

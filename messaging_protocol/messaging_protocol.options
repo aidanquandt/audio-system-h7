@@ -1,0 +1,5 @@
+messaging_protocol.LogMessage.tag            max_size:16
+messaging_protocol.LogMessage.message        max_size:64
+messaging_protocol.ResponseHeader.error_msg  max_size:64
+messaging_protocol.AudioStreamClose.reason   max_size:32
+messaging_protocol.AudioChunk.data           max_size:512

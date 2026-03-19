@@ -21,6 +21,10 @@ set(_sources
     heartbeat/heartbeat.c
     led/led.c
     touch/touch.c
+    messaging_protocol/messaging_protocol_task.c
+    messaging_protocol/messaging_protocol_framer.c
+    messaging_protocol/messaging_protocol_handler.c
+    messaging_protocol/transport/messaging_protocol_uart.c
 )
 
 # ──────────────────────────────────────────────────────────────────────────────

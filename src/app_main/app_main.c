@@ -12,6 +12,7 @@
 #include "drivers/uart/uart_driver.h"
 #include "drivers/touch/touch_driver.h"
 #include "drivers/hsem/hsem_driver.h"
+#include "src/messaging_protocol/messaging_protocol.h"
 
 void app_main(void)
 {
@@ -21,6 +22,10 @@ void app_main(void)
     lcd_driver_init();
     uart_driver_init();
     touch_driver_init();
+
+    messaging_protocol_transport_t uart_transport;
+    messaging_protocol_uart_transport_init(&uart_transport);
+    messaging_protocol_init(&uart_transport);
 
     display_init();
     led_init();

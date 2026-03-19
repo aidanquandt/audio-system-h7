@@ -1,9 +1,10 @@
-.PHONY: all build flash rebuild clean build-and-flash configure help
+.PHONY: all build codegen flash rebuild clean build-and-flash configure help
 
 all: build
 
 help:
 	@echo "Available targets:"
+	@echo "  codegen          Generate messaging_protocol.pb.c/.h from proto"
 	@echo "  build            Build both CM4 and CM7"
 	@echo "  flash            Flash both cores"
 	@echo "  build-and-flash  Build then flash"
@@ -11,7 +12,10 @@ help:
 	@echo "  clean            Remove build artifacts"
 	@echo "  configure        Run CMake configuration"
 
-build:
+codegen:
+	./scripts/gen-proto.sh
+
+build: codegen
 	./scripts/build.sh
 
 flash:
