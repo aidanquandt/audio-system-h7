@@ -7,6 +7,7 @@ PROTO="$PROJECT_ROOT/messaging_protocol"
 OUT="$PROJECT_ROOT/host/src/host/generated"
 
 mkdir -p "$OUT"
-protoc --python_out="$OUT" \
+# Use grpc_tools.protoc for protobuf 4.x compatibility (matches nanopb generator)
+python3 -m grpc_tools.protoc --python_out="$OUT" \
   -I "$PROTO" \
   "$PROTO/messaging_protocol.proto"
