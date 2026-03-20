@@ -1,65 +1,35 @@
 ---
-Language: C
 BasedOnStyle: LLVM
 
 # Indentation
 IndentWidth: 4
-TabWidth: 4
 UseTab: Never
+TabWidth: 4
 ContinuationIndentWidth: 4
 
-# Column limit
+# Line length
 ColumnLimit: 100
 
-# Brace style: Allman for functions/structs/enums, K&R for control flow
-BreakBeforeBraces: Custom
-BraceWrapping:
-  AfterFunction:        true
-  AfterStruct:          false
-  AfterEnum:            false
-  AfterControlStatement: Always
-  BeforeElse:           true
+# Braces
+BreakBeforeBraces: Allman
+AllowShortBlocksOnASingleLine: Never
+AllowShortFunctionsOnASingleLine: None
 
-# Pointer alignment: attach * to the name (uint8_t *buf, not uint8_t* buf)
-PointerAlignment: Right
+# Spacing
+SpaceAfterCStyleCast: true
+SpaceBeforeRangeBasedForLoopColon: true
 
-# Alignment
-AlignConsecutiveAssignments:
-  Enabled: true
-  AcrossEmptyLines: false
-  AcrossComments: false
-AlignConsecutiveDeclarations:
-  Enabled: true
-  AcrossEmptyLines: false
-  AcrossComments: false
-AlignConsecutiveMacros:
-  Enabled: true
-  AcrossEmptyLines: false
-  AcrossComments: false
+# Pointers
+PointerAlignment: Left
 
-# Function arguments / parameters
-AllowAllArgumentsOnNextLine: false
-AllowAllParametersOfDeclarationOnNextLine: false
-BinPackArguments: false
-BinPackParameters: false
+# Comments
+ReflowComments: true
+SpaceBeforeParens: ControlStatements
 
-# Short forms on one line
-AllowShortFunctionsOnASingleLine: Inline
+# Includes
+SortIncludes: CaseSensitive
+IncludeBlocks: Preserve
+
+# Other
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: false
-AllowShortBlocksOnASingleLine: Empty
-
-# Include ordering (keep as-is, don't reorder)
-SortIncludes: false
-
-# Spaces
-SpaceAfterCStyleCast: false
-SpaceBeforeParens: ControlStatements
-SpacesInParentheses: false
-
-# Always add braces around if/for/while/else bodies
-InsertBraces: true
-
-# Don't touch these (generated / vendor code)
-# Use a per-directory .clang-format with DisableFormat: true in stm32_hw/
-...
