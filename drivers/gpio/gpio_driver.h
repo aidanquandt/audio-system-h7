@@ -2,7 +2,8 @@
 
 #include <stdbool.h>
 
-typedef enum {
+typedef enum
+{
     GPIO_DRIVER_LED_RED   = 0, /* LD6 (CM7) / LD7 (CM4) */
     GPIO_DRIVER_LED_GREEN = 1,
     GPIO_DRIVER_TOUCH_INT = 2, /* PG2 - LCD_INT, touch data ready (CM4 only) */

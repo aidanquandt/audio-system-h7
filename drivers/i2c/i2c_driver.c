@@ -2,8 +2,8 @@
 
 #ifdef CORE_CM4
 
-#include "main.h"
 #include "i2c.h"
+#include "main.h"
 
 extern I2C_HandleTypeDef hi2c4;
 
@@ -14,103 +14,83 @@ void i2c_driver_init(void)
     /* I2C4 is initialised in main via MX_I2C4_Init(). */
 }
 
-bool i2c_driver_read(uint8_t addr, uint8_t reg, uint8_t *buf, uint16_t len)
+bool i2c_driver_read(uint8_t addr, uint8_t reg, uint8_t* buf, uint16_t len)
 {
     if (buf == NULL)
     {
         return false;
     }
-    return HAL_I2C_Mem_Read(&hi2c4,
-                            (uint16_t)addr << 1U,
-                            (uint16_t)reg,
-                            I2C_MEMADD_SIZE_8BIT,
-                            buf,
-                            len,
+    return HAL_I2C_Mem_Read(&hi2c4, (uint16_t) addr << 1U, (uint16_t) reg, I2C_MEMADD_SIZE_8BIT,
+                            buf, len, I2C4_TIMEOUT_MS) == HAL_OK;
+}
+
+bool i2c_driver_read16(uint8_t addr, uint16_t reg, uint8_t* buf, uint16_t len)
+{
+    if (buf == NULL)
+    {
+        return false;
+    }
+    return HAL_I2C_Mem_Read(&hi2c4, (uint16_t) addr << 1U, reg, I2C_MEMADD_SIZE_16BIT, buf, len,
                             I2C4_TIMEOUT_MS) == HAL_OK;
 }
 
-bool i2c_driver_read16(uint8_t addr, uint16_t reg, uint8_t *buf, uint16_t len)
+bool i2c_driver_write(uint8_t addr, uint8_t reg, const uint8_t* buf, uint16_t len)
 {
     if (buf == NULL)
     {
         return false;
     }
-    return HAL_I2C_Mem_Read(&hi2c4,
-                            (uint16_t)addr << 1U,
-                            reg,
-                            I2C_MEMADD_SIZE_16BIT,
-                            buf,
-                            len,
-                            I2C4_TIMEOUT_MS) == HAL_OK;
+    return HAL_I2C_Mem_Write(&hi2c4, (uint16_t) addr << 1U, (uint16_t) reg, I2C_MEMADD_SIZE_8BIT,
+                             (uint8_t*) buf, len, I2C4_TIMEOUT_MS) == HAL_OK;
 }
 
-bool i2c_driver_write(uint8_t addr, uint8_t reg, const uint8_t *buf, uint16_t len)
-{
-    if (buf == NULL)
-    {
-        return false;
-    }
-    return HAL_I2C_Mem_Write(&hi2c4,
-                             (uint16_t)addr << 1U,
-                             (uint16_t)reg,
-                             I2C_MEMADD_SIZE_8BIT,
-                             (uint8_t *)buf,
-                             len,
-                             I2C4_TIMEOUT_MS) == HAL_OK;
-}
-
-bool i2c_driver_write16(uint8_t addr, uint16_t reg, const uint8_t *buf, uint16_t len)
+bool i2c_driver_write16(uint8_t addr, uint16_t reg, const uint8_t* buf, uint16_t len)
 {
     if (buf == NULL && len > 0)
     {
         return false;
     }
-    return HAL_I2C_Mem_Write(&hi2c4,
-                             (uint16_t)addr << 1U,
-                             reg,
-                             I2C_MEMADD_SIZE_16BIT,
-                             (uint8_t *)buf,
-                             len,
-                             I2C4_TIMEOUT_MS) == HAL_OK;
+    return HAL_I2C_Mem_Write(&hi2c4, (uint16_t) addr << 1U, reg, I2C_MEMADD_SIZE_16BIT,
+                             (uint8_t*) buf, len, I2C4_TIMEOUT_MS) == HAL_OK;
 }
 
 #else
 
 void i2c_driver_init(void) {}
 
-bool i2c_driver_read(uint8_t addr, uint8_t reg, uint8_t *buf, uint16_t len)
+bool i2c_driver_read(uint8_t addr, uint8_t reg, uint8_t* buf, uint16_t len)
 {
-    (void)addr;
-    (void)reg;
-    (void)buf;
-    (void)len;
+    (void) addr;
+    (void) reg;
+    (void) buf;
+    (void) len;
     return false;
 }
 
-bool i2c_driver_read16(uint8_t addr, uint16_t reg, uint8_t *buf, uint16_t len)
+bool i2c_driver_read16(uint8_t addr, uint16_t reg, uint8_t* buf, uint16_t len)
 {
-    (void)addr;
-    (void)reg;
-    (void)buf;
-    (void)len;
+    (void) addr;
+    (void) reg;
+    (void) buf;
+    (void) len;
     return false;
 }
 
-bool i2c_driver_write(uint8_t addr, uint8_t reg, const uint8_t *buf, uint16_t len)
+bool i2c_driver_write(uint8_t addr, uint8_t reg, const uint8_t* buf, uint16_t len)
 {
-    (void)addr;
-    (void)reg;
-    (void)buf;
-    (void)len;
+    (void) addr;
+    (void) reg;
+    (void) buf;
+    (void) len;
     return false;
 }
 
-bool i2c_driver_write16(uint8_t addr, uint16_t reg, const uint8_t *buf, uint16_t len)
+bool i2c_driver_write16(uint8_t addr, uint16_t reg, const uint8_t* buf, uint16_t len)
 {
-    (void)addr;
-    (void)reg;
-    (void)buf;
-    (void)len;
+    (void) addr;
+    (void) reg;
+    (void) buf;
+    (void) len;
     return false;
 }
 

@@ -4,10 +4,11 @@
 
 #define GPIO_DRIVER_EXTI_LINES 16
 
-typedef struct {
-    GPIO_TypeDef *port;
-    uint16_t      pin;
-    bool          is_output;
+typedef struct
+{
+    GPIO_TypeDef* port;
+    uint16_t pin;
+    bool is_output;
 } gpio_descriptor_t;
 
 static const gpio_descriptor_t gpio_map[GPIO_DRIVER_COUNT] = {
@@ -23,7 +24,7 @@ static const gpio_descriptor_t gpio_map[GPIO_DRIVER_COUNT] = {
 };
 
 static gpio_driver_exti_callback_t exti_callbacks[GPIO_DRIVER_EXTI_LINES];
-static gpio_driver_pin_t          exti_line_to_pin[GPIO_DRIVER_EXTI_LINES];
+static gpio_driver_pin_t exti_line_to_pin[GPIO_DRIVER_EXTI_LINES];
 
 /*
  * Shadow state for each pin owned by this core (outputs only).
@@ -82,8 +83,7 @@ void gpio_driver_toggle(gpio_driver_pin_t pin)
         return;
     }
     shadow_state[pin] ^= 1;
-    HAL_GPIO_WritePin(gpio_map[pin].port,
-                      gpio_map[pin].pin,
+    HAL_GPIO_WritePin(gpio_map[pin].port, gpio_map[pin].pin,
                       shadow_state[pin] ? GPIO_PIN_SET : GPIO_PIN_RESET);
 }
 

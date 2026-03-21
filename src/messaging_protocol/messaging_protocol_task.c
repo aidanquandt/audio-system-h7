@@ -1,12 +1,12 @@
-#include "src/messaging_protocol/messaging_protocol.h"
-#include "src/messaging_protocol/messaging_protocol_framer.h"
-#include "src/messaging_protocol/messaging_protocol_handler.h"
+#include "FreeRTOS.h"
 #include "messaging_protocol.pb.h"
 #include "pb_decode.h"
 #include "pb_encode.h"
-#include "FreeRTOS.h"
-#include "task.h"
 #include "semphr.h"
+#include "src/messaging_protocol/messaging_protocol.h"
+#include "src/messaging_protocol/messaging_protocol_framer.h"
+#include "src/messaging_protocol/messaging_protocol_handler.h"
+#include "task.h"
 #include <string.h>
 
 #ifdef CORE_CM4
@@ -15,17 +15,17 @@
 #define MESSAGING_PROTOCOL_TASK_PRIORITY    (tskIDLE_PRIORITY + 3)
 #define MESSAGING_PROTOCOL_RECV_TIMEOUT_MS  10U
 
-static messaging_protocol_transport_t *s_transport;
+static messaging_protocol_transport_t* s_transport;
 static uint8_t s_tx_buf[MESSAGING_PROTOCOL_MAX_FRAME_SIZE + 2];
 static SemaphoreHandle_t s_tx_mutex;
 
-static void messaging_protocol_task(void *pvParameters)
+static void messaging_protocol_task(void* pvParameters)
 {
     messaging_protocol_framer_t framer;
-    uint8_t                    recv_buf[64];
-    messaging_protocol_Frame   frame;
+    uint8_t recv_buf[64];
+    messaging_protocol_Frame frame;
 
-    (void)pvParameters;
+    (void) pvParameters;
     messaging_protocol_framer_init(&framer);
 
     for (;;)
@@ -61,7 +61,7 @@ static void messaging_protocol_task(void *pvParameters)
 
 #endif /* CORE_CM4 */
 
-void messaging_protocol_init(messaging_protocol_transport_t *transport)
+void messaging_protocol_init(messaging_protocol_transport_t* transport)
 {
 #ifdef CORE_CM4
     if (transport == NULL)
@@ -71,14 +71,14 @@ void messaging_protocol_init(messaging_protocol_transport_t *transport)
     s_transport = transport;
     s_tx_mutex  = xSemaphoreCreateMutex();
     configASSERT(s_tx_mutex != NULL);
-    xTaskCreate(messaging_protocol_task, "msg_proto", MESSAGING_PROTOCOL_TASK_STACK_WORDS,
-                NULL, MESSAGING_PROTOCOL_TASK_PRIORITY, NULL);
+    xTaskCreate(messaging_protocol_task, "msg_proto", MESSAGING_PROTOCOL_TASK_STACK_WORDS, NULL,
+                MESSAGING_PROTOCOL_TASK_PRIORITY, NULL);
 #else
-    (void)transport;
+    (void) transport;
 #endif /* CORE_CM4 */
 }
 
-void messaging_protocol_send_frame(messaging_protocol_Frame *frame)
+void messaging_protocol_send_frame(messaging_protocol_Frame* frame)
 {
 #ifdef CORE_CM4
     if (s_transport == NULL || frame == NULL)
@@ -105,12 +105,12 @@ void messaging_protocol_send_frame(messaging_protocol_Frame *frame)
         return;
     }
 
-    s_tx_buf[0] = (uint8_t)(payload_len & 0xFF);
-    s_tx_buf[1] = (uint8_t)((payload_len >> 8) & 0xFF);
+    s_tx_buf[0] = (uint8_t) (payload_len & 0xFF);
+    s_tx_buf[1] = (uint8_t) ((payload_len >> 8) & 0xFF);
 
     s_transport->send(s_transport->ctx, s_tx_buf, payload_len + 2);
     xSemaphoreGive(s_tx_mutex);
 #else
-    (void)frame;
+    (void) frame;
 #endif /* CORE_CM4 */
 }

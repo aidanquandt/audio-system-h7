@@ -3,5 +3,5 @@
 
 void led_init(void)
 {
-    (void)0;
+    (void) 0;
 }

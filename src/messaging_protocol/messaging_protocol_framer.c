@@ -1,25 +1,25 @@
 #include "src/messaging_protocol/messaging_protocol_framer.h"
 #include <string.h>
 
-void messaging_protocol_framer_init(messaging_protocol_framer_t *framer)
+void messaging_protocol_framer_init(messaging_protocol_framer_t* framer)
 {
-    framer->state          = MESSAGING_PROTOCOL_FRAMER_WAIT_LEN_LO;
-    framer->payload_len    = 0;
+    framer->state            = MESSAGING_PROTOCOL_FRAMER_WAIT_LEN_LO;
+    framer->payload_len      = 0;
     framer->payload_received = 0;
     memset(framer->payload, 0, sizeof(framer->payload));
 }
 
-bool messaging_protocol_framer_feed(messaging_protocol_framer_t *framer, uint8_t byte)
+bool messaging_protocol_framer_feed(messaging_protocol_framer_t* framer, uint8_t byte)
 {
     switch (framer->state)
     {
     case MESSAGING_PROTOCOL_FRAMER_WAIT_LEN_LO:
-        framer->payload_len = (uint16_t)byte;
+        framer->payload_len = (uint16_t) byte;
         framer->state       = MESSAGING_PROTOCOL_FRAMER_WAIT_LEN_HI;
         return false;
 
     case MESSAGING_PROTOCOL_FRAMER_WAIT_LEN_HI:
-        framer->payload_len |= (uint16_t)byte << 8;
+        framer->payload_len |= (uint16_t) byte << 8;
         if (framer->payload_len > MESSAGING_PROTOCOL_MAX_FRAME_SIZE)
         {
             /* Invalid length, discard and resync */
@@ -27,7 +27,7 @@ bool messaging_protocol_framer_feed(messaging_protocol_framer_t *framer, uint8_t
             return false;
         }
         framer->payload_received = 0;
-        framer->state           = MESSAGING_PROTOCOL_FRAMER_WAIT_PAYLOAD;
+        framer->state            = MESSAGING_PROTOCOL_FRAMER_WAIT_PAYLOAD;
         if (framer->payload_len == 0)
         {
             /* Empty frame, discard */
@@ -51,9 +51,9 @@ bool messaging_protocol_framer_feed(messaging_protocol_framer_t *framer, uint8_t
     }
 }
 
-void messaging_protocol_framer_reset(messaging_protocol_framer_t *framer)
+void messaging_protocol_framer_reset(messaging_protocol_framer_t* framer)
 {
-    framer->state          = MESSAGING_PROTOCOL_FRAMER_WAIT_LEN_LO;
-    framer->payload_len    = 0;
+    framer->state            = MESSAGING_PROTOCOL_FRAMER_WAIT_LEN_LO;
+    framer->payload_len      = 0;
     framer->payload_received = 0;
 }

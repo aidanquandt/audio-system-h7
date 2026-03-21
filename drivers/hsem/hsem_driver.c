@@ -42,7 +42,7 @@ void HAL_HSEM_FreeCallback(uint32_t SemMask)
     uint32_t mask = SemMask;
     while (mask)
     {
-        uint32_t i = (uint32_t)__builtin_ctz(mask);
+        uint32_t i = (uint32_t) __builtin_ctz(mask);
         if (hsem_callbacks[i])
         {
             hsem_callbacks[i](1U << i);

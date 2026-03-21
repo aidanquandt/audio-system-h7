@@ -19,19 +19,19 @@ void i2c_driver_init(void);
  * @param len  Number of bytes to read.
  * @return true on success, false on HAL error or timeout.
  */
-bool i2c_driver_read(uint8_t addr, uint8_t reg, uint8_t *buf, uint16_t len);
+bool i2c_driver_read(uint8_t addr, uint8_t reg, uint8_t* buf, uint16_t len);
 
 /**
  * Read from an I2C device (16-bit register address).
  */
-bool i2c_driver_read16(uint8_t addr, uint16_t reg, uint8_t *buf, uint16_t len);
+bool i2c_driver_read16(uint8_t addr, uint16_t reg, uint8_t* buf, uint16_t len);
 
 /**
  * Write to an I2C device (8-bit register address).
  */
-bool i2c_driver_write(uint8_t addr, uint8_t reg, const uint8_t *buf, uint16_t len);
+bool i2c_driver_write(uint8_t addr, uint8_t reg, const uint8_t* buf, uint16_t len);
 
 /**
  * Write to an I2C device (16-bit register address).
  */
-bool i2c_driver_write16(uint8_t addr, uint16_t reg, const uint8_t *buf, uint16_t len);
+bool i2c_driver_write16(uint8_t addr, uint16_t reg, const uint8_t* buf, uint16_t len);

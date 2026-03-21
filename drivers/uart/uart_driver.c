@@ -1,49 +1,52 @@
 #include "drivers/uart/uart_driver.h"
 #include "FreeRTOS.h"
-#include "semphr.h"
 #include "queue.h"
+#include "semphr.h"
 #include "stream_buffer.h"
 #include "task.h"
 #include <string.h>
 
 #ifdef CORE_CM4
 
-#include <stdbool.h>
 #include "usart.h"
+#include <stdbool.h>
 
 #define UART_DMA_TIMEOUT_MS 50U
 
-typedef struct {
-    uint8_t  data[UART_TX_MAX_MSG_LEN];
+typedef struct
+{
+    uint8_t data[UART_TX_MAX_MSG_LEN];
     uint16_t len;
 } uart_msg_t;
 
-static struct {
-    QueueHandle_t     queue;
+static struct
+{
+    QueueHandle_t queue;
     SemaphoreHandle_t complete;
-    uint32_t          drop_count;
+    uint32_t drop_count;
 } tx_ctx;
 
-static struct {
+static struct
+{
     StreamBufferHandle_t stream;
-    uint8_t              buf[UART_RX_BUF_LEN];
-    volatile uint32_t    drop_count;
+    uint8_t buf[UART_RX_BUF_LEN];
+    volatile uint32_t drop_count;
 } rx_ctx;
 
 /* HAL-level callbacks (set during init). */
 static void (*uart_tx_cplt_cb)(void);
 static void (*uart_rx_cplt_cb)(uint16_t);
 
-static bool uart_hal_transmit_dma(const uint8_t *buf, uint16_t len)
+static bool uart_hal_transmit_dma(const uint8_t* buf, uint16_t len)
 {
     if (buf == NULL || len == 0)
     {
         return false;
     }
-    return HAL_UART_Transmit_DMA(&huart3, (uint8_t *)buf, len) == HAL_OK;
+    return HAL_UART_Transmit_DMA(&huart3, (uint8_t*) buf, len) == HAL_OK;
 }
 
-static bool uart_hal_receive_dma(uint8_t *buf, uint16_t len)
+static bool uart_hal_receive_dma(uint8_t* buf, uint16_t len)
 {
     if (buf == NULL || len == 0)
     {
@@ -52,7 +55,7 @@ static bool uart_hal_receive_dma(uint8_t *buf, uint16_t len)
     return HAL_UARTEx_ReceiveToIdle_DMA(&huart3, buf, len) == HAL_OK;
 }
 
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef* huart)
 {
     if (huart->Instance != USART3)
     {
@@ -64,7 +67,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
     }
 }
 
-void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t size)
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef* huart, uint16_t size)
 {
     if (huart->Instance != USART3)
     {
@@ -85,8 +88,8 @@ static void uart_driver_tx_cplt_handler(void)
 
 static void uart_driver_rx_cplt_handler(uint16_t received)
 {
-    BaseType_t woken   = pdFALSE;
-    size_t     written = xStreamBufferSendFromISR(rx_ctx.stream, rx_ctx.buf, received, &woken);
+    BaseType_t woken = pdFALSE;
+    size_t written   = xStreamBufferSendFromISR(rx_ctx.stream, rx_ctx.buf, received, &woken);
     if (written < received)
     {
         rx_ctx.drop_count += received - written;
@@ -95,9 +98,9 @@ static void uart_driver_rx_cplt_handler(uint16_t received)
     portYIELD_FROM_ISR(woken);
 }
 
-static void uart_driver_drain_task(void *arg)
+static void uart_driver_drain_task(void* arg)
 {
-    (void)arg;
+    (void) arg;
     uart_msg_t msg;
 
     for (;;)
@@ -132,7 +135,7 @@ void uart_driver_init(void)
     configASSERT(rx_ctx.stream);
     uart_tx_cplt_cb = uart_driver_tx_cplt_handler;
     uart_rx_cplt_cb = uart_driver_rx_cplt_handler;
-    bool ok = uart_hal_receive_dma(rx_ctx.buf, UART_RX_BUF_LEN);
+    bool ok         = uart_hal_receive_dma(rx_ctx.buf, UART_RX_BUF_LEN);
     configASSERT(ok);
     xTaskCreate(uart_driver_drain_task, "UART_tx", 256, NULL, tskIDLE_PRIORITY + 2, NULL);
 }
@@ -149,7 +152,7 @@ uint32_t uart_driver_get_drop_count(void)
     return n_rx + n_tx;
 }
 
-void uart_driver_transmit(const uint8_t *buf, size_t len)
+void uart_driver_transmit(const uint8_t* buf, size_t len)
 {
     if (buf == NULL || len == 0)
     {
@@ -166,7 +169,7 @@ void uart_driver_transmit(const uint8_t *buf, size_t len)
     }
 
     uart_msg_t msg;
-    msg.len = (uint16_t)len;
+    msg.len = (uint16_t) len;
     memcpy(msg.data, buf, msg.len);
 
     xQueueSend(tx_ctx.queue, &msg, portMAX_DELAY);
@@ -175,8 +178,18 @@ void uart_driver_transmit(const uint8_t *buf, size_t len)
 #else
 
 void uart_driver_init(void) {}
-void uart_driver_transmit(const uint8_t *buf, size_t len) { (void)buf; (void)len; }
-uint32_t uart_driver_get_drop_count(void) { return 0U; }
-StreamBufferHandle_t uart_driver_get_rx_stream(void) { return NULL; }
+void uart_driver_transmit(const uint8_t* buf, size_t len)
+{
+    (void) buf;
+    (void) len;
+}
+uint32_t uart_driver_get_drop_count(void)
+{
+    return 0U;
+}
+StreamBufferHandle_t uart_driver_get_rx_stream(void)
+{
+    return NULL;
+}
 
 #endif /* CORE_CM4 */

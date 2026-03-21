@@ -6,8 +6,8 @@
  */
 
 #include "drivers/timer/timer_driver.h"
-#include <stdint.h>
 #include "stm32h7xx.h"
+#include <stdint.h>
 
 void configureTimerForRunTimeStats(void)
 {
@@ -16,5 +16,5 @@ void configureTimerForRunTimeStats(void)
 
 unsigned long getRunTimeCounterValue(void)
 {
-    return (unsigned long)TIM2->CNT;
+    return (unsigned long) TIM2->CNT;
 }

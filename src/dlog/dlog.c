@@ -27,20 +27,20 @@
 /* Must match configMAX_TASK_NAME_LEN; task_name in proto is 16 bytes. */
 #define TASK_NAME_LEN 16
 
-static void dlog_task(void *pvParameters)
+static void dlog_task(void* pvParameters)
 {
-    (void)pvParameters;
+    (void) pvParameters;
 
     static TaskStatus_t status[DLOG_MAX_TASKS];
     static TaskStatus_t prev_status[DLOG_MAX_TASKS];
-    static UBaseType_t  prev_n         = 0;
-    static uint32_t     prev_total_now = 0;
-    static uint8_t      first_run      = 1;
+    static UBaseType_t prev_n      = 0;
+    static uint32_t prev_total_now = 0;
+    static uint8_t first_run       = 1;
 
     for (;;)
     {
-        uint32_t    total_now = 0;
-        UBaseType_t n         = uxTaskGetSystemState(status, DLOG_MAX_TASKS, &total_now);
+        uint32_t total_now = 0;
+        UBaseType_t n      = uxTaskGetSystemState(status, DLOG_MAX_TASKS, &total_now);
 
         if (n == 0)
         {
@@ -50,7 +50,7 @@ static void dlog_task(void *pvParameters)
 
         if (first_run)
         {
-            memcpy(prev_status, status, (size_t)n * sizeof(TaskStatus_t));
+            memcpy(prev_status, status, (size_t) n * sizeof(TaskStatus_t));
             prev_n         = n;
             prev_total_now = total_now;
             first_run      = 0;
@@ -90,24 +90,24 @@ static void dlog_task(void *pvParameters)
          * undercounts (e.g. task ordering, new/deleted tasks), percentages
          * get inflated. total_delta is from the same counter as ulRunTimeCounter.
          */
-        uint32_t total_delta = (uint32_t)(total_now - prev_total_now);
-        uint64_t denominator = (total_delta > 0U) ? (uint64_t)total_delta : 1ULL;
+        uint32_t total_delta = (uint32_t) (total_now - prev_total_now);
+        uint64_t denominator = (total_delta > 0U) ? (uint64_t) total_delta : 1ULL;
 
         /*
          * Second pass: compute percentage per task (truncated). Assign rounding
          * remainder to the task with largest run_delta so reported total is 100%.
          */
-        uint8_t     pcts[DLOG_MAX_TASKS];
-        uint32_t    sum_pct = 0;
+        uint8_t pcts[DLOG_MAX_TASKS];
+        uint32_t sum_pct    = 0;
         UBaseType_t idx_max = 0;
         for (UBaseType_t i = 0; i < n; i++)
         {
-            uint32_t pct = (uint32_t)((100ULL * (uint64_t)run_deltas[i]) / denominator);
+            uint32_t pct = (uint32_t) ((100ULL * (uint64_t) run_deltas[i]) / denominator);
             if (pct > 100U)
             {
                 pct = 100U;
             }
-            pcts[i] = (uint8_t)pct;
+            pcts[i] = (uint8_t) pct;
             sum_pct += pcts[i];
             if (run_deltas[i] > run_deltas[idx_max])
             {
@@ -117,16 +117,16 @@ static void dlog_task(void *pvParameters)
         if (sum_pct < 100U && n > 0)
         {
             uint32_t rem     = 100U - sum_pct;
-            uint32_t new_pct = (uint32_t)pcts[idx_max] + rem;
-            pcts[idx_max]    = (uint8_t)(new_pct > 100U ? 100U : new_pct);
+            uint32_t new_pct = (uint32_t) pcts[idx_max] + rem;
+            pcts[idx_max]    = (uint8_t) (new_pct > 100U ? 100U : new_pct);
         }
 
         for (UBaseType_t i = 0; i < n; i++)
         {
-            (void)pcts[i];
+            (void) pcts[i];
         }
 
-        memcpy(prev_status, status, (size_t)n * sizeof(TaskStatus_t));
+        memcpy(prev_status, status, (size_t) n * sizeof(TaskStatus_t));
         prev_n         = n;
         prev_total_now = total_now;
 

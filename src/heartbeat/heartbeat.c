@@ -1,11 +1,11 @@
 #include "src/heartbeat/heartbeat.h"
-#include "drivers/gpio/gpio_driver.h"
 #include "FreeRTOS.h"
+#include "drivers/gpio/gpio_driver.h"
 #include "task.h"
 
-static void heartbeat_task(void *pvParameters)
+static void heartbeat_task(void* pvParameters)
 {
-    (void)pvParameters;
+    (void) pvParameters;
 
     for (;;)
     {

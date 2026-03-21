@@ -7,10 +7,11 @@
  * Touch event: last sampled state.
  * Coordinates are in display space; use lcd_driver_width/height or LCD_DRIVER_* for bounds.
  */
-typedef struct touch_state {
+typedef struct touch_state
+{
     uint16_t x;
     uint16_t y;
-    bool     pressed;
+    bool pressed;
 } touch_state_t;
 
 /**
@@ -24,4 +25,4 @@ void touch_driver_init(void);
  * @param out  Filled with coordinates and pressed flag.
  * @return true if a valid read completed (out updated), false on read error.
  */
-bool touch_driver_read(touch_state_t *out);
+bool touch_driver_read(touch_state_t* out);

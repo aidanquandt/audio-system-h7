@@ -1,3 +1,8 @@
+CompileFlags:
+  CompilationDatabase: build/
+  Compiler: arm-none-eabi-gcc
+
+---
 If:
   PathMatch: .*\.h
 CompileFlags:

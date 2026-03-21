@@ -6,6 +6,7 @@ IndentWidth: 4
 UseTab: Never
 TabWidth: 4
 ContinuationIndentWidth: 4
+IndentCaseLabels: false
 
 # Line length
 ColumnLimit: 100
@@ -13,23 +14,29 @@ ColumnLimit: 100
 # Braces
 BreakBeforeBraces: Allman
 AllowShortBlocksOnASingleLine: Never
-AllowShortFunctionsOnASingleLine: None
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+
+# Alignment
+AlignConsecutiveAssignments: Consecutive
+AlignConsecutiveMacros: Consecutive
+AlignConsecutiveBitFields: Consecutive
+AlignTrailingComments: true
 
 # Spacing
 SpaceAfterCStyleCast: true
-SpaceBeforeRangeBasedForLoopColon: true
+SpaceBeforeParens: ControlStatements
 
 # Pointers
 PointerAlignment: Left
 
 # Comments
 ReflowComments: true
-SpaceBeforeParens: ControlStatements
 
 # Includes
 SortIncludes: CaseSensitive
 IncludeBlocks: Preserve
 
 # Other
-AllowShortIfStatementsOnASingleLine: Never
-AllowShortLoopsOnASingleLine: false
+MaxEmptyLinesToKeep: 2

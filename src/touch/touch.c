@@ -3,13 +3,13 @@
 #ifdef CORE_CM4
 
 #include "FreeRTOS.h"
+#include "drivers/gpio/gpio_driver.h"
+#include "drivers/lcd/lcd_driver.h"
+#include "drivers/touch/touch_driver.h"
 #include "semphr.h"
 #include "task.h"
-#include "drivers/gpio/gpio_driver.h"
-#include "drivers/touch/touch_driver.h"
-#include "drivers/lcd/lcd_driver.h"
 
-#define TOUCH_DOT_SIZE        12U
+#define TOUCH_DOT_SIZE         12U
 #define TOUCH_TASK_STACK_WORDS 256U
 #define RGB565_WHITE           0xFFFFU
 
@@ -18,7 +18,7 @@ static SemaphoreHandle_t s_touch_sem;
 /* Called from ISR when touch INT (PG2) fires. Keep minimal: only unblock the task. */
 static void touch_exti_cb(gpio_driver_pin_t pin)
 {
-    (void)pin;
+    (void) pin;
     if (s_touch_sem == NULL)
     {
         return;
@@ -28,9 +28,9 @@ static void touch_exti_cb(gpio_driver_pin_t pin)
     portYIELD_FROM_ISR(woken);
 }
 
-static void touch_task(void *pvParameters)
+static void touch_task(void* pvParameters)
 {
-    (void)pvParameters;
+    (void) pvParameters;
     touch_state_t state;
     for (;;)
     {
@@ -67,8 +67,6 @@ void touch_init(void)
 
 #else
 
-void touch_init(void)
-{
-}
+void touch_init(void) {}
 
 #endif /* CORE_CM4 */
